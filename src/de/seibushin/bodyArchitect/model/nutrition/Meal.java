@@ -26,6 +26,9 @@ public class Meal {
     @OneToMany(mappedBy = "meal")
     private Set<MealFood> mealFoods = new HashSet<MealFood>();
 
+    @OneToMany(mappedBy = "meal")
+    private Set<DayMeal> dayMeals = new HashSet<>();
+
     public Meal() {
 
     }
