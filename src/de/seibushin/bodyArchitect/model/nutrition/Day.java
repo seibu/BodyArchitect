@@ -39,7 +39,7 @@ public class Day {
         this.id = id;
     }
 
-    public Date getName() {
+    public Date getDate() {
         return date;
     }
 

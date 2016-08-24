@@ -2,233 +2,87 @@
  *
  * NO LICENSE
  * YOU MAY NOT REPRODUCE, DISTRIBUTE, OR CREATE DERIVATIVE WORKS FROM MY WORK
- *
+ * 
  */
 
 package de.seibushin.bodyArchitect;
 
-import de.seibushin.bodyArchitect.helper.HibernateUtil;
-import de.seibushin.bodyArchitect.model.nutrition.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import de.seibushin.bodyArchitect.helper.MsgUtil;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
 
-public class Main {
-    public static void main(String args[]) {
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+public class Main extends Application {
 
-        // create a new Session
-        Session session = sessionFactory.openSession();
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle(MsgUtil.getString("title"));
+        primaryStage.setOnCloseRequest(event -> {
+            // stop the propagation of the event
+            event.consume();
+            close();
+        });
 
-        // do something database oriented
-        //createFood(session);
-        //session.getTransaction().commit();
+        // load the fxml and show HOME
+        try {
+            // init FXMLLoader
+            FXMLLoader loader = new FXMLLoader();
+            // set location to home.fxml
+            loader.setLocation(getClass().getResource(Config.FXML_ROOT));
 
-        //printFood(session);
+            // load
+            BorderPane root = loader.load();
+            primaryStage.setScene(new Scene(root));
+            showFXML(Config.FXML_HOME, root);
 
-        dayTest(session);
-        printDay(session);
-        //mealTest(session);
-        //printMeal(session);
-        //printFood(session);
-
-        session.close();
-        sessionFactory.close();
-    }
-
-    private static void dayTest(Session session) {
-        session.beginTransaction();
-
-        Food apple = new Food("Apfel", 80, 2, 20, 19, 0, 100, 120);
-        Food banana = new Food("Banane", 100, 4, 20, 19, 0, 100, 100);
-
-        Meal meal = new Meal("Frühstück", Type.BREAKFAST);
-
-        MealFood mealFood = new MealFood();
-        mealFood.setFood(apple);
-        mealFood.setMeal(meal);
-        mealFood.setWeight(100);
-
-        MealFood mealFood2 = new MealFood();
-        mealFood2.setFood(banana);
-        mealFood2.setMeal(meal);
-        mealFood2.setWeight(100);
-
-        session.save(mealFood);
-        session.save(mealFood2);
-
-        Food milk = new Food("Milch", 64, 3.3, 4.8, 4.8, 3.5, 100, 200);
-        Food creatine = new Food("Creatine", 0, 0, 0, 0, 0, 3, 3);
-        Food whey = new Food("Tasty Whey", 387, 74, 7, 3.5, 7, 100, 30);
-
-        Meal shake = new Meal("Shake", Type.SNACK);
-
-        MealFood mf = new MealFood();
-        mf.setFood(milk);
-        mf.setMeal(shake);
-        mf.setWeight(300);
-
-        MealFood mf2 = new MealFood();
-        mf2.setFood(creatine);
-        mf2.setMeal(shake);
-        mf2.setWeight(3);
-
-        MealFood mf3 = new MealFood();
-        mf3.setFood(whey);
-        mf3.setMeal(shake);
-        mf3.setWeight(30);
-
-        session.save(mf);
-        session.save(mf2);
-        session.save(mf3);
-
-        Day day = new Day();
-        day.setDate(new Date());
-        day.setWeekday(Weekdays.WEDNESDAY);
-
-        DayMeal dm = new DayMeal();
-        dm.setMeal(shake);
-        dm.setDay(day);
-
-        DayMeal dm2 = new DayMeal();
-        dm2.setMeal(meal);
-        dm2.setDay(day);
-
-        session.save(dm);
-        session.save(dm2);
-
-        session.getTransaction().commit();
-    }
-
-    private static void printDay(Session session) {
-        session.beginTransaction();
-
-        // print all the meals
-        EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();
-        EntityManager em = entityManagerFactory.createEntityManager();
-
-        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
-
-        CriteriaQuery<Day> criteria = builder.createQuery(Day.class);
-        Root<Day> mealFoodRoot = criteria.from(Day.class);
-        criteria.select(mealFoodRoot);
-        List<Day> meals = em.createQuery(criteria).getResultList();
-
-        CriteriaBuilder cb = entityManagerFactory.getCriteriaBuilder();
-
-        System.out.println("\n----\n");
-        for (final Day m : meals) {
-            System.out.println(m);
+            // show the stage
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        System.out.println("\n----\n");
-
-        session.getTransaction().commit();
-    }
-
-    private static void mealTest(Session session) {
-        session.beginTransaction();
-        Food apple = new Food("Apfel", 80, 2, 20, 19, 0, 100, 120);
-        Food banana = new Food("Banane", 100, 4, 20, 19, 0, 100, 100);
-
-        Meal meal = new Meal("Frühstück", Type.BREAKFAST);
-
-        MealFood mealFood = new MealFood();
-        mealFood.setFood(apple);
-        mealFood.setMeal(meal);
-        mealFood.setWeight(100);
-
-        MealFood mealFood2 = new MealFood();
-        mealFood2.setFood(banana);
-        mealFood2.setMeal(meal);
-        mealFood2.setWeight(100);
-
-        session.save(mealFood);
-        session.save(mealFood2);
-
-        session.getTransaction().commit();
     }
 
     /**
+     *  * Shows a specific fxml-files elements in the center of the given !BorderPane!
+     *  @todo check ability to use other types then BorderPane
      *
-     * @param session
+     * @param path to fxml file relative to the main.class
+     * @param mainPane pane to show the content of the  FXML of the given path
+     * @return returns the controller specified in the fxml
      */
-    //@todo check for dependencies
-    private static void deleteMeal(Session session) {
-        session.beginTransaction();
-        // deletion test for Id 8
-        Meal meal = new Meal();
-        meal.setId(3);
-        session.delete(meal);
+    public void showFXML(String path, BorderPane mainPane) {
+        try {
+            // initilize a FXMLLoader
+            FXMLLoader loader = new FXMLLoader();
+            // set the given path to the fxml
+            loader.setLocation(getClass().getResource(path));
+            // load the fxml
+            Pane pane = loader.load();
 
-        /* mealFood
-        MealFood mealFood = new MealFood();
-        mealFood.setId(8);
-        session.delete(mealFood);
-        */
-        session.getTransaction().commit();
-    }
-
-    private static void printMeal(Session session) {
-        session.beginTransaction();
-        // print all the meals
-        EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();
-        EntityManager em = entityManagerFactory.createEntityManager();
-
-        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
-
-        CriteriaQuery<Meal> criteria = builder.createQuery(Meal.class);
-        Root<Meal> mealFoodRoot = criteria.from(Meal.class);
-        criteria.select(mealFoodRoot);
-        List<Meal> meals = em.createQuery(criteria).getResultList();
-
-        CriteriaBuilder cb = entityManagerFactory.getCriteriaBuilder();
-
-        System.out.println("\n----\n");
-        for (final Meal m : meals) {
-            System.out.println(m);
+            mainPane.setCenter(pane);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println("\n----\n");
-        session.getTransaction().commit();
     }
 
-    private static void createFood(Session session) {
-        session.beginTransaction();
-        Food food = new Food("Apfel", 80, 2, 20, 19, 0, 100, 120);
-        session.save(food);
-
-        Food food2 = new Food("Banane", 100, 4, 20, 19, 0, 100, 100);
-        session.save(food2);
-        session.getTransaction().commit();
+    @Override
+    public void stop() throws Exception {
+        close();
     }
 
-    private static void printFood(Session session) {
-        session.beginTransaction();
-        EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();
-        EntityManager em = entityManagerFactory.createEntityManager();
+    /**
+     * Terminate all threads and close the app
+     */
+    private void close() {
+        System.exit(0);
+    }
 
-        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
-
-        CriteriaQuery<Food> criteria = builder.createQuery(Food.class);
-        Root<Food> foodRoot = criteria.from(Food.class);
-        criteria.select(foodRoot);
-        List<Food> foods = em.createQuery(criteria).getResultList();
-
-        CriteriaBuilder cb = entityManagerFactory.getCriteriaBuilder();
-
-        System.out.println("\n----\n");
-        System.out.println(MessageFormat.format("Storing {0} foods in the database", foods.size()));
-        for (final Food f : foods) {
-            System.out.println(f);
-        }
-        System.out.println("\n----\n");
-        session.getTransaction().commit();
+    public static void main(String[] args) {
+        launch(args);
     }
 }
