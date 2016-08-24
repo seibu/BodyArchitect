@@ -1,3 +1,3 @@
-BodyArchitect (by seibushin.de)
+#BodyArchitect (by seibushin.de)
 
 BodyArchitect simple fx-App to track nutrition and workout
