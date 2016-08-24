@@ -21,6 +21,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // init BodyArchitect + Hibernate
+        BodyArchitect.init();
+
         primaryStage.setTitle(MsgUtil.getString("title"));
         primaryStage.setOnCloseRequest(event -> {
             // stop the propagation of the event
@@ -79,6 +82,7 @@ public class Main extends Application {
      * Terminate all threads and close the app
      */
     private void close() {
+        BodyArchitect.getBa().close();
         System.exit(0);
     }
 

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.Controller">
    <bottom>
       <Label text="Adds" BorderPane.alignment="CENTER" />
    </bottom>
@@ -15,8 +15,8 @@
             <Label text="BodyArchitect" BorderPane.alignment="CENTER" />
             <HBox alignment="CENTER">
                <children>
-                  <Button mnemonicParsing="false" text="Home" />
-                  <Button mnemonicParsing="false" text="Nutrition" />
+                  <Button mnemonicParsing="false" text="Home" onAction="#showHome"/>
+                  <Button mnemonicParsing="false" text="Nutrition" onAction="#showNutrition" />
                   <Button mnemonicParsing="false" text="Workout" />
                </children>
             </HBox>

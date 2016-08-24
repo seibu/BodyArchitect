@@ -7,6 +7,8 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
+import javafx.beans.property.StringProperty;
+
 import javax.persistence.*;
 import java.text.MessageFormat;
 import java.util.HashSet;
