@@ -22,6 +22,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -79,11 +80,16 @@ public class BodyArchitect {
         session.getTransaction().commit();
     }
 
-    public <T> void deleteEntry(T entry) {
+    public void deleteEntry(Class type, int id) {
         Session session = getSession();
         session.beginTransaction();
-        T en = (T) session.merge(entry);
-        session.delete(en);
+
+        try {
+            Object o = type.getConstructor(int.class).newInstance(id);
+            session.delete(o);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         session.getTransaction().commit();
     }

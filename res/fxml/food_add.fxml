@@ -8,7 +8,6 @@
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -23,7 +22,7 @@
   </rowConstraints>
    <children>
       <TextField fx:id="tf_name" promptText="Enter name" />
-      <TextField fx:id="tf_portion" promptText="Enter portion size" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <TextField fx:id="tf_weight" promptText="Enter weight" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <TextField fx:id="tf_energy" promptText="Enter energy (kcal)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Label text="Energy (kcal)" GridPane.rowIndex="2" />
       <Label text="Fat" GridPane.rowIndex="3" />
@@ -34,13 +33,7 @@
       <TextField fx:id="tf_carbs" promptText="Enter carbs" GridPane.columnIndex="1" GridPane.rowIndex="4" />
       <TextField fx:id="tf_sugar" promptText="Enter sugar" GridPane.columnIndex="1" GridPane.rowIndex="5" />
       <TextField fx:id="tf_protein" promptText="Enter protein" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Label text="100g" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Button mnemonicParsing="false" onAction="#addFood" text="Add" GridPane.columnIndex="2" GridPane.rowIndex="8" />
-      <Label fx:id="lbl_energy" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <Label fx:id="lbl_fat" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-      <Label fx:id="lbl_carbs" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-      <Label fx:id="lbl_sugar" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-      <Label fx:id="lbl_protein" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-      <Label fx:id="lbl_result" prefHeight="17.0" prefWidth="296.0" text="Label" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="7" />
+      <Button mnemonicParsing="false" onAction="#addFood" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="8" />
+      <Label fx:id="lbl_result" prefHeight="17.0" prefWidth="296.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="7" />
    </children>
 </GridPane>

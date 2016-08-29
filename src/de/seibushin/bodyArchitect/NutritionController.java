@@ -101,10 +101,8 @@ public class NutritionController {
     public void deleteFood() {
         Food food = tv_food.getSelectionModel().getSelectedItem();
 
-        System.out.println(food);
-
         try {
-            BodyArchitect.getBa().deleteEntry(food);
+            BodyArchitect.getBa().deleteEntry(Food.class, food.getId());
             tv_food.getItems().remove(food);
         } catch (HibernateException e) {
             e.printStackTrace();
