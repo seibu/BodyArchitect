@@ -7,6 +7,8 @@
 
 package de.seibushin.bodyArchitect;
 
+import de.seibushin.bodyArchitect.helper.ColumnUtil;
+import de.seibushin.bodyArchitect.helper.MsgUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +22,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
@@ -63,75 +66,73 @@ public class NutritionController {
     @FXML
     TableColumn PORTION;
 
-    public void showHome(ActionEvent actionEvent) {
+    /**
+     * Shows the food_add window for adding new food
+     * onclose the content of the tableview is refreshed
+     */
+    @FXML
+    private void showFoodAdd() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource(Config.FXML_FOOD_ADD));
+            Stage stage = new Stage();
+            stage.setTitle(MsgUtil.getString("title"));
+
+            // on close refresh the foods tv
+            stage.setOnCloseRequest(event -> {
+                // stop the propagation of the event
+                BodyArchitect.getBa().refreshTableView(tv_food, Food.class);
+
+            });
+
+            stage.setScene(new Scene(loader.load()));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Deletes the currently selected Food
+     * @todo mark the selected Food as to be deleted to give the opportunity to restore the data
+     * @todo create garbage collector to finally delete the entry after a given time
+     */
+    @FXML
+    public void deleteFood() {
+        Food food = tv_food.getSelectionModel().getSelectedItem();
+
+        System.out.println(food);
+
+        try {
+            BodyArchitect.getBa().deleteEntry(food);
+            tv_food.getItems().remove(food);
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Adds all annotated fields to the tableview and shows the content of the database
+     */
     private void populateTableView() {
-        // set all the CellValueFactories
-        ID.setCellValueFactory(new PropertyValueFactory<Food, Integer>("id"));
-        NAME.setCellValueFactory(new PropertyValueFactory<Food, String>("name"));
-        KCAL.setCellValueFactory(new PropertyValueFactory<Food, Double>("kcal"));
-        CARBS.setCellValueFactory(new PropertyValueFactory<Food, Double>("carbs"));
-        SUGAR.setCellValueFactory(new PropertyValueFactory<Food, Double>("sugar"));
-        FAT.setCellValueFactory(new PropertyValueFactory<Food, Double>("fat"));
-        PROTEIN.setCellValueFactory(new PropertyValueFactory<Food, Double>("protein"));
-        WEIGHT.setCellValueFactory(new PropertyValueFactory<Food, Integer>("weight"));
-        PORTION.setCellValueFactory(new PropertyValueFactory<Food, Integer>("portion"));
+        // add columns for Food.class to the tableview
+        ColumnUtil.addColumns(tv_food, Food.class);
+        // refresh the data
+        BodyArchitect.getBa().refreshTableView(tv_food, Food.class);
 
-        NAME.setCellFactory(TextFieldTableCell.forTableColumn());
-        NAME.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<Food, String>>() {
-                    @Override
-                    public void handle(TableColumn.CellEditEvent<Food, String> t) {
-                        Food f = t.getRowValue();
-                        f.setName(t.getNewValue());
-                        Session session = BodyArchitect.getBa().getSession();
-                        session.beginTransaction();
-
-                        session.merge(f);
-
-                        session.getTransaction().commit();
-                        session.close();
-                    }
-                }
-        );
-
-        ObservableList<Food> data = FXCollections.observableArrayList();
-
-        Session session = BodyArchitect.getBa().getSession();
-
-        session.beginTransaction();
-
-
-        session.getTransaction().commit();
-        session.close();
-
-
-
-        List<Food> foods = BodyArchitect.getBa().getEntity(Food.class);
-
+        /*
         System.out.println("\n----\n");
         System.out.println(MessageFormat.format("Storing {0} foods in the database", foods.size()));
         for (final Food f : foods) {
             System.out.println(f);
         }
         System.out.println("\n----\n");
-
-        for(Food f : foods) {
-            data.add(f);
-        }
-
-        try {
-            tv_food.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        */
     }
 
     @FXML
     private void initialize() {
-        System.out.println("test");
         populateTableView();
     }
+
 }

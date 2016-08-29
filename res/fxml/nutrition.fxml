@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.NutritionController">
+<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.NutritionController">
   <tabs>
     <Tab text="Day">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane />
       </content>
     </Tab>
     <Tab text="Meal">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane />
       </content>
     </Tab>
       <Tab text="Food">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <VBox spacing="5.0">
                <children>
-                  <TableView fx:id="tv_food" prefHeight="266.0" prefWidth="600.0" editable="true">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="ID" fx:id="ID" />
-                      <TableColumn prefWidth="75.0" text="NAME" fx:id="NAME" />
-                      <TableColumn prefWidth="75.0" text="KCAL" fx:id="KCAL" />
-                      <TableColumn prefWidth="75.0" text="CARBS" fx:id="CARBS" />
-                      <TableColumn prefWidth="75.0" text="SUGAR" fx:id="SUGAR" />
-                      <TableColumn prefWidth="75.0" text="FAT" fx:id="FAT" />
-                      <TableColumn prefWidth="75.0" text="PROTEIN" fx:id="PROTEIN" />
-                      <TableColumn prefWidth="75.0" text="WEIGHT" fx:id="WEIGHT" />
-                      <TableColumn prefWidth="75.0" text="PORTION" fx:id="PORTION" />
-                    </columns>
-                  </TableView>
-               </children></AnchorPane>
+                  <HBox alignment="TOP_RIGHT" spacing="5.0">
+                     <children>
+                        <Button mnemonicParsing="false" text="Delete" onAction="#deleteFood" />
+                        <Button mnemonicParsing="false" text="Add" onAction="#showFoodAdd" />
+                     </children>
+                  </HBox>
+                  <TableView fx:id="tv_food" editable="true" VBox.vgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </VBox>
         </content>
       </Tab>
   </tabs>

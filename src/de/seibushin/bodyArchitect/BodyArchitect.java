@@ -9,6 +9,11 @@ package de.seibushin.bodyArchitect;
 
 import de.seibushin.bodyArchitect.helper.HibernateUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -23,12 +28,13 @@ import java.util.List;
 public class BodyArchitect {
     private static BodyArchitect ba = null;
     private SessionFactory sessionFactory;
+    private BorderPane root;
 
     public BodyArchitect() {
         sessionFactory = HibernateUtil.getSessionFactory();
 
-        // populate DB with Food
-        createFood();
+        // populate DB with test Food
+        //createFood();
     }
 
     public static void init() {
@@ -37,8 +43,16 @@ public class BodyArchitect {
         }
     }
 
+    public void setRoot(BorderPane root) {
+        this.root = root;
+    }
+
+    public BorderPane getRoot() {
+        return this.root;
+    }
+
     public Session getSession() {
-        return sessionFactory.openSession();
+        return sessionFactory.getCurrentSession();
     }
 
     private void createFood() {
@@ -54,10 +68,28 @@ public class BodyArchitect {
         session.save(whey);
 
         session.getTransaction().commit();
-        session.close();
+    }
+
+    public <T> void addEntry(T entry) {
+        Session session = getSession();
+        session.beginTransaction();
+
+        session.save(entry);
+
+        session.getTransaction().commit();
+    }
+
+    public <T> void deleteEntry(T entry) {
+        Session session = getSession();
+        session.beginTransaction();
+        T en = (T) session.merge(entry);
+        session.delete(en);
+
+        session.getTransaction().commit();
     }
 
     public void close() {
+        getSession().close();
         sessionFactory.close();
     }
 
@@ -65,8 +97,10 @@ public class BodyArchitect {
         return ba;
     }
 
-    public <T> List<T> getEntity(Class type) {
+    private <T> List<T> getEntity(Class type) {
         Session session = getSession();
+
+        session.beginTransaction();
 
         // getEnityManager
         EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();
@@ -74,17 +108,30 @@ public class BodyArchitect {
 
         CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
 
-
-
         CriteriaQuery<T> criteria = builder.createQuery(type);
         Root<T> root = criteria.from(type);
         criteria.select(root);
         List<T> entity = em.createQuery(criteria).getResultList();
 
-        CriteriaBuilder cb = entityManagerFactory.getCriteriaBuilder();
-
-        session.close();
+        session.getTransaction().commit();
 
         return entity;
+    }
+
+    public void refreshTableView(TableView tableView, Class type) {
+        try {
+            ObservableList data = FXCollections.observableArrayList();
+
+            List entries = getEntity(type);
+
+            // add all foods to the collection
+            for (Object entry : entries) {
+                data.add(entry);
+            }
+
+            tableView.setItems(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

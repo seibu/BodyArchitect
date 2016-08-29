@@ -7,6 +7,7 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
+import de.seibushin.bodyArchitect.model.BAField;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.*;
@@ -22,13 +23,21 @@ public class Food {
     @Column(name = "FOOD_ID")
     private int id;
 
+    @BAField
     private String name;
+    @BAField
     private double kcal;
+    @BAField
     private double protein;
+    @BAField
     private double carbs;
+    @BAField
     private double sugar;
+    @BAField
     private double fat;
+    @BAField
     private double weight;
+    @BAField
     private double portion;
 
     @OneToMany(mappedBy = "food")
@@ -53,7 +62,7 @@ public class Food {
      * @param weight - weight
      * @param portion - portion
      */
-    public Food(String name, double kcal, double protein, double carbs, double sugar, double fat, double weight, double portion) {
+    public Food(String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion) {
         this.name = name;
         this.kcal = kcal;
         this.protein = protein;

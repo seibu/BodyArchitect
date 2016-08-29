@@ -17,11 +17,11 @@ public class MealFood {
     @Column(name = "MEAL_FOODS_ID")
     private int id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "MEAL_ID")
     private Meal meal;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "FOOD_ID")
     private Food food;
 

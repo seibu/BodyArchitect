@@ -7,6 +7,7 @@
 
 package de.seibushin.bodyArchitect;
 
+import de.seibushin.bodyArchitect.helper.FxUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +23,11 @@ public class Controller {
     TableView tv_food;
 
     public void showNutrition(ActionEvent actionEvent) {
+        FxUtil.showFXML(Config.FXML_NUTRITION, BodyArchitect.getBa().getRoot());
+
+        /* Nutrition in a new Stage / Window
         try {
+
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource(Config.FXML_NUTRITION));
             Stage stage = new Stage();
@@ -35,8 +40,10 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
 
     public void showHome(ActionEvent actionEvent) {
+        FxUtil.showFXML(Config.FXML_HOME, BodyArchitect.getBa().getRoot());
     }
 }
