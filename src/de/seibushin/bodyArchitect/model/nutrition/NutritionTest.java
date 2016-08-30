@@ -191,7 +191,7 @@ public class NutritionTest {
         session.getTransaction().commit();
     }
 
-    private static void printMeal(Session session) {
+    public static void printMeal(Session session) {
         session.beginTransaction();
         // print all the meals
         EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();

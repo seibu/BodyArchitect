@@ -18,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "FOODS")
 public class Food {
+    @BAField
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FOOD_ID")

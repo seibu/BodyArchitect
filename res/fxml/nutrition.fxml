@@ -9,13 +9,29 @@
   <tabs>
     <Tab text="Day">
       <content>
-        <AnchorPane />
+        <AnchorPane fx:id="day">
+               <children>
+                  <Button layoutX="103.0" layoutY="195.0" mnemonicParsing="false" onAction="#showShit" text="Button" />
+               </children></AnchorPane>
       </content>
     </Tab>
     <Tab text="Meal">
-      <content>
-        <AnchorPane />
-      </content>
+         <content>
+            <VBox spacing="5.0">
+               <children>
+                  <HBox alignment="TOP_RIGHT" spacing="5.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#deleteMeal" text="Delete" />
+                        <Button mnemonicParsing="false" onAction="#showMealAdd" text="Add" />
+                     </children>
+                  </HBox>
+                  <TableView fx:id="tv_meal" VBox.vgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </content>
     </Tab>
       <Tab text="Food">
         <content>
@@ -23,8 +39,8 @@
                <children>
                   <HBox alignment="TOP_RIGHT" spacing="5.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Delete" onAction="#deleteFood" />
-                        <Button mnemonicParsing="false" text="Add" onAction="#showFoodAdd" />
+                        <Button mnemonicParsing="false" onAction="#deleteFood" text="Delete" />
+                        <Button mnemonicParsing="false" onAction="#showFoodAdd" text="Add" />
                      </children>
                   </HBox>
                   <TableView fx:id="tv_food" editable="true" VBox.vgrow="ALWAYS" />

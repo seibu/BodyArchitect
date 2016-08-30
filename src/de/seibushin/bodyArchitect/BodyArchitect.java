@@ -11,6 +11,7 @@ import de.seibushin.bodyArchitect.helper.HibernateUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -126,18 +127,29 @@ public class BodyArchitect {
 
     public void refreshTableView(TableView tableView, Class type) {
         try {
-            ObservableList data = FXCollections.observableArrayList();
-
-            List entries = getEntity(type);
-
-            // add all foods to the collection
-            for (Object entry : entries) {
-                data.add(entry);
-            }
-
-            tableView.setItems(data);
+            tableView.setItems(getData(type));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void refreshListView(ListView listView, Class type) {
+        try {
+             listView.setItems(getData(type));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ObservableList getData(Class type) {
+        ObservableList data = FXCollections.observableArrayList();
+
+        List entries = getEntity(type);
+
+        // add all foods to the collection
+        for (Object entry : entries) {
+            data.add(entry);
+        }
+        return data;
     }
 }

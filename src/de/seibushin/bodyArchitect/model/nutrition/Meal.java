@@ -7,6 +7,8 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
+import de.seibushin.bodyArchitect.model.BAField;
+
 import javax.persistence.*;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -15,22 +17,29 @@ import java.util.Set;
 @Entity
 @Table(name = "MEALS")
 public class Meal {
+    @BAField
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MEAL_ID")
     private int id;
 
+    @BAField
     private String name;
+    @BAField
     private Type type;
 
     @OneToMany(mappedBy = "meal")
-    private Set<MealFood> mealFoods = new HashSet<MealFood>();
+    private Set<MealFood> mealFoods = new HashSet<>();
 
     @OneToMany(mappedBy = "meal")
     private Set<DayMeal> dayMeals = new HashSet<>();
 
     public Meal() {
 
+    }
+
+    public Meal(int id) {
+        this.id = id;
     }
 
     public Meal(String name, Type type) {

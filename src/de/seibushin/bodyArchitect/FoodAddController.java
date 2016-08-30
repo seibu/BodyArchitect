@@ -65,5 +65,4 @@ public class FoodAddController {
             lbl_result.setText(MsgUtil.getString("addFood_error"));
         }
     }
-
 }
