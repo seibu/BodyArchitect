@@ -210,7 +210,7 @@ public class NutritionController {
         // populate Foods
         populateTableView();
 
-        NutritionTest.printMeal(BodyArchitect.getBa().getSession());
+        //NutritionTest.printMeal(BodyArchitect.getBa().getSession());
     }
 
 }

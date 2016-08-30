@@ -8,6 +8,7 @@
 package de.seibushin.bodyArchitect.model.nutrition;
 
 import javax.persistence.*;
+import java.text.MessageFormat;
 
 @Entity
 @Table(name = "MEAL_FOODS")
@@ -61,5 +62,11 @@ public class MealFood {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    @Override
+    public String toString() {
+        String s = getFood().getName() + ": " + weight + "g";
+        return s;
     }
 }

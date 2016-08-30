@@ -10,6 +10,7 @@ package de.seibushin.bodyArchitect.model.nutrition;
 import de.seibushin.bodyArchitect.model.BAField;
 
 import javax.persistence.*;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,11 +29,32 @@ public class Meal {
     @BAField
     private Type type;
 
+    @BAField
     @OneToMany(mappedBy = "meal")
     private Set<MealFood> mealFoods = new HashSet<>();
 
     @OneToMany(mappedBy = "meal")
     private Set<DayMeal> dayMeals = new HashSet<>();
+
+    @Transient
+    @BAField
+    private double kcal;
+
+    @Transient
+    @BAField
+    private double protein;
+
+    @Transient
+    @BAField
+    private double carbs;
+
+    @Transient
+    @BAField
+    private double sugar;
+
+    @Transient
+    @BAField
+    private double fat;
 
     public Meal() {
 
@@ -77,6 +99,56 @@ public class Meal {
 
     public void setMealFoods(Set<MealFood> mealFoods) {
         this.mealFoods = mealFoods;
+    }
+
+    public String getKcal() {
+        if (kcal == 0) {
+            mealFoods.stream().forEach(mf -> {
+                kcal += mf.getFood().getKcal() / mf.getFood().getWeight() * mf.getWeight();
+            });
+        }
+
+        return new DecimalFormat("#.##").format(kcal);
+    }
+
+    public String getProtein() {
+        if (protein == 0) {
+            mealFoods.stream().forEach(mf -> {
+                protein += mf.getFood().getProtein() / mf.getFood().getWeight() * mf.getWeight();
+            });
+        }
+
+        return new DecimalFormat("#.##").format(protein);
+    }
+
+    public String getCarbs() {
+        if (carbs == 0) {
+            mealFoods.stream().forEach(mf -> {
+                carbs += mf.getFood().getCarbs() / mf.getFood().getWeight() * mf.getWeight();
+            });
+        }
+
+        return new DecimalFormat("#.##").format(carbs);
+    }
+
+    public String getSugar() {
+        if (sugar == 0) {
+            mealFoods.stream().forEach(mf -> {
+                sugar += mf.getFood().getSugar() / mf.getFood().getWeight() * mf.getWeight();
+            });
+        }
+
+        return new DecimalFormat("#.##").format(sugar);
+    }
+
+    public String getFat() {
+        if (fat == 0) {
+            mealFoods.stream().forEach(mf -> {
+                fat += mf.getFood().getFat() / mf.getFood().getWeight() * mf.getWeight();
+            });
+        }
+
+        return new DecimalFormat("#.##").format(fat);
     }
 
     @Override
