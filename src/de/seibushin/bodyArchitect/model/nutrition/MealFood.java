@@ -26,7 +26,7 @@ public class MealFood {
     @JoinColumn(name = "FOOD_ID")
     private Food food;
 
-    private int weight;
+    private double weight;
 
     public MealFood() {
 
@@ -56,11 +56,11 @@ public class MealFood {
         this.food = food;
     }
 
-    public int getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 

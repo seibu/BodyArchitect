@@ -8,6 +8,7 @@
 package de.seibushin.bodyArchitect;
 
 import de.seibushin.bodyArchitect.helper.HibernateUtil;
+import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +26,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.List;
 
 public class BodyArchitect {
@@ -125,6 +127,8 @@ public class BodyArchitect {
         return entity;
     }
 
+
+
     public void refreshTableView(TableView tableView, Class type) {
         try {
             tableView.setItems(getData(type));
@@ -151,5 +155,48 @@ public class BodyArchitect {
             data.add(entry);
         }
         return data;
+    }
+
+    public <T> List<T> getEntry(Class type, LocalDate day) {
+        Session session = getSession();
+
+        session.beginTransaction();
+
+        // getEnityManager
+        EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
+
+        CriteriaQuery<T> criteria = builder.createQuery(type);
+        Root<T> root = criteria.from(type);
+        criteria.select(root);
+        criteria.where(builder.equal(root.get("date"), day));
+        List<T> entity = em.createQuery(criteria).getResultList();
+
+        session.getTransaction().commit();
+
+        return entity;
+    }
+
+    public <T> List<LocalDate> getColumn(Class type, String column) {
+        Session session = getSession();
+
+        session.beginTransaction();
+
+        // getEnityManager
+        EntityManagerFactory entityManagerFactory = session.getEntityManagerFactory();
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
+
+        CriteriaQuery<LocalDate> criteria = builder.createQuery(LocalDate.class);
+        Root<T> root = criteria.from(type);
+        criteria.select(root.get(column).as(LocalDate.class));
+        List<LocalDate> entity = em.createQuery(criteria).getResultList();
+
+        session.getTransaction().commit();
+
+        return entity;
     }
 }

@@ -9,10 +9,21 @@
   <tabs>
     <Tab text="Day">
       <content>
-        <AnchorPane fx:id="day">
+            <VBox spacing="5.0">
                <children>
-                  <Button layoutX="103.0" layoutY="195.0" mnemonicParsing="false" onAction="#showShit" text="Button" />
-               </children></AnchorPane>
+                  <HBox alignment="TOP_RIGHT" spacing="5.0">
+                     <children>
+                        <Button layoutX="103.0" layoutY="195.0" mnemonicParsing="false" onAction="#showAddMeal" text="Add" />
+                        <Button mnemonicParsing="false" onAction="#removeMeal" text="Remove" />
+                     </children>
+                  </HBox>
+                  <Pane fx:id="calendarPane" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="lv_meals" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
       </content>
     </Tab>
     <Tab text="Meal">

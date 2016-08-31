@@ -9,44 +9,22 @@ package de.seibushin.bodyArchitect;
 
 import de.seibushin.bodyArchitect.helper.ColumnUtil;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
+import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import de.seibushin.bodyArchitect.model.nutrition.NutritionTest;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import jfxtras.scene.control.CalendarPicker;
 import jfxtras.scene.control.LocalDatePicker;
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class NutritionController {
 
@@ -76,7 +54,9 @@ public class NutritionController {
     TableColumn PORTION;
 
     @FXML
-    AnchorPane day;
+    Pane calendarPane;
+    @FXML
+    ListView lv_meals;
 
     LocalDatePicker cp;
 
@@ -158,6 +138,34 @@ public class NutritionController {
         }
     }
 
+    @FXML
+    private void showAddMeal() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource(Config.FXML_ADD_MEAL));
+            Stage stage = new Stage();
+            stage.setTitle(MsgUtil.getString("title"));
+
+            // on close refresh the foods tv
+            stage.setOnCloseRequest(event -> {
+                // stop the propagation of the event
+                BodyArchitect.getBa().refreshListView(lv_meals, Day.class);
+
+            });
+
+            stage.setScene(new Scene(loader.load()));
+            ((AddMealController)loader.getController()).setDate(cp.getLocalDate());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void removeMeal() {
+
+    }
+
     /**
      * Adds all annotated fields to the tableview and shows the content of the database
      */
@@ -172,6 +180,10 @@ public class NutritionController {
         ColumnUtil.addColumns(tv_meal, Meal.class);
         // refresh the data
         BodyArchitect.getBa().refreshTableView(tv_meal, Meal.class);
+
+        //BodyArchitect.getBa().refreshListView(lv_meals, Day.class);
+        lv_meals.getItems().setAll(BodyArchitect.getBa().getEntry(Day.class, cp.getLocalDate()));
+
 
         /*
         System.out.println("\n----\n");
@@ -198,14 +210,16 @@ public class NutritionController {
             if (newValue != null) {
                 System.out.println(newValue);
                 // show currentDay Day with Meals
+
+                lv_meals.getItems().setAll(BodyArchitect.getBa().getEntry(Day.class, newValue));
             }
         });
 
         // Highlight Days with Meals
-        // cp.highlightedLocalDates().add(cp.getLocalDate());
+        cp.highlightedLocalDates().addAll(BodyArchitect.getBa().getColumn(Day.class, "date"));
 
         // add the DatePicker to the Pane
-        day.getChildren().add(cp);
+        calendarPane.getChildren().add(cp);
 
         // populate Foods
         populateTableView();

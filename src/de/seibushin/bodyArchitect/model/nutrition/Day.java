@@ -7,8 +7,11 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
+import de.seibushin.bodyArchitect.model.BAField;
+
 import javax.persistence.*;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,16 +19,17 @@ import java.util.Set;
 @Entity
 @Table(name = "DAYS")
 public class Day {
+    @BAField
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DAY_ID")
     private int id;
 
-    private Weekdays weekday;
-    private Date date;
+    @BAField
+    private LocalDate date;
 
     @OneToMany(mappedBy = "day")
-    private Set<DayMeal> dayMeals = new HashSet<DayMeal>();
+    private Set<DayMeal> dayMeals = new HashSet<>();
 
     public Day() {
 
@@ -39,20 +43,12 @@ public class Day {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public Weekdays getWeekday() {
-        return weekday;
-    }
-
-    public void setWeekday(Weekdays weekday) {
-        this.weekday = weekday;
     }
 
     public Set<DayMeal> getDayMeals() {
@@ -65,7 +61,7 @@ public class Day {
 
     @Override
     public String toString() {
-        String s = MessageFormat.format("{0}: {1} - {2}\n", this.id, this.weekday, this.date);
+        String s = MessageFormat.format("{0}: {1}\n", this.id, this.date);
         for (DayMeal dm : this.dayMeals) {
             s += dm.getId() + ": " + dm.getMeal() + "\n";
         }

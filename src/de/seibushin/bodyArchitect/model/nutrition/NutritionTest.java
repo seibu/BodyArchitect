@@ -18,6 +18,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -103,8 +104,7 @@ public class NutritionTest {
 
         // new Day
         Day day = new Day();
-        day.setDate(new Date());
-        day.setWeekday(Weekdays.WEDNESDAY);
+        day.setDate(LocalDate.now());
 
         // link meal to day
         DayMeal dm = new DayMeal();
