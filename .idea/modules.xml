@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_android.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_android.iml" group="BodyArchitectNutrition" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_desktop.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_desktop.iml" group="BodyArchitectNutrition" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_embedded.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_embedded.iml" group="BodyArchitectNutrition" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_ios.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_ios.iml" group="BodyArchitectNutrition" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_main.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_main.iml" group="BodyArchitectNutrition" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_test.iml" filepath="$PROJECT_DIR$/.idea/modules/BodyArchitectNutrition_test.iml" group="BodyArchitectNutrition" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.javafxports:jfxmobile-plugin:1.0.8'
+    }
+}
+
+apply plugin: 'org.javafxports.jfxmobile'
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        url 'http://nexus.gluonhq.com/nexus/content/repositories/releases'
+    }
+}
+
+mainClassName = 'de.seibushin.bodyArchitect.Main'
+
+dependencies {
+    compile 'com.gluonhq:charm:3.0.0',
+            'org.hibernate:hibernate-core:5.2.2.Final',
+            'com.h2database:h2:1.4.192',
+            'org.hibernate:hibernate-c3p0:5.2.2.Final',
+            'org.jfxtras:jfxtras-controls:8.0-r5'
+    androidRuntime 'com.gluonhq:charm-android:3.0.0'
+    iosRuntime 'com.gluonhq:charm-ios:3.0.0'
+    desktopRuntime 'com.gluonhq:charm-desktop:3.0.0',
+            'org.hibernate:hibernate-core:5.2.2.Final',
+            'com.h2database:h2:1.4.192',
+            'org.hibernate:hibernate-c3p0:5.2.2.Final',
+            'org.jfxtras:jfxtras-controls:8.0-r5'
+}
+
+jfxmobile {
+    android {
+        manifest = 'src/android/AndroidManifest.xml'
+    }
+    ios {
+        infoPList = file('src/ios/Default-Info.plist')
+        forceLinkClasses = [
+                'de.seibushin.bodyArchitect.**.*',
+                'com.gluonhq.**.*',
+                'io.datafx.**.*',
+                'javax.annotations.**.*',
+                'javax.inject.**.*',
+                'javax.json.**.*',
+                'org.glassfish.json.**.*'
+        ]
+    }
+}
