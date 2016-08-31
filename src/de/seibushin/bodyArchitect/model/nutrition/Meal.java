@@ -38,23 +38,23 @@ public class Meal {
 
     @Transient
     @BAField
-    private double kcal;
+    double kcal;
 
     @Transient
     @BAField
-    private double protein;
+    double protein;
 
     @Transient
     @BAField
-    private double carbs;
+    double carbs;
 
     @Transient
     @BAField
-    private double sugar;
+    double sugar;
 
     @Transient
     @BAField
-    private double fat;
+    double fat;
 
     public Meal() {
 
@@ -153,10 +153,16 @@ public class Meal {
 
     @Override
     public String toString() {
-        String s = MessageFormat.format("{0}: {1}({2})\n", this.id, this.getName(), this.getType());
+        /*String s = MessageFormat.format("{0}: {1}({2})\n", this.id, this.getName(), this.getType());
         for (MealFood mf : this.getMealFoods()) {
             s += mf.getWeight() + "g -> " + mf.getFood().toString() + "\n";
+        }*/
+
+        String s = MessageFormat.format("{0} ({1})\n{2}kcal [P {3} | C {4}({5}) | F {6}]\n", this.name, this.type, getKcal(), getProtein(), getCarbs(), getSugar(), getFat());
+        for (MealFood mf : this.mealFoods) {
+            s += MessageFormat.format("{0}\n", mf);
         }
+
         return s;
     }
 }

@@ -27,17 +27,17 @@ public class Food {
     @BAField
     private String name;
     @BAField
-    private double kcal;
+    double kcal;
     @BAField
-    private double protein;
+    double protein;
     @BAField
-    private double carbs;
+    double carbs;
     @BAField
-    private double sugar;
+    double sugar;
     @BAField
-    private double fat;
+    double fat;
     @BAField
-    private double weight;
+    double weight;
     @BAField
     private double portion;
 

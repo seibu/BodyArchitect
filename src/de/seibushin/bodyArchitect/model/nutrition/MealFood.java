@@ -8,6 +8,7 @@
 package de.seibushin.bodyArchitect.model.nutrition;
 
 import javax.persistence.*;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
 @Entity
@@ -26,7 +27,7 @@ public class MealFood {
     @JoinColumn(name = "FOOD_ID")
     private Food food;
 
-    private double weight;
+    double weight;
 
     public MealFood() {
 
@@ -64,9 +65,39 @@ public class MealFood {
         this.weight = weight;
     }
 
+    public String getKcal() {
+        Double kcal = food.kcal / food.weight * weight;
+
+        return new DecimalFormat("#.##").format(kcal);
+    }
+
+    public String getProtein() {
+        Double protein = food.protein / food.weight * weight;
+
+        return new DecimalFormat("#.##").format(protein);
+    }
+
+    public String getCarbs() {
+        Double carbs = food.carbs / food.weight * weight;
+
+        return new DecimalFormat("#.##").format(carbs);
+    }
+
+    public String getSugar() {
+        Double sugar = food.sugar / food.weight * weight;
+
+        return new DecimalFormat("#.##").format(sugar);
+    }
+
+    public String getFat() {
+        Double fat = food.fat / food.weight * weight;
+
+        return new DecimalFormat("#.##").format(fat);
+    }
+
     @Override
     public String toString() {
-        String s = getFood().getName() + ": " + weight + "g";
+        String s = MessageFormat.format("{0}: {1}g - {2}kcal [P {3} | C {4}({5}) | F {6}]", food.getName(), weight, getKcal(), getProtein(), getCarbs(), getSugar(), getFat());
         return s;
     }
 }
