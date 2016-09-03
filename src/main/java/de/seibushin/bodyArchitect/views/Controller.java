@@ -5,8 +5,10 @@
  *
  */
 
-package de.seibushin.bodyArchitect;
+package de.seibushin.bodyArchitect.views;
 
+import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.Config;
 import de.seibushin.bodyArchitect.helper.FxUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,7 +26,7 @@ public class Controller {
         try {
 
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource(Config.FXML_NUTRITION));
+            loader.setLocation(Main1.class.getResource(Config.FXML_NUTRITION));
             Stage stage = new Stage();
             Scene scene = null;
 

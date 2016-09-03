@@ -1,71 +1,79 @@
-/* Copyright 2016 Sebastian Meyer (seibushin.de)
- *
- * NO LICENSE
- * YOU MAY NOT REPRODUCE, DISTRIBUTE, OR CREATE DERIVATIVE WORKS FROM MY WORK
- * 
- */
-
 package de.seibushin.bodyArchitect;
 
-import de.seibushin.bodyArchitect.helper.FxUtil;
-import de.seibushin.bodyArchitect.helper.MsgUtil;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
+import com.gluonhq.charm.glisten.application.MobileApplication;
+import com.gluonhq.charm.glisten.control.Avatar;
+import com.gluonhq.charm.glisten.control.NavigationDrawer;
+import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
+import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
+import com.gluonhq.charm.glisten.visual.Swatch;
+import de.seibushin.bodyArchitect.views.HomeView;
+import de.seibushin.bodyArchitect.views.NutritionView;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class Main extends MobileApplication {
+
+    // Views and Layers
+    public static final String HOME_VIEW = "home";
+    public static final String NUTRITION_VIEW = "Nutrition";
+    public static final String WORKOUT_VIEW = "Workout";
+    public static final String MENU_LAYER = "Side Menu";
+
 
     @Override
-    public void start(Stage primaryStage) {
-        // init bodyArchitect + Hibernate
+    public void init() {
+        // init BodyArchitect
         BodyArchitect.init();
 
-        primaryStage.setTitle(MsgUtil.getString("title"));
-        primaryStage.setOnCloseRequest(event -> {
-            // stop the propagation of the event
-            event.consume();
-            close();
+        // Views
+        addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
+        addViewFactory(NUTRITION_VIEW, () -> new NutritionView(NUTRITION_VIEW).getView());
+        //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
+
+        // side Navigation
+        NavigationDrawer drawer = new NavigationDrawer();
+
+        // set Navigation Header
+        NavigationDrawer.Header header = new NavigationDrawer.Header("BodyArchitect",
+                "Nutrition Edition",
+                new Avatar(21, new Image(Main.class.getResourceAsStream("/icon.png"))));
+        drawer.setHeader(header);
+
+        // create Menu Items
+        final Item home = new Item("Home", MaterialDesignIcon.HOME.graphic());
+        final Item nutrition = new Item("Nutrition", MaterialDesignIcon.LOCAL_DINING.graphic());
+        final Item workout = new Item("Workout", MaterialDesignIcon.FITNESS_CENTER.graphic());
+
+        // add the Items to the menu
+        drawer.getItems().addAll(home, nutrition, workout);
+
+        // add Listener for the menu to change the View
+        drawer.selectedItemProperty().addListener((obs, oldItem, newItem) -> {
+            hideLayer(MENU_LAYER);
+            switch (((Item)newItem).getTitle()) {
+                case "Home":
+                    switchView(HOME_VIEW);
+                    break;
+                case "Nutrition":
+                    switchView(NUTRITION_VIEW);
+                    break;
+                case "Workout":
+                    switchView(WORKOUT_VIEW);
+                    break;
+            }
         });
 
-        // load the fxml and show HOME
-        try {
-            // init FXMLLoader
-            FXMLLoader loader = new FXMLLoader();
-            // set location to home.fxml
-            System.out.println(Main.class.getResource(Config.FXML_ROOT));
-            loader.setLocation(Main.class.getResource(Config.FXML_ROOT));
-
-            // load
-            BorderPane root = loader.load();
-            // load the root for ba
-            BodyArchitect.getBa().setRoot(root);
-
-            primaryStage.setScene(new Scene(root));
-            FxUtil.showFXML(Config.FXML_HOME, root);
-
-            // show the stage
-            primaryStage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // add sidemenu
+        addLayerFactory(MENU_LAYER, () -> new SidePopupView(drawer));
     }
 
     @Override
-    public void stop() throws Exception {
-        close();
-    }
+    public void postInit(Scene scene) {
+        Swatch.GREEN.assignTo(scene);
 
-    /**
-     * Terminate all threads and close the app
-     */
-    private void close() {
-        BodyArchitect.getBa().close();
-        System.exit(0);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
+        scene.getStylesheets().add(Main.class.getResource("style.css").toExternalForm());
+        ((Stage) scene.getWindow()).getIcons().add(new Image(Main.class.getResourceAsStream("/icon.png")));
     }
 }

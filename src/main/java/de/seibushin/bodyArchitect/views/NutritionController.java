@@ -5,9 +5,17 @@
  *
  */
 
-package de.seibushin.bodyArchitect;
+package de.seibushin.bodyArchitect.views;
 
+import com.gluonhq.charm.glisten.application.MobileApplication;
+import com.gluonhq.charm.glisten.control.AppBar;
+import com.gluonhq.charm.glisten.layout.layer.FloatingActionButton;
+import com.gluonhq.charm.glisten.mvc.View;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
+import de.seibushin.bodyArchitect.*;
 import de.seibushin.bodyArchitect.helper.ColumnUtil;
+import de.seibushin.bodyArchitect.helper.MealCell;
+import de.seibushin.bodyArchitect.helper.MealCellNode;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
@@ -19,6 +27,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jfxtras.scene.control.LocalDatePicker;
 import org.hibernate.HibernateException;
@@ -27,6 +36,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 public class NutritionController {
+    public static final String DAY_VIEW = "Day";
+    public static final String MEAL_VIEW = "Meal";
+    public static final String FOOD_VIEW = "Food";
+
+    @FXML
+    View nutrition;
 
     @FXML
     TableView<Food> tv_food;
@@ -54,7 +69,7 @@ public class NutritionController {
     TableColumn PORTION;
 
     @FXML
-    Pane calendarPane;
+    VBox vbox_nutrition;
     @FXML
     ListView lv_meals;
 
@@ -140,6 +155,9 @@ public class NutritionController {
 
     @FXML
     private void showAddMeal() {
+        nutrition.getApplication().switchView(DAY_VIEW);
+
+        /*
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource(Config.FXML_ADD_MEAL));
@@ -159,6 +177,7 @@ public class NutritionController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
 
     @FXML
@@ -183,6 +202,7 @@ public class NutritionController {
 
         //bodyArchitect.getBa().refreshListView(lv_meals, Day.class);
         lv_meals.getItems().setAll(BodyArchitect.getBa().getEntry(Day.class, cp.getLocalDate()));
+        lv_meals.setCellFactory(c -> new MealCell());
 
 
         /*
@@ -205,12 +225,30 @@ public class NutritionController {
 
     @FXML
     private void initialize() {
+        // add the views
+        MobileApplication.getInstance().addViewFactory(DAY_VIEW, () -> new DayView(DAY_VIEW).getView());
+        MobileApplication.getInstance().addViewFactory(MEAL_VIEW, () -> new MealView(MEAL_VIEW).getView());
+        MobileApplication.getInstance().addViewFactory(FOOD_VIEW, () -> new FoodView(FOOD_VIEW).getView());
+
+        // update appBar
+        nutrition.showingProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue) {
+                AppBar appBar = MobileApplication.getInstance().getAppBar();
+                appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> MobileApplication.getInstance().showLayer(Main.MENU_LAYER)));
+                appBar.setTitleText("Nutrition");
+                appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> showAddMeal()));
+            }
+        });
+
+        // add Layers
+        nutrition.getLayers().add(new FloatingActionButton(MaterialDesignIcon.INFO.text,
+                e -> System.out.println("Info")));
+
+        // add the calendar / localdatepicker
         cp = new LocalDatePicker( LocalDate.now());
+        // add listener so react on click of the calendar/days
         cp.localDateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                System.out.println(newValue);
-                // show currentDay Day with Meals
-
                 lv_meals.getItems().setAll(BodyArchitect.getBa().getEntry(Day.class, newValue));
             }
         });
@@ -219,7 +257,7 @@ public class NutritionController {
         cp.highlightedLocalDates().addAll(BodyArchitect.getBa().getColumn(Day.class, "date"));
 
         // add the DatePicker to the Pane
-        calendarPane.getChildren().add(cp);
+        vbox_nutrition.getChildren().add(0, cp);
 
         // populate Foods
         populateTableView();

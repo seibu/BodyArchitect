@@ -5,10 +5,11 @@
  *
  */
 
-package de.seibushin.bodyArchitect;
+package de.seibushin.bodyArchitect.views;
 
-import de.seibushin.bodyArchitect.helper.MsgUtil;
+import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.model.nutrition.*;
+import de.seibushin.bodyArchitect.helper.MsgUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -16,7 +17,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
-public class MealAddController {
+import java.time.LocalDate;
+import java.util.List;
+
+public class AddMealController {
     @FXML
     TextField tf_name;
     @FXML
@@ -29,6 +33,12 @@ public class MealAddController {
     TextField tf_weight;
     @FXML
     Label lbl_result;
+
+    private LocalDate date;
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
     @FXML
     private void addMeal(ActionEvent actionEvent) {
@@ -46,6 +56,22 @@ public class MealAddController {
                 mf.setWeight(f.getPortion());
                 BodyArchitect.getBa().addEntry(mf);
             });
+
+            List<Day> days = BodyArchitect.getBa().getEntry(Day.class, date);
+            Day day;
+            if (days.size() == 0) {
+                day = new Day();
+                day.setDate(date);
+                BodyArchitect.getBa().addEntry(day);
+            } else {
+                day = days.get(0);
+            }
+
+            DayMeal dm = new DayMeal();
+            dm.setDay(day);
+            dm.setMeal(meal);
+
+            BodyArchitect.getBa().addEntry(dm);
 
             //todo: empty all fields!!!
 

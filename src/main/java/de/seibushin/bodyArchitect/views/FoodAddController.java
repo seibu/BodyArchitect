@@ -5,8 +5,9 @@
  *
  */
 
-package de.seibushin.bodyArchitect;
+package de.seibushin.bodyArchitect.views;
 
+import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.event.ActionEvent;
