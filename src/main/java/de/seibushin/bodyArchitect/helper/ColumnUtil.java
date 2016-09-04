@@ -59,7 +59,7 @@ public class ColumnUtil {
                     public void handle(TableColumn.CellEditEvent<Food, String> t) {
                         Food f = t.getRowValue();
                         f.setName(t.getNewValue());
-                        Session session = BodyArchitect.getBa().getSession();
+                        Session session = BodyArchitect.getInstance().getSession();
                         session.beginTransaction();
 
                         session.merge(f);

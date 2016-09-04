@@ -20,7 +20,7 @@ public class Controller {
     TableView tv_food;
 
     public void showNutrition(ActionEvent actionEvent) {
-        FxUtil.showFXML(Config.FXML_NUTRITION, BodyArchitect.getBa().getRoot());
+        FxUtil.showFXML(Config.FXML_NUTRITION, BodyArchitect.getInstance().getRoot());
 
         /* Nutrition in a new Stage / Window
         try {
@@ -41,6 +41,6 @@ public class Controller {
     }
 
     public void showHome(ActionEvent actionEvent) {
-        FxUtil.showFXML(Config.FXML_HOME, BodyArchitect.getBa().getRoot());
+        FxUtil.showFXML(Config.FXML_HOME, BodyArchitect.getInstance().getRoot());
     }
 }

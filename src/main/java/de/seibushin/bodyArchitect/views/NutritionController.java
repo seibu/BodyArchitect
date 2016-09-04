@@ -15,7 +15,6 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.*;
 import de.seibushin.bodyArchitect.helper.ColumnUtil;
 import de.seibushin.bodyArchitect.helper.MealCell;
-import de.seibushin.bodyArchitect.helper.MealCellNode;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
@@ -26,7 +25,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jfxtras.scene.control.LocalDatePicker;
@@ -90,7 +88,7 @@ public class NutritionController {
             // on close refresh the foods tv
             stage.setOnCloseRequest(event -> {
                 // stop the propagation of the event
-                BodyArchitect.getBa().refreshTableView(tv_food, Food.class);
+                BodyArchitect.getInstance().refreshTableView(tv_food, Food.class);
 
             });
 
@@ -112,7 +110,7 @@ public class NutritionController {
         Food food = tv_food.getSelectionModel().getSelectedItem();
 
         try {
-            BodyArchitect.getBa().deleteEntry(Food.class, food.getId());
+            BodyArchitect.getInstance().deleteEntry(Food.class, food.getId());
             tv_food.getItems().remove(food);
         } catch (HibernateException e) {
             e.printStackTrace();
@@ -130,7 +128,7 @@ public class NutritionController {
             // on close refresh the foods tv
             stage.setOnCloseRequest(event -> {
                 // stop the propagation of the event
-                BodyArchitect.getBa().refreshTableView(tv_meal, Meal.class);
+                BodyArchitect.getInstance().refreshTableView(tv_meal, Meal.class);
 
             });
 
@@ -146,7 +144,7 @@ public class NutritionController {
         Meal meal = tv_meal.getSelectionModel().getSelectedItem();
 
         try {
-            BodyArchitect.getBa().deleteEntry(Meal.class, meal.getId());
+            BodyArchitect.getInstance().deleteEntry(Meal.class, meal.getId());
             tv_meal.getItems().remove(meal);
         } catch (HibernateException e) {
             e.printStackTrace();
@@ -167,7 +165,7 @@ public class NutritionController {
             // on close refresh the foods tv
             stage.setOnCloseRequest(event -> {
                 // stop the propagation of the event
-                BodyArchitect.getBa().refreshListView(lv_meals, Day.class);
+                BodyArchitect.getInstance().refreshListView(lv_meals, Day.class);
 
             });
 
@@ -192,17 +190,18 @@ public class NutritionController {
         // add columns for Food.class to the tableview
         ColumnUtil.addColumns(tv_food, Food.class);
         // refresh the data
-        BodyArchitect.getBa().refreshTableView(tv_food, Food.class);
+        BodyArchitect.getInstance().refreshTableView(tv_food, Food.class);
 
 
         // add columns for Meal.class to the tableview
         ColumnUtil.addColumns(tv_meal, Meal.class);
         // refresh the data
-        BodyArchitect.getBa().refreshTableView(tv_meal, Meal.class);
+        BodyArchitect.getInstance().refreshTableView(tv_meal, Meal.class);
 
-        //bodyArchitect.getBa().refreshListView(lv_meals, Day.class);
-        lv_meals.getItems().setAll(BodyArchitect.getBa().getEntry(Day.class, cp.getLocalDate()));
+        //bodyArchitect.getInstance().refreshListView(lv_meals, Day.class);
         lv_meals.setCellFactory(c -> new MealCell());
+        lv_meals.getItems().setAll(BodyArchitect.getInstance().getMealsForDay(cp.getLocalDate()));
+        System.out.println("test2");
 
 
         /*
@@ -244,17 +243,24 @@ public class NutritionController {
         nutrition.getLayers().add(new FloatingActionButton(MaterialDesignIcon.INFO.text,
                 e -> System.out.println("Info")));
 
+        System.out.println("test1");
+
         // add the calendar / localdatepicker
         cp = new LocalDatePicker( LocalDate.now());
         // add listener so react on click of the calendar/days
+
         cp.localDateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                lv_meals.getItems().setAll(BodyArchitect.getBa().getEntry(Day.class, newValue));
+                BodyArchitect.getInstance().setSelectedDate(newValue);
+                lv_meals.getItems().setAll(BodyArchitect.getInstance().getMealsForDay(newValue));
             }
         });
 
         // Highlight Days with Meals
-        cp.highlightedLocalDates().addAll(BodyArchitect.getBa().getColumn(Day.class, "date"));
+        // @todo throws npe
+        //cp.highlightedLocalDates().addAll(BodyArchitect.getInstance().getColumn(Day.class, "date"));
+
+
 
         // add the DatePicker to the Pane
         vbox_nutrition.getChildren().add(0, cp);
@@ -262,7 +268,8 @@ public class NutritionController {
         // populate Foods
         populateTableView();
 
-        //NutritionTest.printMeal(bodyArchitect.getBa().getSession());
+        //NutritionTest.printMeal(bodyArchitect.getInstance().getSession());
+
     }
 
 }

@@ -38,14 +38,14 @@ public class MealAddController {
             Type type = cb_type.getValue();
 
             Meal meal = new Meal(name, type);
-            BodyArchitect.getBa().addEntry(meal);
+            BodyArchitect.getInstance().addEntry(meal);
 
             lv_food.getItems().stream().forEach(f -> {
                 MealFood mf = new MealFood();
                 mf.setMeal(meal);
                 mf.setFood(f);
                 mf.setWeight(f.getPortion());
-                BodyArchitect.getBa().addEntry(mf);
+                BodyArchitect.getInstance().addEntry(mf);
             });
 
             //todo: empty all fields!!!
@@ -82,6 +82,6 @@ public class MealAddController {
     @FXML
     private void initialize() {
         cb_type.getItems().setAll(Type.values());
-        BodyArchitect.getBa().refreshListView(lv_allFood, Food.class);
+        BodyArchitect.getInstance().refreshListView(lv_allFood, Food.class);
     }
 }

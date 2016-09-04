@@ -47,22 +47,22 @@ public class AddMealController {
             Type type = cb_type.getValue();
 
             Meal meal = new Meal(name, type);
-            BodyArchitect.getBa().addEntry(meal);
+            BodyArchitect.getInstance().addEntry(meal);
 
             lv_food.getItems().stream().forEach(f -> {
                 MealFood mf = new MealFood();
                 mf.setMeal(meal);
                 mf.setFood(f);
                 mf.setWeight(f.getPortion());
-                BodyArchitect.getBa().addEntry(mf);
+                BodyArchitect.getInstance().addEntry(mf);
             });
 
-            List<Day> days = BodyArchitect.getBa().getEntry(Day.class, date);
+            List<Day> days = BodyArchitect.getInstance().getEntry(Day.class, date);
             Day day;
             if (days.size() == 0) {
                 day = new Day();
                 day.setDate(date);
-                BodyArchitect.getBa().addEntry(day);
+                BodyArchitect.getInstance().addEntry(day);
             } else {
                 day = days.get(0);
             }
@@ -71,7 +71,7 @@ public class AddMealController {
             dm.setDay(day);
             dm.setMeal(meal);
 
-            BodyArchitect.getBa().addEntry(dm);
+            BodyArchitect.getInstance().addEntry(dm);
 
             //todo: empty all fields!!!
 
@@ -107,6 +107,6 @@ public class AddMealController {
     @FXML
     private void initialize() {
         cb_type.getItems().setAll(Type.values());
-        BodyArchitect.getBa().refreshListView(lv_allFood, Food.class);
+        BodyArchitect.getInstance().refreshListView(lv_allFood, Food.class);
     }
 }

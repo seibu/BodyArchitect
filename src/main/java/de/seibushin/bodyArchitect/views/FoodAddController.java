@@ -47,7 +47,7 @@ public class FoodAddController {
 
             Food food = new Food(name, energy, fat, carbs, sugar, protein, weight, 0);
 
-            BodyArchitect.getBa().addEntry(food);
+            BodyArchitect.getInstance().addEntry(food);
             lbl_result.setText(MsgUtil.getString("addFood_success"));
         } catch (Exception e) {
             e.printStackTrace();

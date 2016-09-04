@@ -9,7 +9,9 @@ package de.seibushin.bodyArchitect;
 
 import com.gluonhq.charm.glisten.control.CharmListView;
 import de.seibushin.bodyArchitect.helper.HibernateUtil;
+import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
+import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
@@ -24,12 +26,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BodyArchitect {
     private static BodyArchitect ba = null;
     private SessionFactory sessionFactory;
     private BorderPane root;
+    private LocalDate selectedDate;
 
     public BodyArchitect() {
         sessionFactory = HibernateUtil.getSessionFactory();
@@ -99,7 +103,7 @@ public class BodyArchitect {
         sessionFactory.close();
     }
 
-    public static BodyArchitect getBa() {
+    public static BodyArchitect getInstance() {
         return ba;
     }
 
@@ -136,7 +140,8 @@ public class BodyArchitect {
 
     public void refreshListView(ListView listView, Class type) {
         try {
-             listView.setItems(getData(type));
+            listView.getItems().clear();
+            listView.setItems(getData(type));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,6 +157,15 @@ public class BodyArchitect {
             data.add(entry);
         }
         return data;
+    }
+
+    public List<Meal> getMealsForDay(LocalDate day) {
+        List<Day> days = getEntry(Day.class, day);
+
+        List<Meal> meals = new ArrayList<>();
+        days.forEach(d -> d.getDayMeals().forEach(dm -> meals.add(dm.getMeal())));
+
+        return meals;
     }
 
     public <T> List<T> getEntry(Class type, LocalDate day) {
@@ -195,5 +209,13 @@ public class BodyArchitect {
         session.getTransaction().commit();
 
         return entity;
+    }
+
+    public LocalDate getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(LocalDate selectedDate) {
+        this.selectedDate = selectedDate;
     }
 }
