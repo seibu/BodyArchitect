@@ -7,8 +7,8 @@
 
 package de.seibushin.bodyArchitect;
 
-import com.gluonhq.charm.glisten.control.CharmListView;
 import de.seibushin.bodyArchitect.helper.HibernateUtil;
+import de.seibushin.bodyArchitect.helper.LogBook;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
@@ -33,7 +33,8 @@ public class BodyArchitect {
     private static BodyArchitect ba = null;
     private SessionFactory sessionFactory;
     private BorderPane root;
-    private LocalDate selectedDate;
+    private LogBook logBook = new LogBook();
+    private List<Meal> mealsForSelectedDay;
 
     public BodyArchitect() {
         sessionFactory = HibernateUtil.getSessionFactory();
@@ -128,8 +129,6 @@ public class BodyArchitect {
         return entity;
     }
 
-
-
     public void refreshTableView(TableView tableView, Class type) {
         try {
             tableView.setItems(getData(type));
@@ -168,6 +167,24 @@ public class BodyArchitect {
         return meals;
     }
 
+    public Day getSelectedDayObject() {
+        List<Day> days = getEntry(Day.class, getSelectedDay());
+
+        Day day = null;
+        if (days.size() > 0) {
+            day = days.get(0);
+        }
+
+        return day;
+    }
+
+    /**
+     *
+     * @param type
+     * @param day
+     * @param <T>
+     * @return
+     */
     public <T> List<T> getEntry(Class type, LocalDate day) {
         Session session = getSession();
 
@@ -190,6 +207,13 @@ public class BodyArchitect {
         return entity;
     }
 
+    /**
+     * use for highlighting Days
+     * @param type
+     * @param column
+     * @param <T>
+     * @return
+     */
     public <T> List<LocalDate> getColumn(Class type, String column) {
         Session session = getSession();
 
@@ -211,11 +235,23 @@ public class BodyArchitect {
         return entity;
     }
 
-    public LocalDate getSelectedDate() {
-        return selectedDate;
+    public LocalDate getSelectedDay() {
+        return logBook.getSelectedDay();
     }
 
-    public void setSelectedDate(LocalDate selectedDate) {
-        this.selectedDate = selectedDate;
+    public LogBook getLogBook() {
+        return logBook;
+    }
+
+    public ObservableList getMealsForSelectedDay() {
+        ObservableList data = FXCollections.observableArrayList();
+
+        List entries = getMealsForDay(getSelectedDay());
+
+        // add all foods to the collection
+        for (Object entry : entries) {
+            data.add(entry);
+        }
+        return data;
     }
 }

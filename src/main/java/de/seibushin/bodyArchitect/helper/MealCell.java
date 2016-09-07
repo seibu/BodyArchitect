@@ -19,6 +19,8 @@ public class MealCell extends ListCell<Meal> {
         if (item != null) {
             mealCellNode.update(item.getName(), item.getType(), "", item.getKcal(), item.getFat(), item.getCarbs(), item.getSugar(), item.getProtein());
             setGraphic(mealCellNode.getNode());
+        } else {
+            setGraphic(null);
         }
     }
 }

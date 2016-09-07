@@ -71,7 +71,7 @@ public class Main extends MobileApplication {
 
     @Override
     public void postInit(Scene scene) {
-        Swatch.GREEN.assignTo(scene);
+        Swatch.GREY.assignTo(scene);
 
         scene.getStylesheets().add(Main.class.getResource("style.css").toExternalForm());
         ((Stage) scene.getWindow()).getIcons().add(new Image(Main.class.getResourceAsStream("/icon.png")));

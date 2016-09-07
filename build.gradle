@@ -24,7 +24,8 @@ dependencies {
             'org.hibernate:hibernate-core:5.2.2.Final',
             'com.h2database:h2:1.4.192',
             'org.hibernate:hibernate-c3p0:5.2.2.Final',
-            'org.jfxtras:jfxtras-controls:8.0-r5'
+            'org.jfxtras:jfxtras-controls:8.0-r5',
+            'org.jfxtras:jfxtras-gauge-linear:8.0-r5'
     androidRuntime 'com.gluonhq:charm-android:3.0.0'
     iosRuntime 'com.gluonhq:charm-ios:3.0.0'
     desktopRuntime 'com.gluonhq:charm-desktop:3.0.0',

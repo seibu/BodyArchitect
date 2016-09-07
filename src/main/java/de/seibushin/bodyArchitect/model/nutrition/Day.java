@@ -59,7 +59,7 @@ public class Day {
         this.dayMeals = dayMeals;
     }
 
-    public String getKcal() {
+    public Double getKcal() {
         final Double[] kcal = {0.0};
         if (kcal[0] == 0) {
             dayMeals.stream().forEach(dm -> {
@@ -69,10 +69,11 @@ public class Day {
             });
         }
 
-        return new DecimalFormat("#.##").format(kcal[0]);
+        return kcal[0];
+        //return new DecimalFormat("#.##").format(kcal[0]);
     }
 
-    public String getProtein() {
+    public Double getProtein() {
         final Double[] protein = {0.0};
         if (protein[0] == 0) {
             dayMeals.stream().forEach(dm -> {
@@ -82,10 +83,11 @@ public class Day {
             });
         }
 
-        return new DecimalFormat("#.##").format(protein[0]);
+        return protein[0];
+        //return new DecimalFormat("#.##").format(protein[0]);
     }
 
-    public String getCarbs() {
+    public Double getCarbs() {
         final Double[] carbs = {0.0};
         if (carbs[0] == 0) {
             dayMeals.stream().forEach(dm -> {
@@ -95,10 +97,11 @@ public class Day {
             });
         }
 
-        return new DecimalFormat("#.##").format(carbs[0]);
+        return carbs[0];
+        //return new DecimalFormat("#.##").format(carbs[0]);
     }
 
-    public String getSugar() {
+    public Double getSugar() {
         final Double[] sugar = {0.0};
         if (sugar[0] == 0) {
             dayMeals.stream().forEach(dm -> {
@@ -108,10 +111,11 @@ public class Day {
             });
         }
 
-        return new DecimalFormat("#.##").format(sugar[0]);
+        return sugar[0];
+        // return new DecimalFormat("#.##").format(sugar[0]);
     }
 
-    public String getFat() {
+    public Double getFat() {
         final Double[] fat = {0.0};
         if (fat[0] == 0) {
             dayMeals.stream().forEach(dm -> {
@@ -121,7 +125,8 @@ public class Day {
             });
         }
 
-        return new DecimalFormat("#.##").format(fat[0]);
+        return fat[0];
+        //return new DecimalFormat("#.##").format(fat[0]);
     }
 
     @Override

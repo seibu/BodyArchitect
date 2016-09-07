@@ -1,0 +1,36 @@
+#logBook .button.nav {
+    -fx-background-color: transparent;
+}
+
+#logBook .label.date {
+    -fx-font-size: 14px;
+    -fx-text-fill: #3d3d3d;
+    -fx-pref-width: 200px;
+    -fx-alignment: center;
+}
+
+#logBook #gp_calendar .button {
+    -fx-padding: 5px;
+    -fx-pref-width: 30px;
+    -fx-min-width: 30px;
+    -fx-max-width: 50px;
+    -fx-pref-height: 30px;
+    -fx-min-height: 30px;
+    -fx-max-height: 30px;
+    -fx-end-margin: 0;
+    -fx-start-margin: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0;
+    -fx-border-color: #cccccc;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(three-pass-box, #ccc, 0, 0, 0, 0);
+}
+
+#logBook #gp_calendar .button.today {
+    -fx-text-fill: #ff1237;
+}
+
+#logBook #gp_calendar .label {
+    -fx-text-fill: #787878;
+}

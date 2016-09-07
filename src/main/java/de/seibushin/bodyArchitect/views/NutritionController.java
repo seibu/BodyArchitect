@@ -14,6 +14,7 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.*;
 import de.seibushin.bodyArchitect.helper.ColumnUtil;
+import de.seibushin.bodyArchitect.helper.LogBook;
 import de.seibushin.bodyArchitect.helper.MealCell;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
@@ -22,12 +23,16 @@ import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jfxtras.internal.scene.control.gauge.linear.skin.SimpleMetroArcGaugeSkin;
 import jfxtras.scene.control.LocalDatePicker;
+import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
+import jfxtras.scene.control.gauge.linear.elements.AbsoluteSegment;
+import jfxtras.scene.control.gauge.linear.elements.CompleteSegment;
+import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
+import jfxtras.scene.control.gauge.linear.elements.Segment;
 import org.hibernate.HibernateException;
 
 import java.io.IOException;
@@ -48,26 +53,20 @@ public class NutritionController {
     TableView<Meal> tv_meal;
 
     @FXML
-    TableColumn ID;
+    SimpleMetroArcGauge mag_kcal;
     @FXML
-    TableColumn NAME;
+    SimpleMetroArcGauge mag_protein;
     @FXML
-    TableColumn KCAL;
+    SimpleMetroArcGauge mag_fat;
     @FXML
-    TableColumn CARBS;
-    @FXML
-    TableColumn SUGAR;
-    @FXML
-    TableColumn FAT;
-    @FXML
-    TableColumn PROTEIN;
-    @FXML
-    TableColumn WEIGHT;
-    @FXML
-    TableColumn PORTION;
+    SimpleMetroArcGauge mag_carbs;
 
     @FXML
-    VBox vbox_nutrition;
+    VBox vbox_day;
+    @FXML
+    VBox vbox_logs;
+    @FXML
+    TabPane tb_nutrition;
     @FXML
     ListView lv_meals;
 
@@ -183,6 +182,12 @@ public class NutritionController {
 
     }
 
+    @FXML
+    private void showLogBook() {
+        // show LogBook
+        tb_nutrition.getSelectionModel().select(3);
+    }
+
     /**
      * Adds all annotated fields to the tableview and shows the content of the database
      */
@@ -201,7 +206,6 @@ public class NutritionController {
         //bodyArchitect.getInstance().refreshListView(lv_meals, Day.class);
         lv_meals.setCellFactory(c -> new MealCell());
         lv_meals.getItems().setAll(BodyArchitect.getInstance().getMealsForDay(cp.getLocalDate()));
-        System.out.println("test2");
 
 
         /*
@@ -212,14 +216,6 @@ public class NutritionController {
         }
         System.out.println("\n----\n");
         */
-    }
-
-    @FXML
-    private void showShit() {
-        System.out.println(cp.getLocalDate());
-
-        // Highlight
-        cp.highlightedLocalDates().add(cp.getLocalDate());
     }
 
     @FXML
@@ -239,37 +235,82 @@ public class NutritionController {
             }
         });
 
-        // add Layers
-        nutrition.getLayers().add(new FloatingActionButton(MaterialDesignIcon.INFO.text,
-                e -> System.out.println("Info")));
+        // =====================
+        // day Tab
+        // =====================
+        // set the cellFactory and show the data for the current Day no need to clear the list here!
+        lv_meals.setCellFactory(c -> new MealCell());
+        lv_meals.getItems().setAll(BodyArchitect.getInstance().getMealsForSelectedDay());
 
-        System.out.println("test1");
+        Segment seg1 = new PercentSegment(mag_kcal, 0, 25);
+        Segment seg2 = new PercentSegment(mag_kcal, 25, 47.5);
+        Segment seg3 = new PercentSegment(mag_kcal, 47.5, 52.5);
+        Segment seg4 = new PercentSegment(mag_kcal, 52.5, 100);
+        mag_kcal.segments().addAll(seg1, seg2, seg3, seg4);
 
-        // add the calendar / localdatepicker
-        cp = new LocalDatePicker( LocalDate.now());
-        // add listener so react on click of the calendar/days
+        seg1 = new PercentSegment(mag_protein, 0, 25);
+        seg2 = new PercentSegment(mag_protein, 25, 47.5);
+        seg3 = new PercentSegment(mag_protein, 47.5, 52.5);
+        seg4 = new PercentSegment(mag_protein, 52.5, 100);
+        mag_protein.segments().addAll(seg1, seg2, seg3, seg4);
 
-        cp.localDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                BodyArchitect.getInstance().setSelectedDate(newValue);
-                lv_meals.getItems().setAll(BodyArchitect.getInstance().getMealsForDay(newValue));
+        seg1 = new PercentSegment(mag_carbs, 0, 25);
+        seg2 = new PercentSegment(mag_carbs, 25, 47.5);
+        seg3 = new PercentSegment(mag_carbs, 47.5, 52.5);
+        seg4 = new PercentSegment(mag_carbs, 52.5, 100);
+        mag_carbs.segments().addAll(seg1, seg2, seg3, seg4);
+
+        seg1 = new PercentSegment(mag_fat, 0, 25);
+        seg2 = new PercentSegment(mag_fat, 25, 47.5);
+        seg3 = new PercentSegment(mag_fat, 47.5, 52.5);
+        seg4 = new PercentSegment(mag_fat, 52.5, 100);
+        mag_fat.segments().addAll(seg1, seg2, seg3, seg4);
+
+
+        // =====================
+        // Logs Tab
+        // =====================
+        // add the logBook to the Pane
+        vbox_logs.getChildren().add(BodyArchitect.getInstance().getLogBook().getWrapper());
+
+        // listener for the selectedDay
+        BodyArchitect.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, oldValue, newValue) -> {
+            Day selectedDay = BodyArchitect.getInstance().getSelectedDayObject();
+
+            if (selectedDay != null) {
+                // update Date String
+
+
+                // update gauges
+                // @todo check for maxValue and change the maxValue accordingly
+                mag_kcal.setValue(selectedDay.getKcal());
+                mag_carbs.setValue(selectedDay.getCarbs());
+                mag_fat.setValue(selectedDay.getFat());
+                mag_protein.setValue(selectedDay.getProtein());
+
+                // update meals
+                lv_meals.setItems(BodyArchitect.getInstance().getMealsForSelectedDay());
+
+                // switch to Day tab
+                tb_nutrition.getSelectionModel().select(0);
             }
         });
 
-        // Highlight Days with Meals
-        // @todo throws npe
-        //cp.highlightedLocalDates().addAll(BodyArchitect.getInstance().getColumn(Day.class, "date"));
+        // @todo searching alternative way this is not rly convenient...
+        // try the above as a possible solution
+        tb_nutrition.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.intValue() == 0) {
+                // load new Data for selectedDay
+
+            }
+        });
 
 
-
-        // add the DatePicker to the Pane
-        vbox_nutrition.getChildren().add(0, cp);
 
         // populate Foods
-        populateTableView();
+        // populateTableView();
 
         //NutritionTest.printMeal(bodyArchitect.getInstance().getSession());
-
     }
 
 }

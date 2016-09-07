@@ -1,3 +1,16 @@
 .root {
 
 }
+
+
+
+.SimpleMetroArcGauge {
+    -fxx-segment0-color: #888888;
+    -fxx-segment1-color: #fba71b;
+    -fxx-segment2-color: #57b757;
+    -fxx-segment3-color: #f3622d;
+}
+
+.button.calendar {
+    -fx-background-color: transparent;
+}

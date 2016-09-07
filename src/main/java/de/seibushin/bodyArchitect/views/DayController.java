@@ -19,7 +19,6 @@ import de.seibushin.bodyArchitect.model.nutrition.DayMeal;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import javafx.util.Duration;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,7 +42,7 @@ public class DayController {
             // get the selected meal
             Meal meal = lv_day.getSelectionModel().getSelectedItem();
             // get the selected date
-            LocalDate date = BodyArchitect.getInstance().getSelectedDate();
+            LocalDate date = BodyArchitect.getInstance().getSelectedDay();
 
             List<Day> days = BodyArchitect.getInstance().getEntry(Day.class, date);
             Day day;
