@@ -22,7 +22,7 @@ public class FoodView {
 
     public View getView() {
         try {
-            View view = FXMLLoader.load(FoodView.class.getResource("meal.fxml"));
+            View view = FXMLLoader.load(FoodView.class.getResource("food.fxml"));
             view.setName(name);
             return view;
         } catch (IOException e) {

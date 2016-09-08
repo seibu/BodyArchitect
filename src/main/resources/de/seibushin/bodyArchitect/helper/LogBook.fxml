@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import jfxtras.scene.control.gauge.linear.BasicRoundDailGauge?>
 
 <VBox id="logBook" fx:id="vbox_logBook" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="300.0" spacing="5.0" stylesheets="@logBook.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -50,13 +49,13 @@
             <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <Label text="MON" />
-            <Label text="TUE" GridPane.columnIndex="1" />
-            <Label text="WED" GridPane.columnIndex="2" />
-            <Label text="THU" GridPane.columnIndex="3" />
-            <Label text="FRI" GridPane.columnIndex="4" />
-            <Label text="SAT" GridPane.columnIndex="5" />
-            <Label text="SUN" GridPane.columnIndex="6" />
+            <Label alignment="CENTER" text="MON" GridPane.halignment="CENTER" />
+            <Label text="TUE" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+            <Label text="WED" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+            <Label text="THU" GridPane.columnIndex="3" GridPane.halignment="CENTER" />
+            <Label text="FRI" GridPane.columnIndex="4" GridPane.halignment="CENTER" />
+            <Label text="SAT" GridPane.columnIndex="5" GridPane.halignment="CENTER" />
+            <Label text="SUN" GridPane.columnIndex="6" GridPane.halignment="CENTER" />
          </children>
          <VBox.margin>
             <Insets />

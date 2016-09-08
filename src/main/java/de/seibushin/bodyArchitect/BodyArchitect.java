@@ -26,6 +26,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,13 +35,12 @@ public class BodyArchitect {
     private SessionFactory sessionFactory;
     private BorderPane root;
     private LogBook logBook = new LogBook();
-    private List<Meal> mealsForSelectedDay;
+
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
+    private boolean updateDay = false;
 
     public BodyArchitect() {
         sessionFactory = HibernateUtil.getSessionFactory();
-
-        // populate DB with test Food
-        //createFood();
     }
 
     public static void init() {
@@ -49,18 +49,17 @@ public class BodyArchitect {
         }
     }
 
-    public void setRoot(BorderPane root) {
-        this.root = root;
-    }
-
-    public BorderPane getRoot() {
-        return this.root;
+    public static BodyArchitect getInstance() {
+        return ba;
     }
 
     public Session getSession() {
         return sessionFactory.getCurrentSession();
     }
 
+    /**
+     * Insert test data into the food table
+     */
     private void createFood() {
         Session session = getSession();
         session.beginTransaction();
@@ -104,10 +103,6 @@ public class BodyArchitect {
         sessionFactory.close();
     }
 
-    public static BodyArchitect getInstance() {
-        return ba;
-    }
-
     private <T> List<T> getEntity(Class type) {
         Session session = getSession();
 
@@ -146,7 +141,7 @@ public class BodyArchitect {
         }
     }
 
-    private ObservableList getData(Class type) {
+    public ObservableList getData(Class type) {
         ObservableList data = FXCollections.observableArrayList();
 
         List entries = getEntity(type);
@@ -253,5 +248,16 @@ public class BodyArchitect {
             data.add(entry);
         }
         return data;
+    }
+
+    public String getSelectedDayString() {
+        return getSelectedDay().format(dtf);
+    }
+
+    public boolean isUpdateDay() {
+        return updateDay;
+    }
+    public void setUpdateDay(boolean updateDay) {
+        this.updateDay = updateDay;
     }
 }

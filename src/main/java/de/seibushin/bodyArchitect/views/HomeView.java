@@ -27,6 +27,7 @@ public class HomeView {
             return view;
         } catch (IOException e) {
             System.out.println("IOException: " + e);
+            e.printStackTrace();
             return new View(name);
         }
     }

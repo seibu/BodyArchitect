@@ -23,24 +23,23 @@ import javafx.scene.control.ListView;
 import java.time.LocalDate;
 import java.util.List;
 
-public class DayController {
+public class MealDayController {
 
     @FXML
-    private View day;
+    private View meal_day;
 
     @FXML
-    ListView<Meal> lv_day;
+    ListView<Meal> lv_meals;
 
     private SnackbarPopupView snackbarPopupView = new SnackbarPopupView();
 
     private void addMeal() {
-
         String result = "";
         try {
-            System.out.println("addMeal " + lv_day.getSelectionModel().getSelectedItem());
+            System.out.println("addMeal " + lv_meals.getSelectionModel().getSelectedItem());
 
             // get the selected meal
-            Meal meal = lv_day.getSelectionModel().getSelectedItem();
+            Meal meal = lv_meals.getSelectionModel().getSelectedItem();
             // get the selected date
             LocalDate date = BodyArchitect.getInstance().getSelectedDay();
 
@@ -59,18 +58,20 @@ public class DayController {
             dm.setMeal(meal);
 
             BodyArchitect.getInstance().addEntry(dm);
-            result = "Meal added to selected Date " + date;
+            BodyArchitect.getInstance().setUpdateDay(true);
+            result = "Meal added to selected Date " + BodyArchitect.getInstance().getSelectedDayString();
         } catch (Exception e) {
             e.printStackTrace();
             result = "Meal could not be added, please try again";
         }
 
-        MobileApplication.getInstance().showLayer("snackbar");
+        //MobileApplication.getInstance().showLayer("snackbar");
         snackbarPopupView.show(result);
     }
 
+    @FXML
     public void initialize() {
-        day.showingProperty().addListener((obs, oldValue, newValue) -> {
+        meal_day.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
                 AppBar appBar = MobileApplication.getInstance().getAppBar();
 
@@ -83,12 +84,13 @@ public class DayController {
 
                 appBar.setTitleText("Add Meal to Day");
 
-                BodyArchitect.getInstance().refreshListView(lv_day, Meal.class);
+                // @todo check if necessary
+                BodyArchitect.getInstance().refreshListView(lv_meals, Meal.class);
             }
         });
 
         MobileApplication.getInstance().addLayerFactory("snackbar", () -> snackbarPopupView);
 
-        lv_day.setCellFactory(c -> new MealCell());
+        lv_meals.setCellFactory(c -> new MealCell());
     }
 }

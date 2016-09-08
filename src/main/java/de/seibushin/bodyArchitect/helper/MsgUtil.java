@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 public class MsgUtil {
     private static final ResourceBundle msg = getBundle();
 
-    private static ResourceBundle getBundle() {
+    public static ResourceBundle getBundle() {
         try {
             // @todo add internationalization for other languages
             Locale currentLocale = new Locale("de", "DE");

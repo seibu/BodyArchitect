@@ -1,48 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.control.Icon?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <VBox fx:id="vbox" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="lbl_name" text="Meal Name - TYPE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-      </Label>
-      <GridPane hgap="5.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" />
-          <ColumnConstraints hgrow="SOMETIMES" />
-            <ColumnConstraints hgrow="SOMETIMES" />
-            <ColumnConstraints hgrow="SOMETIMES" />
-            <ColumnConstraints hgrow="SOMETIMES" />
-            <ColumnConstraints hgrow="SOMETIMES" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints vgrow="SOMETIMES" />
-          <RowConstraints vgrow="SOMETIMES" />
-        </rowConstraints>
+      <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
          <children>
-            <Label text="of which sugar" GridPane.columnIndex="3" />
-            <Label text="kcal" />
-            <Label fx:id="lbl_fat" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="lbl_kcal" text="Label" GridPane.rowIndex="1" />
-            <Label text="carbs" GridPane.columnIndex="2" />
-            <Label text="fat" GridPane.columnIndex="1" />
-            <Label text="protein" GridPane.columnIndex="4" />
-            <Label fx:id="lbl_carbs" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label fx:id="lbl_sugar" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <Label fx:id="lbl_protein" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <Label fx:id="lbl_name" styleClass="lbl_meal_name" text="Meal Name - TYPE" HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#deleteMeal" styleClass="btn_mealCell" HBox.hgrow="NEVER">
+               <graphic>
+                  <Icon content="DELETE" />
+               </graphic>
+            </Button>
          </children>
+      </HBox>
+      <HBox>
+         <children>
+            <GridPane fx:id="gp_stats" hgap="5.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label styleClass="lbl_hl" text="%meal.cell.kcal" />
+                  <Label styleClass="lbl_hl" text="%meal.cell.protein" GridPane.columnIndex="1" />
+                  <Label styleClass="lbl_hl" text="%meal.cell.fat" GridPane.columnIndex="2" />
+                  <Label styleClass="lbl_hl" text="%meal.cell.carbs" GridPane.columnIndex="3" />
+                  <Label styleClass="lbl_hl" text="%meal.cell.sugar" GridPane.columnIndex="4" />
+                  <Label fx:id="lbl_kcal" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_protein" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_fat" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_carbs" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_sugar" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+            <Region HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Region>
+            <Button mnemonicParsing="false" onAction="#moreLess" styleClass="btn_mealCell" HBox.hgrow="NEVER">
+               <graphic>
+                  <Icon fx:id="i_more_less" content="EXPAND_MORE" />
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <GridPane fx:id="gp_foods" hgap="5.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Label styleClass="lbl_hl" text="%meal.cell.kcal" />
+            <Label styleClass="lbl_hl" text="%meal.cell.protein" GridPane.columnIndex="1" />
+            <Label styleClass="lbl_hl" text="%meal.cell.fat" GridPane.columnIndex="2" />
+            <Label styleClass="lbl_hl" text="%meal.cell.carbs" GridPane.columnIndex="3" />
+            <Label styleClass="lbl_hl" text="%meal.cell.sugar" GridPane.columnIndex="4" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets top="5.0" />
+         </padding>
       </GridPane>
    </children>
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
 </VBox>

@@ -15,7 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class FoodAddController {
+public class FoodController {
     @FXML
     TextField tf_name;
     @FXML

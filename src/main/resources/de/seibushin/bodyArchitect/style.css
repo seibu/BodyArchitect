@@ -1,8 +1,5 @@
 .root {
-
 }
-
-
 
 .SimpleMetroArcGauge {
     -fxx-segment0-color: #888888;
@@ -13,4 +10,32 @@
 
 .button.calendar {
     -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-end-margin: 0;
+    -fx-start-margin: 0;
+}
+
+.button.btn_mealCell {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-end-margin: 0;
+    -fx-start-margin: 0;
+}
+
+.lbl_meal_name {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3d3d3d;
+}
+
+.lbl_hl {
+    -fx-text-fill: #3d3d3d;
+    -fx-font-weight: bold;
+}
+
+#gp_foods {
+    -fx-border-width: 1px 0 0 0;
+    -fx-border-radius: 0;
+    -fx-border-color: #d8d8d8;
+    -fx-border-style: dashed;
 }

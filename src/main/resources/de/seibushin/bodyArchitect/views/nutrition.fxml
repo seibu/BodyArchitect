@@ -8,7 +8,6 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge?>
@@ -21,46 +20,46 @@
                     <content>
                         <VBox fx:id="vbox_day" spacing="5.0">
                             <children>
-                        <HBox alignment="CENTER_LEFT">
+                        <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
                            <children>
-                              <Label text="Mo 05.09.2016" />
                               <Button mnemonicParsing="false" onAction="#showLogBook" styleClass="calendar">
                                  <graphic>
                                     <Icon content="TODAY" />
                                  </graphic>
                               </Button>
+                              <Label fx:id="lbl_date" text="Mo 05.09.2016" />
                            </children>
                         </HBox>
-                        <HBox>
+                        <HBox VBox.vgrow="NEVER">
                            <children>
                               <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label text="kcal" VBox.vgrow="ALWAYS" />
-                                    <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefWidth="100.0" />
+                                    <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
                                  </children>
                               </VBox>
-                              <VBox alignment="CENTER">
+                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label text="protein" />
-                                    <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefWidth="100.0" />
+                                    <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
                                  </children>
                               </VBox>
-                              <VBox alignment="CENTER">
+                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label text="fat" />
-                                    <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefWidth="100.0" />
+                                    <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
                                  </children>
                               </VBox>
-                              <VBox alignment="CENTER">
+                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label text="carbs" />
-                                    <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefWidth="100.0" />
+                                    <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
                                  </children>
                               </VBox>
                            </children>
                         </HBox>
                         <Label text="Meals" />
-                                <ListView fx:id="lv_meals" />
+                                <ListView fx:id="lv_day_meals" prefHeight="100.0" prefWidth="400.0" VBox.vgrow="ALWAYS" />
                             </children>
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -71,39 +70,27 @@
                 <Tab text="Meal">
                     <content>
                         <VBox spacing="5.0">
-                            <children>
-                                <HBox alignment="TOP_RIGHT" spacing="5.0">
-                                    <children>
-                                        <Button mnemonicParsing="false" onAction="#deleteMeal" text="Delete" />
-                                        <Button mnemonicParsing="false" onAction="#showMealAdd" text="Add" />
-                                    </children>
-                                </HBox>
-                                <TableView fx:id="tv_meal" VBox.vgrow="ALWAYS" />
-                            </children>
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </padding>
+                     <children>
+                        <ListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                     </children>
                         </VBox>
                     </content>
                 </Tab>
                 <Tab text="Food">
                     <content>
                         <VBox spacing="5.0">
-                            <children>
-                                <HBox alignment="TOP_RIGHT" spacing="5.0">
-                                    <children>
-                                        <Button mnemonicParsing="false" onAction="#deleteFood" text="Delete" />
-                                        <Button mnemonicParsing="false" onAction="#showFoodAdd" text="Add" />
-                                    </children>
-                                </HBox>
-                                <TableView fx:id="tv_food" editable="true" VBox.vgrow="ALWAYS" />
-                            </children>
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </padding>
                             <opaqueInsets>
                                 <Insets />
                             </opaqueInsets>
+                     <children>
+                        <ListView fx:id="lv_food" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                     </children>
                         </VBox>
                     </content>
                 </Tab>

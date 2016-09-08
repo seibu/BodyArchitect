@@ -12,17 +12,17 @@ import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 
-public class DayView {
+public class MealDayView {
 
     private final String name;
 
-    public DayView(String name) {
+    public MealDayView(String name) {
         this.name = name;
     }
 
     public View getView() {
         try {
-            View view = FXMLLoader.load(DayView.class.getResource("day.fxml"));
+            View view = FXMLLoader.load(MealDayView.class.getResource("meal_day.fxml"));
             view.setName(name);
             return view;
         } catch (IOException e) {

@@ -9,14 +9,11 @@ package de.seibushin.bodyArchitect.helper;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -37,7 +34,7 @@ public class LogBook {
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM yyyy");
     private LocalDate month;
-    private int today = LocalDate.now().getDayOfMonth()-1;
+    private int today = LocalDate.now().getDayOfMonth() - 1;
     private ObjectProperty<LocalDate> selectedDay = new SimpleObjectProperty<>(LocalDate.now());
 
     public LogBook() {
@@ -53,7 +50,6 @@ public class LogBook {
     }
 
     private void init() {
-        vbox_logBook.getStylesheets().add(LogBook.class.getResource("logBook.css").toString());
         createDays();
 
         month = LocalDate.of(selectedDay.get().getYear(), selectedDay.get().getMonth(), 1);
@@ -66,7 +62,7 @@ public class LogBook {
         for (int i = 1; i <= 31; i++) {
             Button day = new Button(String.valueOf(i));
             int finalI = i;
-            day.setOnAction(e ->  {
+            day.setOnAction(e -> {
                 selectedDay.set(month.withDayOfMonth(finalI));
             });
             days.add(day);

@@ -23,6 +23,7 @@ public class HomeController {
     @FXML
     private Label label;
 
+    @FXML
     public void initialize() {
         home.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
