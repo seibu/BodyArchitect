@@ -109,7 +109,7 @@ public class MealController {
             }
         });
 
-        MobileApplication.getInstance().addLayerFactory("snackbar", () -> snackbarPopupView);
+        MobileApplication.getInstance().addLayerFactory("snackbar2", () -> snackbarPopupView);
 
         cb_type.getItems().setAll(Type.values());
         BodyArchitect.getInstance().refreshListView(lv_allFood, Food.class);

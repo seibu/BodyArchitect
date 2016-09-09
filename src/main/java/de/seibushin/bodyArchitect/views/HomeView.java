@@ -8,6 +8,8 @@
 package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.mvc.View;
+import de.seibushin.bodyArchitect.helper.MealCellNode;
+import de.seibushin.bodyArchitect.helper.MsgUtil;
 import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
@@ -21,8 +23,11 @@ public class HomeView {
     }
 
     public View getView() {
+
         try {
-            View view = FXMLLoader.load(HomeView.class.getResource("home.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(HomeView.class.getResource("home.fxml"));
+            fxmlLoader.setResources(MsgUtil.getBundle());
+            View view = fxmlLoader.load();
             view.setName(name);
             return view;
         } catch (IOException e) {

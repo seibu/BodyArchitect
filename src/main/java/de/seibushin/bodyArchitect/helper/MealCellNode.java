@@ -16,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
@@ -44,6 +45,8 @@ public class MealCellNode {
     Icon i_more_less;
     @FXML
     GridPane gp_foods;
+    @FXML
+    Button btn_delete;
 
     public MealCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode.fxml"));
@@ -53,6 +56,16 @@ public class MealCellNode {
             fxmlLoader.load();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public MealCellNode(int type) {
+        this();
+
+        switch (type) {
+            case 0:
+                btn_delete.setVisible(false);
+                break;
         }
     }
 
@@ -81,7 +94,8 @@ public class MealCellNode {
 
     @FXML
     private void deleteMeal() {
-
+        // @todo differanciate between delte meal from day and delete meal for real
+        System.out.println("delete");
     }
 
     @FXML

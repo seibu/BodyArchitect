@@ -41,13 +41,8 @@ public class Main extends MobileApplication {
                 new Avatar(21, new Image(Main.class.getResourceAsStream("/icon.png"))));
         drawer.setHeader(header);
 
-        // create Menu Items
-        final Item home = new Item("Home", MaterialDesignIcon.HOME.graphic());
-        final Item nutrition = new Item("Nutrition", MaterialDesignIcon.LOCAL_DINING.graphic());
-        final Item workout = new Item("Workout", MaterialDesignIcon.FITNESS_CENTER.graphic());
-
         // add the Items to the menu
-        drawer.getItems().addAll(home, nutrition, workout);
+        drawer.getItems().addAll(BodyArchitect.getInstance().getDrawerItems());
 
         // add Listener for the menu to change the View
         drawer.selectedItemProperty().addListener((obs, oldItem, newItem) -> {

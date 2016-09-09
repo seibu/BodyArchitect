@@ -67,6 +67,7 @@ public class MealDayController {
 
         //MobileApplication.getInstance().showLayer("snackbar");
         snackbarPopupView.show(result);
+        MobileApplication.getInstance().showLayer("snackbar");
     }
 
     @FXML
@@ -91,6 +92,6 @@ public class MealDayController {
 
         MobileApplication.getInstance().addLayerFactory("snackbar", () -> snackbarPopupView);
 
-        lv_meals.setCellFactory(c -> new MealCell());
+        lv_meals.setCellFactory(c -> new MealCell(0));
     }
 }

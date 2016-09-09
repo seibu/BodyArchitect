@@ -7,6 +7,8 @@
 
 package de.seibushin.bodyArchitect.helper;
 
+import com.gluonhq.charm.glisten.control.Icon;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;

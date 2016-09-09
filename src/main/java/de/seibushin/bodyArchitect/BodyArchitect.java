@@ -7,6 +7,9 @@
 
 package de.seibushin.bodyArchitect;
 
+import com.gluonhq.charm.glisten.control.NavigationDrawer;
+import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.helper.HibernateUtil;
 import de.seibushin.bodyArchitect.helper.LogBook;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
@@ -14,6 +17,7 @@ import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
@@ -34,12 +38,22 @@ public class BodyArchitect {
     private static BodyArchitect ba = null;
     private SessionFactory sessionFactory;
     private BorderPane root;
-    private LogBook logBook = new LogBook();
+    private LogBook logBook;
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
     private boolean updateDay = false;
 
+    private Item home;
+    private Item nutrition;
+    private Item workout;
+
     public BodyArchitect() {
+        // create Menu Items
+        home = new Item("Home", MaterialDesignIcon.HOME.graphic());
+        home.setSelected(true);
+        nutrition = new Item("Nutrition", MaterialDesignIcon.LOCAL_DINING.graphic());
+        workout = new Item("Workout", MaterialDesignIcon.FITNESS_CENTER.graphic());
+
         sessionFactory = HibernateUtil.getSessionFactory();
     }
 
@@ -162,6 +176,19 @@ public class BodyArchitect {
         return meals;
     }
 
+
+
+    public Day getTodayDayObject() {
+        List<Day> days = getEntry(Day.class, LocalDate.now());
+
+        Day day = null;
+        if (days.size() > 0) {
+            day = days.get(0);
+        }
+
+        return day;
+    }
+
     public Day getSelectedDayObject() {
         List<Day> days = getEntry(Day.class, getSelectedDay());
 
@@ -238,6 +265,10 @@ public class BodyArchitect {
         return logBook;
     }
 
+    public void setLogBook(LogBook logBook) {
+        this.logBook = logBook;
+    }
+
     public ObservableList getMealsForSelectedDay() {
         ObservableList data = FXCollections.observableArrayList();
 
@@ -259,5 +290,14 @@ public class BodyArchitect {
     }
     public void setUpdateDay(boolean updateDay) {
         this.updateDay = updateDay;
+    }
+
+
+    public List<Item> getDrawerItems() {
+        List items = new ArrayList();
+        items.add(home);
+        items.add(nutrition);
+        items.add(workout);
+        return items;
     }
 }

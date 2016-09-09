@@ -11,7 +11,15 @@ import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.scene.control.ListCell;
 
 public class MealCell extends ListCell<Meal> {
-    private MealCellNode mealCellNode = new MealCellNode();
+    private MealCellNode mealCellNode;
+
+    public MealCell() {
+        mealCellNode = new MealCellNode();
+    }
+
+    public MealCell(int type) {
+        mealCellNode = new MealCellNode(type);
+    }
 
     @Override
     public void updateItem(Meal item, boolean empty) {

@@ -1,5 +1,3 @@
-.root {
-}
 
 .SimpleMetroArcGauge {
     -fxx-segment0-color: #888888;
@@ -38,4 +36,35 @@
     -fx-border-radius: 0;
     -fx-border-color: #d8d8d8;
     -fx-border-style: dashed;
+}
+
+.lbl_gauge {
+    -fx-text-fill: #787878;
+}
+
+.btn_trans {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-end-margin: 0;
+    -fx-start-margin: 0;
+    -fx-effect: dropshadow(three-pass-box, #ccc, 0, 0, 0, 0);
+}
+
+.box_wrapper {
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #d8d8d8;
+    -fx-border-style: solid;
+}
+
+.box_header {
+    -fx-background-color: #d8d8d8;
+}
+
+.box_header_lbl {
+    -fx-font-size: 14px;
+}
+
+.box_quickAdd {
+    -fx-background-color: #d8d8d8;
 }

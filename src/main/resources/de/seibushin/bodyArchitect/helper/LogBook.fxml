@@ -16,12 +16,12 @@
          <children>
             <Button fx:id="btn_prev" mnemonicParsing="false" onAction="#prevMonth" styleClass="nav">
                <graphic>
-                   <Icon content="NAVIGATE_BEFORE" />
+                   <Icon fx:id="i_prev" content="NAVIGATE_BEFORE" />
                </graphic></Button>
             <Label id="date" fx:id="lbl_month" contentDisplay="CENTER" styleClass="date" text="Month Year" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
             <Button fx:id="btn_next" mnemonicParsing="false" onAction="#nextMonth" styleClass="nav">
                <graphic>
-                  <Icon content="NAVIGATE_NEXT" />
+                  <Icon fx:id="i_next" content="NAVIGATE_NEXT" />
                </graphic></Button>
          </children>
          <VBox.margin>

@@ -17,7 +17,7 @@
          <children>
             <Label fx:id="lbl_name" styleClass="lbl_meal_name" text="Meal Name - TYPE" HBox.hgrow="ALWAYS" />
             <Region HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#deleteMeal" styleClass="btn_mealCell" HBox.hgrow="NEVER">
+            <Button fx:id="btn_delete" mnemonicParsing="false" onAction="#deleteMeal" styleClass="btn_mealCell" HBox.hgrow="NEVER">
                <graphic>
                   <Icon content="DELETE" />
                </graphic>

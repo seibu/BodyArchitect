@@ -11,7 +11,9 @@ import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import de.seibushin.bodyArchitect.*;
+import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.Main;
+import de.seibushin.bodyArchitect.helper.LogBook;
 import de.seibushin.bodyArchitect.helper.MealCell;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
@@ -30,13 +32,6 @@ public class NutritionController {
 
     @FXML
     View nutrition;
-
-    @FXML
-    TableView<Food> tv_food;
-
-    @FXML
-    TableView<Meal> tv_meal;
-
     @FXML
     SimpleMetroArcGauge mag_kcal;
     @FXML
@@ -45,7 +40,6 @@ public class NutritionController {
     SimpleMetroArcGauge mag_fat;
     @FXML
     SimpleMetroArcGauge mag_carbs;
-
     @FXML
     VBox vbox_day;
     @FXML
@@ -59,7 +53,7 @@ public class NutritionController {
     @FXML
     ListView lv_food;
     @FXML
-    Label lbl_date;
+    Button btn_date;
 
     private Button btn_addMealToDay = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMealToDay());
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
@@ -98,7 +92,7 @@ public class NutritionController {
         BodyArchitect.getInstance().setUpdateDay(false);
 
         // update date Label
-        lbl_date.setText(BodyArchitect.getInstance().getSelectedDayString());
+        btn_date.setText(BodyArchitect.getInstance().getSelectedDayString());
 
         // get selectedDay
         Day selectedDay = BodyArchitect.getInstance().getSelectedDayObject();
@@ -130,6 +124,11 @@ public class NutritionController {
         MobileApplication.getInstance().addViewFactory(MEAL_VIEW, () -> new MealView(MEAL_VIEW).getView());
         MobileApplication.getInstance().addViewFactory(FOOD_VIEW, () -> new FoodView(FOOD_VIEW).getView());
 
+        // create the logbook
+        // NOTE: creating the LogBook directly in the bodyArchitect class would result in the icons not showing correctly
+        LogBook logBook = new LogBook();
+        BodyArchitect.getInstance().setLogBook(logBook);
+
         // update appBar
         nutrition.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
@@ -152,6 +151,7 @@ public class NutritionController {
         lv_day_meals.setCellFactory(c -> new MealCell());
         updateDay();
 
+        // @todo set the correct Segments and search for a more convenient way this is bs...
         Segment seg1 = new PercentSegment(mag_kcal, 0, 25);
         Segment seg2 = new PercentSegment(mag_kcal, 25, 47.5);
         Segment seg3 = new PercentSegment(mag_kcal, 47.5, 52.5);
@@ -185,6 +185,7 @@ public class NutritionController {
         // =====================
         // Food Tab
         // =====================
+        //@todo setCellFactory + create the CellNode
         updateFood();
 
         // =====================
@@ -195,9 +196,9 @@ public class NutritionController {
 
         // listener for the selectedDay
         BodyArchitect.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, oldValue, newValue) -> {
-                updateDay();
-                // switch to Day tab
-                tb_nutrition.getSelectionModel().select(0);
+            updateDay();
+            // switch to Day tab
+            tb_nutrition.getSelectionModel().select(0);
         });
 
         // react on tab selection
