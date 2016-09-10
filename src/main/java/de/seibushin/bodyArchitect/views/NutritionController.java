@@ -79,6 +79,9 @@ public class NutritionController {
 
     private void updateMeal() {
         System.out.println("updateMeal");
+        // set UpdateMeal to false
+        BodyArchitect.getInstance().setUpdateMeal(false);
+
         lv_meals.setItems(BodyArchitect.getInstance().getData(Meal.class));
     }
 
@@ -88,6 +91,7 @@ public class NutritionController {
     }
 
     private void updateDay() {
+        System.out.println("updateDay");
         // set UpdateDay to false
         BodyArchitect.getInstance().setUpdateDay(false);
 
@@ -140,6 +144,10 @@ public class NutritionController {
                 // refresh Day if something was updated
                 if (BodyArchitect.getInstance().isUpdateDay()) {
                     updateDay();
+                }
+
+                if (BodyArchitect.getInstance().isUpdateMeal()) {
+                    updateMeal();
                 }
             }
         });

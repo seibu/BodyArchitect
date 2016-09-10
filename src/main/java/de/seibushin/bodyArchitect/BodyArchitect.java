@@ -29,6 +29,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,11 +42,16 @@ public class BodyArchitect {
     private LogBook logBook;
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
+
     private boolean updateDay = false;
+    private boolean updateMeal = false;
 
     private Item home;
     private Item nutrition;
     private Item workout;
+
+    private DecimalFormat df =  new DecimalFormat("#.#");
+
 
     public BodyArchitect() {
         // create Menu Items
@@ -288,10 +294,14 @@ public class BodyArchitect {
     public boolean isUpdateDay() {
         return updateDay;
     }
+
     public void setUpdateDay(boolean updateDay) {
         this.updateDay = updateDay;
     }
 
+    public DecimalFormat getDf() {
+        return df;
+    }
 
     public List<Item> getDrawerItems() {
         List items = new ArrayList();
@@ -299,5 +309,13 @@ public class BodyArchitect {
         items.add(nutrition);
         items.add(workout);
         return items;
+    }
+
+    public boolean isUpdateMeal() {
+        return updateMeal;
+    }
+
+    public void setUpdateMeal(boolean updateMeal) {
+        this.updateMeal = updateMeal;
     }
 }

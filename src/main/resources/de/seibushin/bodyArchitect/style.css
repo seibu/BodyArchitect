@@ -68,3 +68,10 @@
 .box_quickAdd {
     -fx-background-color: #d8d8d8;
 }
+
+.lbl_tag {
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-border-color: #d8d8d8;
+    -fx-border-style: solid;
+}

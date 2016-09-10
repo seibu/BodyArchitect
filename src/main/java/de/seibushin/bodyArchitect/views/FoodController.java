@@ -44,8 +44,10 @@ public class FoodController {
             Double carbs = Double.valueOf(tf_carbs.getText());
             Double sugar = Double.valueOf(tf_sugar.getText());
             Double protein = Double.valueOf(tf_protein.getText());
+            // @todo check if we need portion in any real way or if this is actually fine
+            Double portion = weight;
 
-            Food food = new Food(name, energy, fat, carbs, sugar, protein, weight, 0);
+            Food food = new Food(name, energy, fat, carbs, sugar, protein, weight, portion);
 
             BodyArchitect.getInstance().addEntry(food);
             lbl_result.setText(MsgUtil.getString("addFood_success"));
