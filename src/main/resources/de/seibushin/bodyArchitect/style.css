@@ -75,3 +75,48 @@
     -fx-border-color: #d8d8d8;
     -fx-border-style: solid;
 }
+
+
+
+.list-view-sliding .list-cell {
+    -fx-padding: 0;
+}
+
+.list-view-sliding .front {
+    -fx-background-color: #fff;
+}
+
+.list-view-sliding .list-cell:selected .front {
+    -fx-background-color: #f3f3f3;
+}
+
+/* set a color for each side of the swipe event */
+.list-view-sliding .back:left {
+    -fx-background-color: blue;
+}
+
+.list-view-sliding .back {
+    -fx-background-color: red;
+}
+
+/* visualize that the user has swiped far enough */
+.list-view-sliding .back:left:swiped {
+    -fx-background-color: darkblue;
+}
+
+.list-view-sliding .back:swiped {
+    -fx-background-color: darkred;
+}
+
+/* Dont show the content of the other side of the backPane */
+.list-view-sliding .back .right {
+    visibility: hidden;
+}
+
+.list-view-sliding .back:left .right {
+    visibility: visible;
+}
+
+.list-view-sliding .back:left .left {
+    visibility: hidden;
+}

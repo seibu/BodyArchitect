@@ -43,8 +43,9 @@ public class BodyArchitect {
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
 
-    private boolean updateDay = false;
-    private boolean updateMeal = false;
+    private boolean updateDay = true;
+    private boolean updateMeal = true;
+    private boolean updateFood = true;
 
     private Item home;
     private Item nutrition;
@@ -317,5 +318,13 @@ public class BodyArchitect {
 
     public void setUpdateMeal(boolean updateMeal) {
         this.updateMeal = updateMeal;
+    }
+
+    public boolean isUpdateFood() {
+        return updateFood;
+    }
+
+    public void setUpdateFood(boolean updateFood) {
+        this.updateFood = updateFood;
     }
 }

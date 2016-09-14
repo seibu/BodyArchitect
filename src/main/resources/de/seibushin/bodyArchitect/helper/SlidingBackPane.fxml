@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.Icon?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane styleClass="left">
+         <children>
+            <Icon content="DELETE" />
+         </children>
+      </StackPane>
+      <Region HBox.hgrow="ALWAYS" />
+      <StackPane styleClass="right">
+         <children>
+            <Icon content="ACCESSIBLE" />
+         </children>
+      </StackPane>
+   </children>
+</HBox>

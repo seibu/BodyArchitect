@@ -38,10 +38,6 @@ public class FoodCellNode {
     Label lbl_protein;
     @FXML
     Label lbl_weight;
-    @FXML
-    Icon i_add_remove;
-    @FXML
-    Button btn_action;
 
     public FoodCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("FoodCellNode.fxml"));

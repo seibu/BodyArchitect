@@ -7,18 +7,39 @@
 
 package de.seibushin.bodyArchitect.helper;
 
+import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.ListCell;
+
+import java.util.function.Consumer;
 
 public class MealCell extends ListCell<Meal> {
     private MealCellNode mealCellNode;
 
-    public MealCell() {
-        mealCellNode = new MealCellNode();
-    }
+    private SlidingListNode slidingNode;
 
-    public MealCell(int type) {
-        mealCellNode = new MealCellNode(type);
+    private Meal current;
+
+    public MealCell(Consumer<Meal> consumerLeft, Consumer<Meal> consumerRight) {
+        mealCellNode = new MealCellNode();
+
+        slidingNode = new SlidingListNode(mealCellNode.getNode(), true);
+
+        slidingNode.swipedLeftProperty().addListener((obs, ov, nv) -> {
+            if (nv && consumerRight != null) {
+                consumerRight.accept(current);
+            }
+            slidingNode.resetTilePosition();
+        });
+
+
+        slidingNode.swipedRightProperty().addListener((obs, ov, nv) -> {
+            if (nv && consumerLeft != null) {
+                consumerLeft.accept(current);
+            }
+            slidingNode.resetTilePosition();
+        });
     }
 
     @Override
@@ -26,9 +47,13 @@ public class MealCell extends ListCell<Meal> {
         super.updateItem(item, empty);
         if (item != null) {
             mealCellNode.update(item);
-            setGraphic(mealCellNode.getNode());
+            setGraphic(slidingNode);
         } else {
             setGraphic(null);
         }
+    }
+
+    public BooleanProperty slidingProperty() {
+        return slidingNode.slidingProperty();
     }
 }

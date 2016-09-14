@@ -13,13 +13,17 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.Main;
+import de.seibushin.bodyArchitect.helper.FoodCell;
 import de.seibushin.bodyArchitect.helper.LogBook;
 import de.seibushin.bodyArchitect.helper.MealCell;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
@@ -59,6 +63,8 @@ public class NutritionController {
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
     private Button btn_addFood = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddFood());
 
+    private final BooleanProperty sliding = new SimpleBooleanProperty();
+
     private void showAddMealToDay() {
         nutrition.getApplication().switchView(MEAL_DAY_VIEW);
     }
@@ -78,46 +84,58 @@ public class NutritionController {
     }
 
     private void updateMeal() {
-        System.out.println("updateMeal");
-        // set UpdateMeal to false
-        BodyArchitect.getInstance().setUpdateMeal(false);
+        // only update if needed
+        if (BodyArchitect.getInstance().isUpdateMeal()) {
+            System.out.println("updateMeal");
+            // set UpdateMeal to false
+            BodyArchitect.getInstance().setUpdateMeal(false);
 
-        lv_meals.setItems(BodyArchitect.getInstance().getData(Meal.class));
+            lv_meals.setItems(BodyArchitect.getInstance().getData(Meal.class));
+        }
     }
 
     private void updateFood() {
-        System.out.println("updateFood");
-        lv_food.setItems(BodyArchitect.getInstance().getData(Food.class));
+        // only update if needed
+        if (BodyArchitect.getInstance().isUpdateFood()) {
+            System.out.println("updateFood");
+            // set UpdateFood to false
+            BodyArchitect.getInstance().setUpdateFood(false);
+
+            lv_food.setItems(BodyArchitect.getInstance().getData(Food.class));
+        }
     }
 
     private void updateDay() {
-        System.out.println("updateDay");
-        // set UpdateDay to false
-        BodyArchitect.getInstance().setUpdateDay(false);
+        // only update if needed
+        if (BodyArchitect.getInstance().isUpdateDay()) {
+            System.out.println("updateDay");
+            // set UpdateDay to false
+            BodyArchitect.getInstance().setUpdateDay(false);
 
-        // update date Label
-        btn_date.setText(BodyArchitect.getInstance().getSelectedDayString());
+            // update date Label
+            btn_date.setText(BodyArchitect.getInstance().getSelectedDayString());
 
-        // get selectedDay
-        Day selectedDay = BodyArchitect.getInstance().getSelectedDayObject();
+            // get selectedDay
+            Day selectedDay = BodyArchitect.getInstance().getSelectedDayObject();
 
-        if (selectedDay != null) {
-            // udpate meals
-            lv_day_meals.setItems(BodyArchitect.getInstance().getMealsForSelectedDay());
+            if (selectedDay != null) {
+                // udpate meals
+                lv_day_meals.setItems(BodyArchitect.getInstance().getMealsForSelectedDay());
 
-            // update gauges
-            // @todo check for maxValue and change the maxValue accordingly
-            mag_kcal.setValue(selectedDay.getKcal());
-            mag_carbs.setValue(selectedDay.getCarbs());
-            mag_fat.setValue(selectedDay.getFat());
-            mag_protein.setValue(selectedDay.getProtein());
-        } else {
-            // clear the elements if day is null
-            lv_day_meals.getItems().clear();
-            mag_kcal.setValue(0);
-            mag_carbs.setValue(0);
-            mag_fat.setValue(0);
-            mag_protein.setValue(0);
+                // update gauges
+                // @todo check for maxValue and change the maxValue accordingly
+                mag_kcal.setValue(selectedDay.getKcal());
+                mag_carbs.setValue(selectedDay.getCarbs());
+                mag_fat.setValue(selectedDay.getFat());
+                mag_protein.setValue(selectedDay.getProtein());
+            } else {
+                // clear the elements if day is null
+                lv_day_meals.getItems().clear();
+                mag_kcal.setValue(0);
+                mag_carbs.setValue(0);
+                mag_fat.setValue(0);
+                mag_protein.setValue(0);
+            }
         }
     }
 
@@ -142,13 +160,9 @@ public class NutritionController {
                 appBar.getActionItems().add(btn_addMealToDay);
 
                 // refresh Day if something was updated
-                if (BodyArchitect.getInstance().isUpdateDay()) {
-                    updateDay();
-                }
-
-                if (BodyArchitect.getInstance().isUpdateMeal()) {
-                    updateMeal();
-                }
+                updateDay();
+                updateMeal();
+                updateFood();
             }
         });
 
@@ -156,7 +170,27 @@ public class NutritionController {
         // day Tab
         // =====================
         // set the cellFactory and show the data for the current Day no need to clear the list here!
-        lv_day_meals.setCellFactory(c -> new MealCell());
+        lv_day_meals.setCellFactory(cell -> {
+            final MealCell mealCell = new MealCell(
+                    c -> {
+                        System.out.println("left");
+                    },
+                    c -> {
+                        System.out.println("right");
+                    });
+            // notify view that cell is sliding
+            sliding.bind(mealCell.slidingProperty());
+
+            return mealCell;
+        });
+
+        // prevent the list from scrolling while sliding
+        lv_meals.addEventFilter(ScrollEvent.ANY, e -> {
+            if (sliding.get() && e.getDeltaY() != 0) {
+                e.consume();
+            }
+        });
+
         updateDay();
 
         // @todo set the correct Segments and search for a more convenient way this is bs...
@@ -187,13 +221,59 @@ public class NutritionController {
         // =====================
         // Meal Tab
         // =====================
-        lv_meals.setCellFactory(c -> new MealCell());
+
+
+
+        lv_meals.setCellFactory(cell -> {
+            final MealCell mealCell = new MealCell(
+                    c -> {
+                        System.out.println("left");
+                    },
+                    c -> {
+                        System.out.println("right");
+                    });
+            // notify view that cell is sliding
+            sliding.bind(mealCell.slidingProperty());
+
+            return mealCell;
+        });
+
+        // prevent the list from scrolling while sliding
+        lv_meals.addEventFilter(ScrollEvent.ANY, e -> {
+            if (sliding.get() && e.getDeltaY() != 0) {
+                e.consume();
+            }
+        });
+
         updateMeal();
 
         // =====================
         // Food Tab
         // =====================
         //@todo setCellFactory + create the CellNode
+
+        // https://bitbucket.org/gluon-oss/samples/src/ffe48d13300f7638e31223965ad261de098dc91c/Comments2.0/src/main/java/com/gluonhq/comments20/views/CommentsPresenter.java
+        lv_food.setCellFactory(cell -> {
+            final FoodCell foodCell = new FoodCell(
+                    c -> {
+                        System.out.println("left");
+                    },
+                    c -> {
+                        System.out.println("right");
+                    });
+            // notify view that cell is sliding
+            sliding.bind(foodCell.slidingProperty());
+
+            return foodCell;
+        });
+
+        // prevent the list from scrolling while sliding
+        lv_food.addEventFilter(ScrollEvent.ANY, e -> {
+            if (sliding.get() && e.getDeltaY() != 0) {
+                e.consume();
+            }
+        });
+
         updateFood();
 
         // =====================
@@ -203,10 +283,14 @@ public class NutritionController {
         vbox_logs.getChildren().add(BodyArchitect.getInstance().getLogBook().getWrapper());
 
         // listener for the selectedDay
-        BodyArchitect.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, oldValue, newValue) -> {
-            updateDay();
-            // switch to Day tab
-            tb_nutrition.getSelectionModel().select(0);
+        BodyArchitect.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, ov, nv) -> {
+            // @todo only switch if the day has data
+            if (nv != null) {
+                BodyArchitect.getInstance().setUpdateDay(true);
+                updateDay();
+                // switch to Day tab
+                tb_nutrition.getSelectionModel().select(0);
+            }
         });
 
         // react on tab selection

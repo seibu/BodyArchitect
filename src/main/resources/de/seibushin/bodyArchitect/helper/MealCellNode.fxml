@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.gluonhq.charm.glisten.control.Icon?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -16,12 +13,6 @@
       <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
          <children>
             <Label fx:id="lbl_name" styleClass="lbl_meal_name" text="Meal Name - TYPE" HBox.hgrow="ALWAYS" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="btn_delete" mnemonicParsing="false" onAction="#deleteMeal" styleClass="btn_mealCell" HBox.hgrow="NEVER">
-               <graphic>
-                  <Icon content="DELETE" />
-               </graphic>
-            </Button>
          </children>
       </HBox>
       <HBox>
@@ -51,42 +42,11 @@
                   <Label fx:id="lbl_sugar" GridPane.columnIndex="4" GridPane.rowIndex="1" />
                </children>
             </GridPane>
-            <Region HBox.hgrow="ALWAYS">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </Region>
-            <Button mnemonicParsing="false" onAction="#moreLess" styleClass="btn_mealCell" HBox.hgrow="NEVER">
-               <graphic>
-                  <Icon fx:id="i_more_less" content="EXPAND_MORE" />
-               </graphic>
-            </Button>
          </children>
       </HBox>
-      <GridPane fx:id="gp_foods" hgap="5.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-            <Label styleClass="lbl_hl" text="%meal.cell.kcal" />
-            <Label styleClass="lbl_hl" text="%meal.cell.protein" GridPane.columnIndex="1" />
-            <Label styleClass="lbl_hl" text="%meal.cell.fat" GridPane.columnIndex="2" />
-            <Label styleClass="lbl_hl" text="%meal.cell.carbs" GridPane.columnIndex="3" />
-            <Label styleClass="lbl_hl" text="%meal.cell.sugar" GridPane.columnIndex="4" />
-         </children>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-         <padding>
-            <Insets top="5.0" />
-         </padding>
-      </GridPane>
+      <VBox fx:id="vb_foods" VBox.vgrow="ALWAYS" />
    </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
 </VBox>

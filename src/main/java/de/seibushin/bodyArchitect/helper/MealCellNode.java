@@ -42,11 +42,7 @@ public class MealCellNode {
     @FXML
     public Label lbl_protein;
     @FXML
-    Icon i_more_less;
-    @FXML
-    GridPane gp_foods;
-    @FXML
-    Button btn_delete;
+    VBox vb_foods;
 
     public MealCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode.fxml"));
@@ -59,20 +55,10 @@ public class MealCellNode {
         }
     }
 
-    public MealCellNode(int type) {
-        this();
-
-        switch (type) {
-            case 0:
-                btn_delete.setVisible(false);
-                break;
-        }
-    }
-
     @FXML
     public void initialize() {
         // hide the foods
-        vbox.getChildren().remove(gp_foods);
+        vbox.getChildren().remove(vb_foods);
     }
 
     public void update(Meal item) {
@@ -83,30 +69,9 @@ public class MealCellNode {
         lbl_sugar.setText(item.getSugar());
         lbl_protein.setText(item.getProtein());
 
-        final int[] i = {1};
         item.getMealFoods().forEach(mf -> {
-            gp_foods.add(new Label(mf.getFood().getName() + " - " + mf.getWeight()), 0, i[0], 6, 1);
-            i[0]++;
-            gp_foods.addRow(i[0], new Label(mf.getKcal()), new Label(mf.getProtein()), new Label(mf.getFat()), new Label(mf.getCarbs()), new Label(mf.getSugar()));
-            i[0]++;
+            vb_foods.getChildren().add(new Label(mf.getFood().getName() + " - " + mf.getWeight()));
         });
-    }
-
-    @FXML
-    private void deleteMeal() {
-        // @todo differanciate between delte meal from day and delete meal for real
-        System.out.println("delete");
-    }
-
-    @FXML
-    private void moreLess() {
-        if (i_more_less.getContent() == MaterialDesignIcon.EXPAND_MORE) {
-            i_more_less.setContent(MaterialDesignIcon.EXPAND_LESS);
-            vbox.getChildren().add(gp_foods);
-        } else {
-            i_more_less.setContent(MaterialDesignIcon.EXPAND_MORE);
-            vbox.getChildren().remove(gp_foods);
-        }
     }
 
     public VBox getNode() {

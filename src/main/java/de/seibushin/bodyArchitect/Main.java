@@ -2,9 +2,11 @@ package de.seibushin.bodyArchitect;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.Avatar;
+import com.gluonhq.charm.glisten.control.ListTile;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
 import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
+import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
 import de.seibushin.bodyArchitect.views.HomeView;
@@ -20,14 +22,23 @@ public class Main extends MobileApplication {
     public static final String NUTRITION_VIEW = "Nutrition";
     public static final String WORKOUT_VIEW = "Workout";
     public static final String MENU_LAYER = "Side Menu";
+    public static final String SNACK_LAYER = "Snackbar Bottom";
 
 
     @Override
     public void init() {
+        // @todo switch to ORMLite instead of Hibernate for better mobile support
+        // @todo switch to SQLite instead of h2 for better mobile support
+
+        // @todo try saving the data in local storage as Objects
+        // maybe try this for the settings first
+        // http://gluonhq.com/learn-to-build-gluon-charm-apps-with-three-new-charm-samples/
+
         // init BodyArchitect
         BodyArchitect.init();
 
         // Views
+
         addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
         addViewFactory(NUTRITION_VIEW, () -> new NutritionView(NUTRITION_VIEW).getView());
         //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
@@ -60,8 +71,13 @@ public class Main extends MobileApplication {
             }
         });
 
+        viewProperty().addListener(e -> {
+            System.out.println(e);
+        });
+
         // add sidemenu
         addLayerFactory(MENU_LAYER, () -> new SidePopupView(drawer));
+        addLayerFactory(SNACK_LAYER, () -> new SnackbarPopupView());
     }
 
     @Override

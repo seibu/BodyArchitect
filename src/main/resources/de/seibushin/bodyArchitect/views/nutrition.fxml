@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge?>
 
-<View fx:id="nutrition" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionController">
+<View fx:id="nutrition" stylesheets="@nutrition.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionController">
     <center>
         <TabPane fx:id="tb_nutrition" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -28,6 +28,9 @@
                                  </graphic>
                               </Button>
                            </children>
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </VBox.margin>
                         </HBox>
                         <HBox VBox.vgrow="NEVER">
                            <children>
@@ -56,24 +59,21 @@
                                  </children>
                               </VBox>
                            </children>
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </VBox.margin>
                         </HBox>
                         <Label text="Meals" />
-                                <ListView fx:id="lv_day_meals" prefHeight="100.0" prefWidth="400.0" VBox.vgrow="ALWAYS" />
+                                <ListView fx:id="lv_day_meals" prefHeight="100.0" prefWidth="400.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS" />
                             </children>
-                            <padding>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                            </padding>
                         </VBox>
                     </content>
                 </Tab>
                 <Tab text="Meal">
                     <content>
                         <VBox spacing="5.0">
-                            <padding>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                            </padding>
                      <children>
-                        <ListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <ListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS" />
                      </children>
                         </VBox>
                     </content>
@@ -81,14 +81,11 @@
                 <Tab text="Food">
                     <content>
                         <VBox spacing="5.0">
-                            <padding>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                            </padding>
                             <opaqueInsets>
                                 <Insets />
                             </opaqueInsets>
                      <children>
-                        <ListView fx:id="lv_food" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <ListView fx:id="lv_food" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS" />
                      </children>
                         </VBox>
                     </content>

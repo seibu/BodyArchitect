@@ -7,6 +7,7 @@
 
 package de.seibushin.bodyArchitect.views;
 
+import com.gluonhq.charm.glisten.animation.BounceInLeftTransition;
 import com.gluonhq.charm.glisten.mvc.View;
 import de.seibushin.bodyArchitect.helper.MealCellNode;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
@@ -29,6 +30,8 @@ public class HomeView {
             fxmlLoader.setResources(MsgUtil.getBundle());
             View view = fxmlLoader.load();
             view.setName(name);
+            // set Transition
+            //view.setShowTransitionFactory(v -> new BounceInLeftTransition(v));
             return view;
         } catch (IOException e) {
             System.out.println("IOException: " + e);

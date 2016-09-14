@@ -13,17 +13,20 @@ import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.BodyArchitect;
-import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.helper.FoodCell;
 import de.seibushin.bodyArchitect.helper.MsgUtil;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
 import de.seibushin.bodyArchitect.model.nutrition.Type;
-import javafx.event.ActionEvent;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.input.ScrollEvent;
 
 public class MealController {
     @FXML
@@ -43,6 +46,8 @@ public class MealController {
     View meal;
 
     private SnackbarPopupView snackbarPopupView = new SnackbarPopupView();
+
+    private final BooleanProperty sliding = new SimpleBooleanProperty();
 
     private void addMeal() {
         String result = "";
@@ -92,6 +97,8 @@ public class MealController {
 
                 appBar.setNavIcon(MaterialDesignIcon.ARROW_BACK.button(e -> {
                     MobileApplication.getInstance().switchToPreviousView();
+                    // clear maybe not used inserted values
+                    clear();
                 }));
                 appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> addMeal()));
 
@@ -102,7 +109,23 @@ public class MealController {
 
         MobileApplication.getInstance().addLayerFactory("snackbar2", () -> snackbarPopupView);
 
-        lv_food.setCellFactory(c -> new FoodCell(lv_allFood));
+        // ListView with the Foods for the new Meal
+        lv_food.setCellFactory(cell -> {
+            final FoodCell foodCell = new FoodCell(
+                    c -> {
+                        System.out.println("left");
+                        lv_food.getItems().remove(c);
+                        lv_allFood.getItems().add(c);
+                    },
+                    c -> {
+                        System.out.println("right");
+
+                    });
+            // notify view that cell is sliding
+            sliding.bind(foodCell.slidingProperty());
+
+            return foodCell;
+        });
         lv_food.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 slider_portion.setValue(newValue.getPortion());
@@ -111,14 +134,43 @@ public class MealController {
             }
         });
 
-        lv_allFood.setCellFactory(c -> new FoodCell(lv_food));
+        // prevent the list from scrolling while sliding
+        lv_food.addEventFilter(ScrollEvent.ANY, e -> {
+            if (sliding.get() && e.getDeltaY() != 0) {
+                e.consume();
+            }
+        });
+
+        // ListView with all the Foods available
+        lv_allFood.setCellFactory(cell -> {
+            final FoodCell foodCell = new FoodCell(
+                    c -> {
+                        System.out.println("left");
+                        lv_allFood.getItems().remove(c);
+                        lv_food.getItems().add(c);
+                    },
+                    c -> {
+                        System.out.println("right");
+                    });
+            // notify view that cell is sliding
+            sliding.bind(foodCell.slidingProperty());
+
+            return foodCell;
+        });
+
+        // prevent the list from scrolling while sliding
+        lv_allFood.addEventFilter(ScrollEvent.ANY, e -> {
+            if (sliding.get() && e.getDeltaY() != 0) {
+                e.consume();
+            }
+        });
+
         lv_allFood.setItems(BodyArchitect.getInstance().getData(Food.class));
 
         slider_portion.valueProperty().addListener(e -> {
             if (lv_food.getSelectionModel().getSelectedItem() != null) {
                 lv_food.getSelectionModel().getSelectedItem().setPortion(Math.ceil(slider_portion.getValue()));
                 lv_food.refresh();
-
             }
         });
 

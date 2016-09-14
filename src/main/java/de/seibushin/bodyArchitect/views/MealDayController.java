@@ -17,8 +17,11 @@ import de.seibushin.bodyArchitect.helper.MealCell;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.DayMeal;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.input.ScrollEvent;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +35,7 @@ public class MealDayController {
     ListView<Meal> lv_meals;
 
     private SnackbarPopupView snackbarPopupView = new SnackbarPopupView();
+    private BooleanProperty sliding = new SimpleBooleanProperty();
 
     private void addMeal() {
         String result = "";
@@ -92,6 +96,25 @@ public class MealDayController {
 
         MobileApplication.getInstance().addLayerFactory("snackbar", () -> snackbarPopupView);
 
-        lv_meals.setCellFactory(c -> new MealCell(0));
+        lv_meals.setCellFactory(cell -> {
+            final MealCell mealCell = new MealCell(
+                    c -> {
+                        System.out.println("left");
+                    },
+                    c -> {
+                        System.out.println("right");
+                    });
+            // notify view that cell is sliding
+            sliding.bind(mealCell.slidingProperty());
+
+            return mealCell;
+        });
+
+        // prevent the list from scrolling while sliding
+        lv_meals.addEventFilter(ScrollEvent.ANY, e -> {
+            if (sliding.get() && e.getDeltaY() != 0) {
+                e.consume();
+            }
+        });
     }
 }

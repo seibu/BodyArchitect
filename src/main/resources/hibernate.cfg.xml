@@ -2,7 +2,7 @@
     <session-factory>
         <!-- Database connection settings -->
         <property name="connection.driver_class">org.h2.Driver</property>
-        <property name="connection.url">jdbc:h2:file:./db/ba</property>
+        <property name="connection.url">jdbc:h2:file:./db;MV_STORE=FALSE;MVCC=FALSE</property>
         <property name="connection.username"/>
         <property name="connection.password"/>
 
