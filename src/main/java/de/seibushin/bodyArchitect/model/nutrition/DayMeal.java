@@ -29,6 +29,10 @@ public class DayMeal {
 
     }
 
+    public DayMeal(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

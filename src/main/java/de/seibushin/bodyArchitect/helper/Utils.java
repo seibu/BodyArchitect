@@ -7,16 +7,19 @@
 
 package de.seibushin.bodyArchitect.helper;
 
+import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class MsgUtil {
+public class Utils {
+    private static Locale currentLocale = new Locale("de", "DE");
+
     private static final ResourceBundle msg = getBundle();
+    private static final NumberFormat nf = NumberFormat.getInstance(currentLocale);
 
     public static ResourceBundle getBundle() {
         try {
             // @todo add internationalization for other languages
-            Locale currentLocale = new Locale("de", "DE");
             ResourceBundle rb = ResourceBundle.getBundle("de.seibushin.bodyArchitect.i18n.MessagesBundle", currentLocale);
             return rb;
         } catch (Exception e) {
@@ -27,5 +30,9 @@ public class MsgUtil {
 
     public static String getString(String key) {
         return msg.getString(key);
+    }
+
+    public static NumberFormat getNumberFormat() {
+        return nf;
     }
 }

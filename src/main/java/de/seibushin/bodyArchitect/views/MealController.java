@@ -14,7 +14,7 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.helper.FoodCell;
-import de.seibushin.bodyArchitect.helper.MsgUtil;
+import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
@@ -70,10 +70,10 @@ public class MealController {
             clear();
 
             BodyArchitect.getInstance().setUpdateMeal(true);
-            result = MsgUtil.getString("addMeal_success");
+            result = Utils.getString("addMeal_success");
         } catch (Exception e) {
             e.printStackTrace();
-            result = MsgUtil.getString("addMeal_error");
+            result = Utils.getString("addMeal_error");
         }
 
         snackbarPopupView.show(result);

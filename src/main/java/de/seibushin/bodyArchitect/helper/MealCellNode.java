@@ -7,24 +7,13 @@
 
 package de.seibushin.bodyArchitect.helper;
 
-import com.gluonhq.charm.glisten.control.Icon;
-import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import de.seibushin.bodyArchitect.model.nutrition.MealFood;
-import de.seibushin.bodyArchitect.model.nutrition.Type;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.Set;
 
 public class MealCellNode {
     @FXML
@@ -47,7 +36,7 @@ public class MealCellNode {
     public MealCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode.fxml"));
         fxmlLoader.setController(this);
-        fxmlLoader.setResources(MsgUtil.getBundle());
+        fxmlLoader.setResources(Utils.getBundle());
         try {
             fxmlLoader.load();
         } catch (IOException e) {

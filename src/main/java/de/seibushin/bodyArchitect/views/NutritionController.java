@@ -19,8 +19,10 @@ import de.seibushin.bodyArchitect.helper.MealCell;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import de.seibushin.bodyArchitect.model.nutrition.MealFood;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.ScrollEvent;
@@ -28,6 +30,10 @@ import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
 import jfxtras.scene.control.gauge.linear.elements.Segment;
+
+import java.nio.channels.Pipe;
+import java.util.Comparator;
+import java.util.concurrent.ExecutionException;
 
 public class NutritionController {
     public static final String MEAL_DAY_VIEW = "Day";
@@ -101,7 +107,9 @@ public class NutritionController {
             // set UpdateFood to false
             BodyArchitect.getInstance().setUpdateFood(false);
 
-            lv_food.setItems(BodyArchitect.getInstance().getData(Food.class));
+            // @todo add option to sort the Elements
+            // keep in mind to implement the Comparable-Interface for the other classes
+            lv_food.setItems(BodyArchitect.getInstance().getData(Food.class).sorted());
         }
     }
 
@@ -174,6 +182,9 @@ public class NutritionController {
             final MealCell mealCell = new MealCell(
                     c -> {
                         System.out.println("left");
+                        // do the delete
+                        BodyArchitect.getInstance().setUpdateDay(true);
+                        updateDay();
                     },
                     c -> {
                         System.out.println("right");
@@ -221,13 +232,16 @@ public class NutritionController {
         // =====================
         // Meal Tab
         // =====================
-
-
-
         lv_meals.setCellFactory(cell -> {
             final MealCell mealCell = new MealCell(
                     c -> {
                         System.out.println("left");
+                        c.getMealFoods().forEach(mf -> {
+                            BodyArchitect.getInstance().deleteEntry(MealFood.class, mf.getId());
+                        });
+                        BodyArchitect.getInstance().deleteEntry(Meal.class, c.getId());
+                        BodyArchitect.getInstance().setUpdateMeal(true);
+                        updateMeal();
                     },
                     c -> {
                         System.out.println("right");
@@ -250,17 +264,26 @@ public class NutritionController {
         // =====================
         // Food Tab
         // =====================
-        //@todo setCellFactory + create the CellNode
 
-        // https://bitbucket.org/gluon-oss/samples/src/ffe48d13300f7638e31223965ad261de098dc91c/Comments2.0/src/main/java/com/gluonhq/comments20/views/CommentsPresenter.java
         lv_food.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell(
+            final FoodCell foodCell = new FoodCell();
+
+            foodCell.setConsumer(
                     c -> {
                         System.out.println("left");
+                        try {
+                            BodyArchitect.getInstance().deleteEntry(Food.class, c.getId());
+                            BodyArchitect.getInstance().setUpdateFood(true);
+                            foodCell.collapse();
+                            updateFood();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     },
                     c -> {
                         System.out.println("right");
                     });
+
             // notify view that cell is sliding
             sliding.bind(foodCell.slidingProperty());
 

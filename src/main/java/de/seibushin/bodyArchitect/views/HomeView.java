@@ -7,10 +7,8 @@
 
 package de.seibushin.bodyArchitect.views;
 
-import com.gluonhq.charm.glisten.animation.BounceInLeftTransition;
 import com.gluonhq.charm.glisten.mvc.View;
-import de.seibushin.bodyArchitect.helper.MealCellNode;
-import de.seibushin.bodyArchitect.helper.MsgUtil;
+import de.seibushin.bodyArchitect.helper.Utils;
 import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
@@ -27,7 +25,7 @@ public class HomeView {
 
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(HomeView.class.getResource("home.fxml"));
-            fxmlLoader.setResources(MsgUtil.getBundle());
+            fxmlLoader.setResources(Utils.getBundle());
             View view = fxmlLoader.load();
             view.setName(name);
             // set Transition

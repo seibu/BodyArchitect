@@ -7,8 +7,8 @@
 
 package de.seibushin.bodyArchitect.helper;
 
-import de.seibushin.bodyArchitect.BodyArchitect;
 import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -22,10 +22,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.hibernate.annotations.SourceType;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
 
 // check gluon Comments2.0 sample for reference
 // https://bitbucket.org/gluon-oss/samples/src/ffe48d13300f7638e31223965ad261de098dc91c/Comments2.0/src/main/java/com/gluonhq/comments20/views/SlidingListTile.java
@@ -65,7 +64,7 @@ public class SlidingListNode extends StackPane {
         HBox backPane;
         FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("SlidingBackPane.fxml"));
         fxmlLoader.setController(this);
-        fxmlLoader.setResources(MsgUtil.getBundle());
+        fxmlLoader.setResources(Utils.getBundle());
         try {
             backPane = fxmlLoader.load();
         } catch (IOException e) {

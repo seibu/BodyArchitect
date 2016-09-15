@@ -16,7 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "FOODS")
-public class Food {
+public class Food implements Comparable {
     @BAField
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -160,5 +160,11 @@ public class Food {
     @Override
     public String toString() {
         return MessageFormat.format("{8} {0}: {1}kcal - {2}g (C {3}({4}), P {5}, F {6}) -> {7}g", this.name, this.kcal, this.weight, this.carbs, this.sugar, this.protein, this.fat, this.portion, this.id);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Food other = (Food) o;
+        return this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
     }
 }

@@ -1,48 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.control.TextField?>
 <?import com.gluonhq.charm.glisten.mvc.View?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <View fx:id="food" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.FoodController">
    <center>
-      <GridPane>
-         <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="NEVER" />
-         </rowConstraints>
+      <VBox>
          <children>
-            <TextField fx:id="tf_name" promptText="Enter name" GridPane.columnIndex="1" />
-            <TextField fx:id="tf_weight" promptText="Enter weight" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="tf_energy" promptText="Enter energy (kcal)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField fx:id="tf_fat" promptText="Enter fat" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <TextField fx:id="tf_carbs" promptText="Enter carbs" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <TextField fx:id="tf_sugar" promptText="Enter sugar" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <TextField fx:id="tf_protein" promptText="Enter protein" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-            <Label text="%food.add.name" />
-            <Label text="%food.add.weight" GridPane.rowIndex="1" />
-            <Label text="%food.add.kcal" GridPane.rowIndex="2" />
-            <Label text="%food.add.fat" GridPane.rowIndex="3" />
-            <Label text="%food.add.carbs" GridPane.rowIndex="4" />
-            <Label text="%food.add.sugar" GridPane.rowIndex="5" />
-            <Label text="%food.add.protein" GridPane.rowIndex="6" />
+            <TextField fx:id="tf_name" floatText="Name" />
+            <TextField fx:id="tf_weight" floatText="Weight" />
+            <TextField fx:id="tf_energy" floatText="kCal" />
+            <TextField fx:id="tf_fat" floatText="Fat" />
+            <TextField fx:id="tf_carbs" floatText="Carbs" />
+            <TextField fx:id="tf_sugar" floatText="Sugar" />
+            <TextField fx:id="tf_protein" floatText="Protein" />
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </GridPane>
+      </VBox>
    </center>
 </View>

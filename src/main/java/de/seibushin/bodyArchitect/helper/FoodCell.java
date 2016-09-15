@@ -9,8 +9,11 @@ package de.seibushin.bodyArchitect.helper;
 
 import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
+import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.ListCell;
+import javafx.util.Duration;
 
 import java.util.function.Consumer;
 
@@ -21,18 +24,25 @@ public class FoodCell extends ListCell<Food> {
 
     private Food current;
 
+    public FoodCell() {
+        foodCellNode = new FoodCellNode();
+        slidingNode = new SlidingListNode(foodCellNode.getNode(), true);
+    }
+
     public FoodCell(Consumer<Food> consumerLeft, Consumer<Food> consumerRight) {
         foodCellNode = new FoodCellNode();
 
         slidingNode = new SlidingListNode(foodCellNode.getNode(), true);
+        setConsumer(consumerLeft, consumerRight);
+    }
 
+    public void setConsumer(Consumer<Food> consumerLeft, Consumer<Food> consumerRight) {
         slidingNode.swipedLeftProperty().addListener((obs, ov, nv) -> {
             if (nv && consumerRight != null) {
                 consumerRight.accept(current);
             }
             slidingNode.resetTilePosition();
         });
-
 
         slidingNode.swipedRightProperty().addListener((obs, ov, nv) -> {
             if (nv && consumerLeft != null) {
@@ -56,6 +66,10 @@ public class FoodCell extends ListCell<Food> {
         } else {
             setGraphic(null);
         }
+    }
+
+    public void collapse() {
+        System.out.println("collapse");
     }
 
     public BooleanProperty slidingProperty() {

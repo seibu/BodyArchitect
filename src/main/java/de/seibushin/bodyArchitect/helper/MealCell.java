@@ -45,6 +45,12 @@ public class MealCell extends ListCell<Meal> {
     @Override
     public void updateItem(Meal item, boolean empty) {
         super.updateItem(item, empty);
+
+        // set the new current if current is null or current differs from the new
+        if (current == null || !current.equals(item)) {
+            current = item;
+        }
+
         if (item != null) {
             mealCellNode.update(item);
             setGraphic(slidingNode);

@@ -11,12 +11,13 @@ import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
+import com.gluonhq.charm.glisten.control.TextField;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.BodyArchitect;
-import de.seibushin.bodyArchitect.helper.MsgUtil;
+import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
+
 
 public class FoodController {
     @FXML
@@ -43,12 +44,12 @@ public class FoodController {
         String result = "";
         try {
             String name = tf_name.getText();
-            Double weight = Double.valueOf(tf_weight.getText());
-            Double energy = Double.valueOf(tf_energy.getText());
-            Double fat = Double.valueOf(tf_fat.getText());
-            Double carbs = Double.valueOf(tf_carbs.getText());
-            Double sugar = Double.valueOf(tf_sugar.getText());
-            Double protein = Double.valueOf(tf_protein.getText());
+            Double weight = Utils.getNumberFormat().parse(tf_weight.getText()).doubleValue();
+            Double energy = Utils.getNumberFormat().parse(tf_energy.getText()).doubleValue();
+            Double fat = Utils.getNumberFormat().parse(tf_fat.getText()).doubleValue();
+            Double carbs = Utils.getNumberFormat().parse(tf_carbs.getText()).doubleValue();
+            Double sugar = Utils.getNumberFormat().parse(tf_sugar.getText()).doubleValue();
+            Double protein = Utils.getNumberFormat().parse(tf_protein.getText()).doubleValue();
             // @todo check if we need portion in any real way or if this is actually fine
             Double portion = weight;
 
@@ -61,10 +62,10 @@ public class FoodController {
 
             // we need to update the FoodView
             BodyArchitect.getInstance().setUpdateFood(true);
-            result = MsgUtil.getString("addFood_success");
+            result = Utils.getString("addFood_success");
         } catch (Exception e) {
             e.printStackTrace();
-            result = MsgUtil.getString("addFood_error");
+            result = Utils.getString("addFood_error");
         }
 
         snackbarPopupView.show(result);
@@ -72,14 +73,14 @@ public class FoodController {
 
     private void clear() {
         // clear the fields for a new food to be added
-        tf_name.clear();
-        tf_carbs.clear();
-        tf_energy.clear();
-        tf_fat.clear();
-        tf_carbs.clear();
-        tf_sugar.clear();
-        tf_protein.clear();
-        tf_weight.clear();
+        tf_name.setText("");
+        tf_carbs.setText("");
+        tf_energy.setText("");
+        tf_fat.setText("");
+        tf_carbs.setText("");
+        tf_sugar.setText("");
+        tf_protein.setText("");
+        tf_weight.setText("");
     }
 
     @FXML
@@ -97,8 +98,6 @@ public class FoodController {
                 appBar.setTitleText("Add Food");
             }
         });
-
-
 
         MobileApplication.getInstance().addLayerFactory("snackbar3", () -> snackbarPopupView);
     }

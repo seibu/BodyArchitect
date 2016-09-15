@@ -7,16 +7,11 @@
 
 package de.seibushin.bodyArchitect.helper;
 
-import com.gluonhq.charm.glisten.control.Icon;
 import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
-import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -42,7 +37,7 @@ public class FoodCellNode {
     public FoodCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("FoodCellNode.fxml"));
         fxmlLoader.setController(this);
-        fxmlLoader.setResources(MsgUtil.getBundle());
+        fxmlLoader.setResources(Utils.getBundle());
         try {
             fxmlLoader.load();
         } catch (IOException e) {
