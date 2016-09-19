@@ -62,7 +62,7 @@ public class SlidingListNode extends StackPane {
     public SlidingListNode(VBox frontPane, boolean slideable) {
         // BackPane
         HBox backPane;
-        FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("SlidingBackPane.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(SlidingListNode.class.getResource("SlidingBackPane.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.Icon?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox fx:id="root" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="popup" stylesheets="@mealInfo.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox id="header-container" alignment="BOTTOM_LEFT" styleClass="popup" VBox.vgrow="NEVER">
+         <children>
+            <HBox alignment="BOTTOM_LEFT" minWidth="0.0" prefWidth="1.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label fx:id="lbl_name" styleClass="highlight" text="Name">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="lbl_type" minWidth="50.0" text="Type">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+               </children>
+            </HBox>
+            <Label fx:id="lbl_kcal" text="150 kcal">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Label>
+            <Icon fx:id="i_close" content="CLOSE" styleClass="icon-clickable" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <GridPane hgap="5.0" styleClass="cell-body">
+         <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Label text="%food.cell.protein">
+               <styleClass>
+                  <String fx:value="light" />
+                  <String fx:value="lowlight" />
+               </styleClass>
+            </Label>
+            <Label text="%food.cell.carbs" GridPane.columnIndex="2">
+               <styleClass>
+                  <String fx:value="light" />
+                  <String fx:value="lowlight" />
+               </styleClass>
+            </Label>
+            <Label text="%food.cell.fat" GridPane.columnIndex="1">
+               <styleClass>
+                  <String fx:value="light" />
+                  <String fx:value="lowlight" />
+               </styleClass>
+            </Label>
+            <Label text="%food.cell.sugar" GridPane.columnIndex="3">
+               <styleClass>
+                  <String fx:value="light" />
+                  <String fx:value="lowlight" />
+               </styleClass>
+            </Label>
+            <Label fx:id="lbl_protein" GridPane.rowIndex="1" />
+            <Label fx:id="lbl_fat" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="lbl_carbs" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label fx:id="lbl_sugar" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+      <Region prefHeight="1.0" styleClass="spacer" VBox.vgrow="NEVER" />
+      <ListView fx:id="lv_foods" prefHeight="225.0" VBox.vgrow="NEVER">
+         <VBox.margin>
+            <Insets bottom="5.0" left="15.0" right="15.0" />
+         </VBox.margin>
+      </ListView>
+   </children>
+</VBox>

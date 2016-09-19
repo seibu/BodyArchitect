@@ -101,54 +101,54 @@ public class Meal {
         this.mealFoods = mealFoods;
     }
 
-    public String getKcal() {
+    public Double getKcal() {
         if (kcal == 0) {
             mealFoods.stream().forEach(mf -> {
                 kcal += mf.getFood().getKcal() / mf.getFood().getWeight() * mf.getWeight();
             });
         }
 
-        return new DecimalFormat("#.##").format(kcal);
+        return kcal;
     }
 
-    public String getProtein() {
+    public Double getProtein() {
         if (protein == 0) {
             mealFoods.stream().forEach(mf -> {
                 protein += mf.getFood().getProtein() / mf.getFood().getWeight() * mf.getWeight();
             });
         }
 
-        return new DecimalFormat("#.##").format(protein);
+        return protein;
     }
 
-    public String getCarbs() {
+    public Double getCarbs() {
         if (carbs == 0) {
             mealFoods.stream().forEach(mf -> {
                 carbs += mf.getFood().getCarbs() / mf.getFood().getWeight() * mf.getWeight();
             });
         }
 
-        return new DecimalFormat("#.##").format(carbs);
+        return carbs;
     }
 
-    public String getSugar() {
+    public Double getSugar() {
         if (sugar == 0) {
             mealFoods.stream().forEach(mf -> {
                 sugar += mf.getFood().getSugar() / mf.getFood().getWeight() * mf.getWeight();
             });
         }
 
-        return new DecimalFormat("#.##").format(sugar);
+        return sugar;
     }
 
-    public String getFat() {
+    public Double getFat() {
         if (fat == 0) {
             mealFoods.stream().forEach(mf -> {
                 fat += mf.getFood().getFat() / mf.getFood().getWeight() * mf.getWeight();
             });
         }
 
-        return new DecimalFormat("#.##").format(fat);
+        return fat;
     }
 
     @Override

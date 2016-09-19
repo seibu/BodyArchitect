@@ -9,10 +9,11 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge?>
 
-<View fx:id="nutrition" stylesheets="@nutrition.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionController">
+<View fx:id="nutrition" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionController">
     <center>
         <TabPane fx:id="tb_nutrition" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -37,25 +38,45 @@
                               <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label styleClass="lbl_gauge" text="kcal" textOverrun="CLIP" VBox.vgrow="ALWAYS" />
-                                    <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
+                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                       <children>
+                                          <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="100.0" prefWidth="100.0" />
+                                          <Label fx:id="lbl_kcal_add" />
+                                       </children>
+                                    </StackPane>
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label styleClass="lbl_gauge" text="protein" />
-                                    <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
+                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                       <children>
+                                          <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                          <Label fx:id="lbl_protein_add" />
+                                       </children>
+                                    </StackPane>
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label styleClass="lbl_gauge" text="fat" />
-                                    <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
+                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                       <children>
+                                          <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                          <Label fx:id="lbl_fat_add" />
+                                       </children>
+                                    </StackPane>
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label styleClass="lbl_gauge" text="carbs" />
-                                    <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="NEVER" />
+                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                       <children>
+                                          <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                          <Label fx:id="lbl_carbs_add" />
+                                       </children>
+                                    </StackPane>
                                  </children>
                               </VBox>
                            </children>

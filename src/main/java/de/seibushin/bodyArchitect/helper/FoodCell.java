@@ -7,13 +7,9 @@
 
 package de.seibushin.bodyArchitect.helper;
 
-import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
-import javafx.animation.Interpolator;
-import javafx.animation.ScaleTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.ListCell;
-import javafx.util.Duration;
 
 import java.util.function.Consumer;
 

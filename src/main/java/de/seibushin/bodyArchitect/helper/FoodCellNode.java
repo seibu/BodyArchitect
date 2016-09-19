@@ -24,6 +24,8 @@ public class FoodCellNode {
     @FXML
     Label lbl_kcal;
     @FXML
+    Label lbl_weight;
+    @FXML
     Label lbl_fat;
     @FXML
     Label lbl_carbs;
@@ -31,11 +33,10 @@ public class FoodCellNode {
     Label lbl_sugar;
     @FXML
     Label lbl_protein;
-    @FXML
-    Label lbl_weight;
+
 
     public FoodCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("FoodCellNode.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("mealFoodCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {
@@ -51,12 +52,13 @@ public class FoodCellNode {
     }
 
     private void updateStats(Food item) {
-        lbl_kcal.setText(BodyArchitect.getInstance().getDf().format(item.getKcal() / item.getWeight() * item.getPortion()));
+        lbl_kcal.setText(BodyArchitect.getInstance().getDf().format(item.getKcal() / item.getWeight() * item.getPortion()) + " " + Utils.getString("food.cell.kcal"));
+        lbl_weight.setText(BodyArchitect.getInstance().getDf().format(item.getPortion()) + Utils.getString("food.cell.weight.unit"));
+
         lbl_fat.setText(BodyArchitect.getInstance().getDf().format(item.getFat() / item.getWeight() * item.getPortion()));
         lbl_carbs.setText(BodyArchitect.getInstance().getDf().format(item.getCarbs() / item.getWeight() * item.getPortion()));
         lbl_sugar.setText(BodyArchitect.getInstance().getDf().format(item.getSugar() / item.getWeight() * item.getPortion()));
         lbl_protein.setText(BodyArchitect.getInstance().getDf().format(item.getProtein() / item.getWeight() * item.getPortion()));
-        lbl_weight.setText(BodyArchitect.getInstance().getDf().format(item.getPortion()));
     }
 
     public void update(Food item) {

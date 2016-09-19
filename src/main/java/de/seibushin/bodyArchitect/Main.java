@@ -9,6 +9,7 @@ import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
+import de.seibushin.bodyArchitect.helper.MealInfoLayer;
 import de.seibushin.bodyArchitect.views.HomeView;
 import de.seibushin.bodyArchitect.views.NutritionView;
 import javafx.scene.Scene;
@@ -38,7 +39,6 @@ public class Main extends MobileApplication {
         BodyArchitect.init();
 
         // Views
-
         addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
         addViewFactory(NUTRITION_VIEW, () -> new NutritionView(NUTRITION_VIEW).getView());
         //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
@@ -82,6 +82,8 @@ public class Main extends MobileApplication {
 
     @Override
     public void postInit(Scene scene) {
+        BodyArchitect.getInstance().setMealInfoLayer(new MealInfoLayer());
+
         Swatch.GREY.assignTo(scene);
 
         scene.getStylesheets().add(Main.class.getResource("style.css").toExternalForm());

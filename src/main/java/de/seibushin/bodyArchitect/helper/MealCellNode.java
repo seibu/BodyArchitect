@@ -7,19 +7,28 @@
 
 package de.seibushin.bodyArchitect.helper;
 
+import com.gluonhq.charm.glisten.application.MobileApplication;
+import com.gluonhq.charm.glisten.control.Icon;
+import com.gluonhq.charm.glisten.layout.Layer;
+import com.gluonhq.charm.glisten.layout.layer.PopupView;
+import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
 public class MealCellNode {
     @FXML
-    public VBox vbox;
+    public VBox mealCell;
     @FXML
     public Label lbl_name;
+    @FXML
+    private Label lbl_type;
     @FXML
     public Label lbl_kcal;
     @FXML
@@ -31,10 +40,10 @@ public class MealCellNode {
     @FXML
     public Label lbl_protein;
     @FXML
-    VBox vb_foods;
+    Icon i_info;
 
     public MealCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode2.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {
@@ -46,24 +55,21 @@ public class MealCellNode {
 
     @FXML
     public void initialize() {
-        // hide the foods
-        vbox.getChildren().remove(vb_foods);
+
     }
 
     public void update(Meal item) {
-        lbl_name.setText(item.getName() + " - " + item.getType());
-        lbl_kcal.setText(item.getKcal());
-        lbl_fat.setText(item.getFat());
-        lbl_carbs.setText(item.getCarbs());
-        lbl_sugar.setText(item.getSugar());
-        lbl_protein.setText(item.getProtein());
+        lbl_name.setText(item.getName());
+        lbl_type.setText(item.getType().toString());
 
-        item.getMealFoods().forEach(mf -> {
-            vb_foods.getChildren().add(new Label(mf.getFood().getName() + " - " + mf.getWeight()));
-        });
+        lbl_kcal.setText(BodyArchitect.getInstance().getDf().format(item.getKcal()) + " " + Utils.getString("meal.cell.kcal"));
+        lbl_fat.setText(BodyArchitect.getInstance().getDf().format(item.getFat()));
+        lbl_carbs.setText(BodyArchitect.getInstance().getDf().format(item.getCarbs()));
+        lbl_sugar.setText(BodyArchitect.getInstance().getDf().format(item.getSugar()));
+        lbl_protein.setText(BodyArchitect.getInstance().getDf().format(item.getProtein()));
     }
 
     public VBox getNode() {
-        return vbox;
+        return mealCell;
     }
 }

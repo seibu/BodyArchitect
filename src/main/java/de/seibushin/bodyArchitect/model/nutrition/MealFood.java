@@ -69,34 +69,33 @@ public class MealFood {
         this.weight = weight;
     }
 
-    public String getKcal() {
+    public String getName() {
+        return food.getName();
+    }
+
+    public Double getKcal() {
         Double kcal = food.kcal / food.weight * weight;
-
-        return new DecimalFormat("#.##").format(kcal);
+        return kcal;
     }
 
-    public String getProtein() {
+    public Double getProtein() {
         Double protein = food.protein / food.weight * weight;
-
-        return new DecimalFormat("#.##").format(protein);
+        return protein;
     }
 
-    public String getCarbs() {
+    public Double getCarbs() {
         Double carbs = food.carbs / food.weight * weight;
-
-        return new DecimalFormat("#.##").format(carbs);
+        return carbs;
     }
 
-    public String getSugar() {
+    public Double getSugar() {
         Double sugar = food.sugar / food.weight * weight;
-
-        return new DecimalFormat("#.##").format(sugar);
+        return sugar;
     }
 
-    public String getFat() {
+    public Double getFat() {
         Double fat = food.fat / food.weight * weight;
-
-        return new DecimalFormat("#.##").format(fat);
+        return fat;
     }
 
     @Override

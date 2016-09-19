@@ -1,0 +1,24 @@
+.popup {
+    -fx-background-color: #fff;
+}
+
+.list-view {
+    -fx-border-width: 0;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: transparent;
+}
+
+.list-view .list-cell {
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #ccc;
+}
+
+.list-view .list-cell:empty {
+    -fx-border-width: 0;
+}
+
+.spacer {
+    -fx-background-color: #ccc;
+}

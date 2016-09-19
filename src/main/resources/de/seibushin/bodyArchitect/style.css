@@ -1,4 +1,3 @@
-
 .SimpleMetroArcGauge {
     -fxx-segment0-color: #888888;
     -fxx-segment1-color: #fba71b;
@@ -50,6 +49,13 @@
     -fx-effect: dropshadow(three-pass-box, #ccc, 0, 0, 0, 0);
 }
 
+.btn_trans:hover,
+.btn_trans:active,
+.btn_trans:focus,
+.btn_trans:visited {
+    -fx-background-color: transparent;
+}
+
 .box_wrapper {
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
@@ -77,8 +83,7 @@
 }
 
 
-
-.list-view-sliding .list-cell {
+.list-view .list-cell {
     -fx-padding: 0;
 }
 
@@ -119,4 +124,25 @@
 
 .list-view-sliding .back:left .left {
     visibility: hidden;
+}
+
+.highlight {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.lowlight {
+    -fx-font-size: 10px;
+}
+
+.light {
+    -fx-text-fill: #959595;
+}
+
+.icon-clickable .text {
+    -fx-fill: #959595;
+    -fx-cursor: hand;
+}
+.icon-clickable:hover .text {
+    -fx-fill: #000;
 }

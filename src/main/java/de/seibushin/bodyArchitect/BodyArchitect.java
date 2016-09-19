@@ -9,12 +9,24 @@ package de.seibushin.bodyArchitect;
 
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
+import com.gluonhq.charm.glisten.layout.Layer;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
+import com.gluonhq.connect.ConnectState;
+import com.gluonhq.connect.GluonObservableObject;
+import com.gluonhq.connect.gluoncloud.GluonClient;
+import com.gluonhq.connect.gluoncloud.GluonClientBuilder;
+import com.gluonhq.connect.gluoncloud.OperationMode;
+import com.gluonhq.connect.provider.DataProvider;
 import de.seibushin.bodyArchitect.helper.HibernateUtil;
 import de.seibushin.bodyArchitect.helper.LogBook;
+import de.seibushin.bodyArchitect.helper.MealInfoLayer;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import de.seibushin.bodyArchitect.model.nutrition.Settings;
+import de.seibushin.bodyArchitect.model.refactoring.Service;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -34,12 +46,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class BodyArchitect {
     private static BodyArchitect ba = null;
     private SessionFactory sessionFactory;
     private BorderPane root;
     private LogBook logBook;
+    private ObjectProperty<Settings> settings = new SimpleObjectProperty<>(new Settings());
+    private static final String NUTRITION_SETTINGS = "settings-v0";
+    private GluonClient gluonClient;
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
 
@@ -51,8 +67,10 @@ public class BodyArchitect {
     private Item nutrition;
     private Item workout;
 
-    private DecimalFormat df =  new DecimalFormat("#.#");
+    private final DecimalFormat df =  new DecimalFormat("#.#");
+    private MealInfoLayer mealInfoLayer;
 
+    private Service service;
 
     public BodyArchitect() {
         // create Menu Items
@@ -62,6 +80,13 @@ public class BodyArchitect {
         workout = new Item("Workout", MaterialDesignIcon.FITNESS_CENTER.graphic());
 
         sessionFactory = HibernateUtil.getSessionFactory();
+
+        gluonClient = GluonClientBuilder.create().operationMode(OperationMode.LOCAL_ONLY).build();
+
+        // load data
+        getSettings();
+        service = new Service();
+        service.loadRelevant();
     }
 
     public static void init() {
@@ -326,5 +351,36 @@ public class BodyArchitect {
 
     public void setUpdateFood(boolean updateFood) {
         this.updateFood = updateFood;
+    }
+
+    private void getSettings() {
+        GluonObservableObject<Settings> settingsTmp = DataProvider.<Settings>retrieveObject(
+                gluonClient.createObjectDataReader(NUTRITION_SETTINGS, Settings.class));
+        settingsTmp.stateProperty().addListener((obs, ov, nv) -> {
+            if (ConnectState.SUCCEEDED.equals(nv) && settingsTmp.get() != null) {
+                settings.set(settingsTmp.get());
+            }
+        });
+    }
+
+    public void storeSettings() {
+        DataProvider.<Settings>storeObject(settings.get(), gluonClient.createObjectDataWriter(NUTRITION_SETTINGS, Settings.class));
+    }
+
+    public ObjectProperty<Settings> settingsProperty() {
+        return settings;
+    }
+
+
+    public MealInfoLayer getMealInfoLayer() {
+        return mealInfoLayer;
+    }
+
+    public void setMealInfoLayer(MealInfoLayer mealInfoLayer) {
+        this.mealInfoLayer = mealInfoLayer;
+    }
+
+    public Service getService() {
+        return service;
     }
 }
