@@ -8,15 +8,10 @@
 package de.seibushin.bodyArchitect.helper;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
-import com.gluonhq.charm.glisten.layout.layer.PopupView;
-import de.seibushin.bodyArchitect.BodyArchitect;
-import de.seibushin.bodyArchitect.model.nutrition.Food;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.beans.property.BooleanProperty;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;
 
@@ -48,7 +43,7 @@ public class MealCell extends ListCell<Meal> {
         });
 
         mealCellNode.i_info.setOnMouseClicked(e -> {
-            BodyArchitect.getInstance().getMealInfoLayer().setMeal(current);
+            Service.getInstance().getMealInfoLayer().setMeal(current);
             MobileApplication.getInstance().showLayer("MealInfo");
         });
     }

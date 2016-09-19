@@ -9,11 +9,11 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
+import com.gluonhq.charm.glisten.control.TextField;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
-import com.gluonhq.charm.glisten.control.TextField;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.fxml.FXML;
@@ -55,13 +55,11 @@ public class FoodController {
 
             // add the food
             Food food = new Food(name, energy, fat, carbs, sugar, protein, weight, portion);
-            BodyArchitect.getInstance().addEntry(food);
+            Service.getInstance().addFood(food);
 
             // clear the fields
             clear();
 
-            // we need to update the FoodView
-            BodyArchitect.getInstance().setUpdateFood(true);
             result = Utils.getString("addFood_success");
         } catch (Exception e) {
             e.printStackTrace();

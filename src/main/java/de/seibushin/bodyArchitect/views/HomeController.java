@@ -11,12 +11,13 @@ import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.Main;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
+
+import java.time.LocalDate;
 
 public class HomeController {
 
@@ -47,7 +48,7 @@ public class HomeController {
 
                 // update the gauge
                 // @todo how ineffective is this? we have to get the dayobject fresh from the db everytime we open this view
-                Day today = BodyArchitect.getInstance().getTodayDayObject();
+                Day today = Service.getInstance().getDay(LocalDate.now());
                 if (today != null) {
                     // update gauges
                     // @todo check for maxValue and change the maxValue accordingly

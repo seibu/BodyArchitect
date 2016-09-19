@@ -11,20 +11,19 @@ import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import de.seibushin.bodyArchitect.BodyArchitect;
 import de.seibushin.bodyArchitect.Main;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.FoodCell;
 import de.seibushin.bodyArchitect.helper.LogBook;
 import de.seibushin.bodyArchitect.helper.MealCell;
-import de.seibushin.bodyArchitect.helper.MealInfoLayer;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
-import de.seibushin.bodyArchitect.model.nutrition.Food;
-import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import de.seibushin.bodyArchitect.model.nutrition.MealFood;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
@@ -106,18 +105,22 @@ public class NutritionController {
     }
 
     private void updateMeal() {
+
+        lv_meals.setItems(Service.getInstance().mealsProperty().get());
         // only update if needed
+        /*
         if (BodyArchitect.getInstance().isUpdateMeal()) {
             System.out.println("updateMeal");
             // set UpdateMeal to false
             BodyArchitect.getInstance().setUpdateMeal(false);
 
-            lv_meals.setItems(BodyArchitect.getInstance().getData(Meal.class));
+            //lv_meals.setItems(BodyArchitect.getInstance().getData(Meal.class));
         }
+        */
     }
 
     private void updateFood() {
-        lv_food.setItems(BodyArchitect.getInstance().getService().foodsProperty().get());
+        lv_food.setItems(Service.getInstance().foodsProperty().get());
 
         /*
         // only update if needed
@@ -134,6 +137,34 @@ public class NutritionController {
     }
 
     private void updateDay() {
+        System.out.println("update Day");
+        Day selectedDay = Service.getInstance().getSelectedDayObject();
+        System.out.println(selectedDay);
+        btn_date.setText(Service.getInstance().getSelectedDayString());
+
+        if (selectedDay != null) {
+            lv_day_meals.setItems(Service.getInstance().getMealsForSelectedDay());
+
+            // update gauges
+            currKcal = selectedDay.getKcal();
+            currCarbs = selectedDay.getCarbs();
+            currProtein = selectedDay.getProtein();
+            currFat = selectedDay.getFat();
+
+            updateGauge(mag_kcal, currKcal, lbl_kcal_add);
+            updateGauge(mag_carbs, currCarbs, lbl_carbs_add);
+            updateGauge(mag_fat, currFat, lbl_fat_add);
+            updateGauge(mag_protein, currProtein, lbl_protein_add);
+        } else {
+            lv_day_meals.getItems().clear();
+            mag_kcal.setValue(0);
+            mag_carbs.setValue(0);
+            mag_fat.setValue(0);
+            mag_protein.setValue(0);
+        }
+
+
+        /*
         // only update if needed
         if (BodyArchitect.getInstance().isUpdateDay()) {
             System.out.println("updateDay");
@@ -170,6 +201,7 @@ public class NutritionController {
                 mag_protein.setValue(0);
             }
         }
+        */
     }
 
     private void updateGauge(SimpleMetroArcGauge gauge, double nv, Label lbl) {
@@ -192,12 +224,12 @@ public class NutritionController {
         MobileApplication.getInstance().addViewFactory(SETTINGS_VIEW, () -> new SettingsView(SETTINGS_VIEW).getView());
 
         // add the mealInfoLayer (popup)
-        MobileApplication.getInstance().addLayerFactory("MealInfo", () -> BodyArchitect.getInstance().getMealInfoLayer());
+        MobileApplication.getInstance().addLayerFactory("MealInfo", () -> Service.getInstance().getMealInfoLayer());
 
         // create the logbook
         // NOTE: creating the LogBook directly in the bodyArchitect class would result in the icons not showing correctly
         LogBook logBook = new LogBook();
-        BodyArchitect.getInstance().setLogBook(logBook);
+        Service.getInstance().setLogBook(logBook);
 
         // update appBar
         nutrition.showingProperty().addListener((obs, oldValue, newValue) -> {
@@ -221,10 +253,7 @@ public class NutritionController {
         lv_day_meals.setCellFactory(cell -> {
             final MealCell mealCell = new MealCell(
                     c -> {
-                        System.out.println("left");
-                        // do the delete
-                        BodyArchitect.getInstance().setUpdateDay(true);
-                        updateDay();
+                        System.out.println("left -> delete");
                     },
                     c -> {
                         System.out.println("right");
@@ -242,7 +271,7 @@ public class NutritionController {
             }
         });
 
-        mag_kcal.maxValueProperty().bind(BodyArchitect.getInstance().settingsProperty().get().targetKcalProperty());
+        mag_kcal.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetKcalProperty());
         Segment seg1 = new PercentSegment(mag_kcal, 0, 100);
         Segment seg2 = new PercentSegment(mag_kcal, 95, 100);
         mag_kcal.segments().addAll(seg1, seg2);
@@ -250,7 +279,7 @@ public class NutritionController {
             updateGauge(mag_kcal, currKcal, lbl_kcal_add);
         });
 
-        mag_protein.maxValueProperty().bind(BodyArchitect.getInstance().settingsProperty().get().targetProteinProperty());
+        mag_protein.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetProteinProperty());
         seg1 = new PercentSegment(mag_protein, 0, 100);
         seg2 = new PercentSegment(mag_protein, 95, 100);
         mag_protein.segments().addAll(seg1, seg2);
@@ -258,7 +287,7 @@ public class NutritionController {
             updateGauge(mag_protein, currProtein, lbl_protein_add);
         });
 
-        mag_carbs.maxValueProperty().bind(BodyArchitect.getInstance().settingsProperty().get().targetCarbsProperty());
+        mag_carbs.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetCarbsProperty());
         seg1 = new PercentSegment(mag_carbs, 0, 100);
         seg2 = new PercentSegment(mag_carbs, 95, 100);
         mag_carbs.segments().addAll(seg1, seg2);
@@ -266,7 +295,7 @@ public class NutritionController {
             updateGauge(mag_carbs, currCarbs, lbl_carbs_add);
         });
 
-        mag_fat.maxValueProperty().bind(BodyArchitect.getInstance().settingsProperty().get().targetFatProperty());
+        mag_fat.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetFatProperty());
         seg1 = new PercentSegment(mag_fat, 0, 100);
         seg2 = new PercentSegment(mag_fat, 95, 100);
         mag_fat.segments().addAll(seg1, seg2);
@@ -281,12 +310,6 @@ public class NutritionController {
             final MealCell mealCell = new MealCell(
                     c -> {
                         System.out.println("left");
-                        c.getMealFoods().forEach(mf -> {
-                            BodyArchitect.getInstance().deleteEntry(MealFood.class, mf.getId());
-                        });
-                        BodyArchitect.getInstance().deleteEntry(Meal.class, c.getId());
-                        BodyArchitect.getInstance().setUpdateMeal(true);
-                        updateMeal();
                     },
                     c -> {
                         System.out.println("right");
@@ -341,13 +364,12 @@ public class NutritionController {
         // Logs Tab
         // =====================
         // add the logBook to the Pane
-        vbox_logs.getChildren().add(BodyArchitect.getInstance().getLogBook().getWrapper());
+        vbox_logs.getChildren().add(Service.getInstance().getLogBook().getWrapper());
 
         // listener for the selectedDay
-        BodyArchitect.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, ov, nv) -> {
+        Service.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, ov, nv) -> {
             // @todo only switch if the day has data
             if (nv != null) {
-                BodyArchitect.getInstance().setUpdateDay(true);
                 updateDay();
                 // switch to Day tab
                 tb_nutrition.getSelectionModel().select(0);

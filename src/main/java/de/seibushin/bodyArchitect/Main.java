@@ -36,7 +36,7 @@ public class Main extends MobileApplication {
         // http://gluonhq.com/learn-to-build-gluon-charm-apps-with-three-new-charm-samples/
 
         // init BodyArchitect
-        BodyArchitect.init();
+        Service.init();
 
         // Views
         addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
@@ -53,7 +53,7 @@ public class Main extends MobileApplication {
         drawer.setHeader(header);
 
         // add the Items to the menu
-        drawer.getItems().addAll(BodyArchitect.getInstance().getDrawerItems());
+        drawer.getItems().addAll(Service.getInstance().getDrawerItems());
 
         // add Listener for the menu to change the View
         drawer.selectedItemProperty().addListener((obs, oldItem, newItem) -> {
@@ -82,7 +82,7 @@ public class Main extends MobileApplication {
 
     @Override
     public void postInit(Scene scene) {
-        BodyArchitect.getInstance().setMealInfoLayer(new MealInfoLayer());
+        Service.getInstance().setMealInfoLayer(new MealInfoLayer());
 
         Swatch.GREY.assignTo(scene);
 

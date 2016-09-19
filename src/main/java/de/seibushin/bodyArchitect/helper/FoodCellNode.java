@@ -7,7 +7,7 @@
 
 package de.seibushin.bodyArchitect.helper;
 
-import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -52,13 +52,13 @@ public class FoodCellNode {
     }
 
     private void updateStats(Food item) {
-        lbl_kcal.setText(BodyArchitect.getInstance().getDf().format(item.getKcal() / item.getWeight() * item.getPortion()) + " " + Utils.getString("food.cell.kcal"));
-        lbl_weight.setText(BodyArchitect.getInstance().getDf().format(item.getPortion()) + Utils.getString("food.cell.weight.unit"));
+        lbl_kcal.setText(Service.getInstance().getDf().format(item.getKcal() / item.getWeight() * item.getPortion()) + " " + Utils.getString("food.cell.kcal"));
+        lbl_weight.setText(Service.getInstance().getDf().format(item.getPortion()) + Utils.getString("food.cell.weight.unit"));
 
-        lbl_fat.setText(BodyArchitect.getInstance().getDf().format(item.getFat() / item.getWeight() * item.getPortion()));
-        lbl_carbs.setText(BodyArchitect.getInstance().getDf().format(item.getCarbs() / item.getWeight() * item.getPortion()));
-        lbl_sugar.setText(BodyArchitect.getInstance().getDf().format(item.getSugar() / item.getWeight() * item.getPortion()));
-        lbl_protein.setText(BodyArchitect.getInstance().getDf().format(item.getProtein() / item.getWeight() * item.getPortion()));
+        lbl_fat.setText(Service.getInstance().getDf().format(item.getFat() / item.getWeight() * item.getPortion()));
+        lbl_carbs.setText(Service.getInstance().getDf().format(item.getCarbs() / item.getWeight() * item.getPortion()));
+        lbl_sugar.setText(Service.getInstance().getDf().format(item.getSugar() / item.getWeight() * item.getPortion()));
+        lbl_protein.setText(Service.getInstance().getDf().format(item.getProtein() / item.getWeight() * item.getPortion()));
     }
 
     public void update(Food item) {

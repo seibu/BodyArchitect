@@ -11,7 +11,7 @@ import com.gluonhq.charm.glisten.application.GlassPane;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.layout.Layer;
-import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,7 +19,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -75,12 +74,12 @@ public class MealInfoLayer extends Layer {
             // set the header
             lbl_name.setText(meal.getName());
             lbl_type.setText(meal.getType().toString());
-            lbl_kcal.setText(BodyArchitect.getInstance().getDf().format(meal.getKcal()) + " " + Utils.getString("meal.info.kcal"));
+            lbl_kcal.setText(Service.getInstance().getDf().format(meal.getKcal()) + " " + Utils.getString("meal.info.kcal"));
 
-            lbl_fat.setText(BodyArchitect.getInstance().getDf().format(meal.getFat()));
-            lbl_carbs.setText(BodyArchitect.getInstance().getDf().format(meal.getCarbs()));
-            lbl_sugar.setText(BodyArchitect.getInstance().getDf().format(meal.getSugar()));
-            lbl_protein.setText(BodyArchitect.getInstance().getDf().format(meal.getProtein()));
+            lbl_fat.setText(Service.getInstance().getDf().format(meal.getFat()));
+            lbl_carbs.setText(Service.getInstance().getDf().format(meal.getCarbs()));
+            lbl_sugar.setText(Service.getInstance().getDf().format(meal.getSugar()));
+            lbl_protein.setText(Service.getInstance().getDf().format(meal.getProtein()));
 
             // set the foods
             ObservableList ol = FXCollections.observableArrayList();

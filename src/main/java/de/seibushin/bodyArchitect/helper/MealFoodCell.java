@@ -8,10 +8,7 @@
 package de.seibushin.bodyArchitect.helper;
 
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
-import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.ListCell;
-
-import java.util.function.Consumer;
 
 public class MealFoodCell extends ListCell<MealFood> {
     private MealFoodCellNode mealFoodCellNode;

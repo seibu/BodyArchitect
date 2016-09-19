@@ -2,168 +2,96 @@
  *
  * NO LICENSE
  * YOU MAY NOT REPRODUCE, DISTRIBUTE, OR CREATE DERIVATIVE WORKS FROM MY WORK
- *
+ * 
  */
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-import de.seibushin.bodyArchitect.model.BAField;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-import javax.persistence.*;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@Table(name = "MEALS")
 public class Meal {
-    @BAField
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MEAL_ID")
-    private int id;
-
-    @BAField
-    private String name;
-    @BAField
-    private Type type;
-
-    @BAField
-    @OneToMany(mappedBy = "meal")
-    private Set<MealFood> mealFoods = new HashSet<>();
-
-    @OneToMany(mappedBy = "meal")
-    private Set<DayMeal> dayMeals = new HashSet<>();
-
-    @Transient
-    @BAField
-    double kcal;
-
-    @Transient
-    @BAField
-    double protein;
-
-    @Transient
-    @BAField
-    double carbs;
-
-    @Transient
-    @BAField
-    double sugar;
-
-    @Transient
-    @BAField
-    double fat;
+    private StringProperty name = new SimpleStringProperty();
+    private ObjectProperty<Type> type = new SimpleObjectProperty<>();
+    private ListProperty<MealFood> mealFoods = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public Meal() {
-
-    }
-
-    public Meal(int id) {
-        this.id = id;
     }
 
     public Meal(String name, Type type) {
-        this.name = name;
-        this.type = type;
+        this.name.set(name);
+        this.type.set(type);
     }
 
-    public int getId() {
-        return id;
+    public Meal(String name, Type type, ObservableList<MealFood> mealFoods) {
+        this.name.set(name);
+        this.type.set(type);
+        this.mealFoods.set(mealFoods);
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void addMealFood(MealFood mealFood) {
+        mealFoods.get().add(mealFood);
+    }
+
+    public void removeFood(MealFood mealFood) {
+        mealFoods.get().remove(mealFood);
     }
 
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return name.get();
     }
 
     public Type getType() {
-        return type;
+        return type.get();
     }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public Set<MealFood> getMealFoods() {
-        return mealFoods;
-    }
-
-    public void setMealFoods(Set<MealFood> mealFoods) {
-        this.mealFoods = mealFoods;
+    public ObservableList<MealFood> getMealFoods() {
+        return mealFoods.get();
     }
 
     public Double getKcal() {
-        if (kcal == 0) {
-            mealFoods.stream().forEach(mf -> {
-                kcal += mf.getFood().getKcal() / mf.getFood().getWeight() * mf.getWeight();
-            });
-        }
+        final Double[] d = {0.0};
+        mealFoods.get().forEach(mf -> {
+            d[0] += mf.getKcal();
+        });
 
-        return kcal;
+        return d[0];
     }
 
     public Double getProtein() {
-        if (protein == 0) {
-            mealFoods.stream().forEach(mf -> {
-                protein += mf.getFood().getProtein() / mf.getFood().getWeight() * mf.getWeight();
-            });
-        }
+        final Double[] d = {0.0};
+        mealFoods.get().forEach(mf -> {
+            d[0] += mf.getProtein();
+        });
 
-        return protein;
-    }
-
-    public Double getCarbs() {
-        if (carbs == 0) {
-            mealFoods.stream().forEach(mf -> {
-                carbs += mf.getFood().getCarbs() / mf.getFood().getWeight() * mf.getWeight();
-            });
-        }
-
-        return carbs;
-    }
-
-    public Double getSugar() {
-        if (sugar == 0) {
-            mealFoods.stream().forEach(mf -> {
-                sugar += mf.getFood().getSugar() / mf.getFood().getWeight() * mf.getWeight();
-            });
-        }
-
-        return sugar;
+        return d[0];
     }
 
     public Double getFat() {
-        if (fat == 0) {
-            mealFoods.stream().forEach(mf -> {
-                fat += mf.getFood().getFat() / mf.getFood().getWeight() * mf.getWeight();
-            });
-        }
+        final Double[] d = {0.0};
+        mealFoods.get().forEach(mf -> {
+            d[0] += mf.getFat();
+        });
 
-        return fat;
+        return d[0];
     }
 
-    @Override
-    public String toString() {
-        /*String s = MessageFormat.format("{0}: {1}({2})\n", this.id, this.getName(), this.getType());
-        for (MealFood mf : this.getMealFoods()) {
-            s += mf.getWeight() + "g -> " + mf.getFood().toString() + "\n";
-        }*/
+    public Double getCarbs() {
+        final Double[] d = {0.0};
+        mealFoods.get().forEach(mf -> {
+            d[0] += mf.getCarbs();
+        });
 
-        String s = MessageFormat.format("{0} ({1})\n{2}kcal [P {3} | C {4}({5}) | F {6}]\n", this.name, this.type, getKcal(), getProtein(), getCarbs(), getSugar(), getFat());
-        for (MealFood mf : this.mealFoods) {
-            s += MessageFormat.format("{0}\n", mf);
-        }
+        return d[0];
+    }
 
-        return s;
+    public Double getSugar() {
+        final Double[] d = {0.0};
+        mealFoods.get().forEach(mf -> {
+            d[0] += mf.getSugar();
+        });
+
+        return d[0];
     }
 }
-

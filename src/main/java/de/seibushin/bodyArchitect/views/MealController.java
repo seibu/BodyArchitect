@@ -12,13 +12,13 @@ import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import de.seibushin.bodyArchitect.BodyArchitect;
+import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.FoodCell;
 import de.seibushin.bodyArchitect.helper.Utils;
+import de.seibushin.bodyArchitect.model.nutrition.Type;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
-import de.seibushin.bodyArchitect.model.nutrition.Type;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -56,20 +56,16 @@ public class MealController {
             Type type = cb_type.getValue();
 
             Meal meal = new Meal(name, type);
-            BodyArchitect.getInstance().addEntry(meal);
 
             lv_food.getItems().stream().forEach(f -> {
-                MealFood mf = new MealFood();
-                mf.setMeal(meal);
-                mf.setFood(f);
-                mf.setWeight(f.getPortion());
-                BodyArchitect.getInstance().addEntry(mf);
+                meal.addMealFood(new MealFood(f, slider_portion.getValue()));
             });
+
+            Service.getInstance().addMeal(meal);
 
             // clear the fields and reset the listViews
             clear();
 
-            BodyArchitect.getInstance().setUpdateMeal(true);
             result = Utils.getString("addMeal_success");
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,7 +82,7 @@ public class MealController {
         tf_name.clear();
 
         lv_food.getItems().clear();
-        lv_allFood.setItems(BodyArchitect.getInstance().getData(Food.class));
+        lv_allFood.setItems(Service.getInstance().getFoodsClone());
     }
 
     @FXML
@@ -165,7 +161,7 @@ public class MealController {
             }
         });
 
-        lv_allFood.setItems(BodyArchitect.getInstance().getData(Food.class));
+        lv_allFood.setItems(Service.getInstance().getFoodsClone());
 
         slider_portion.valueProperty().addListener(e -> {
             if (lv_food.getSelectionModel().getSelectedItem() != null) {
