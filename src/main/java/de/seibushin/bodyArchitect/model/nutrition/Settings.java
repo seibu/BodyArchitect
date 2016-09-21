@@ -7,60 +7,52 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 public class Settings {
-    private final IntegerProperty targetKcal = new SimpleIntegerProperty(2000);
-    private final IntegerProperty targetProtein = new SimpleIntegerProperty(180);
-    private final IntegerProperty targetFat = new SimpleIntegerProperty(90);
-    private final IntegerProperty targetCarbs = new SimpleIntegerProperty(220);
+    private int targetKcal;
+    private int targetProtein;
+    private int targetFat;
+    private int targetCarbs;
 
-    public int getTargetKcal() {
-        return targetKcal.get();
+    public Settings() {
+
     }
 
-    public IntegerProperty targetKcalProperty() {
+    public Settings(int targetKcal, int targetProtein, int targetFat, int targetCarbs) {
+        this.targetKcal = targetKcal;
+        this.targetProtein = targetProtein;
+        this.targetFat = targetFat;
+        this.targetCarbs = targetCarbs;
+    }
+
+    public int getTargetKcal() {
         return targetKcal;
     }
 
     public void setTargetKcal(int targetKcal) {
-        this.targetKcal.set(targetKcal);
+        this.targetKcal = targetKcal;
     }
 
     public int getTargetProtein() {
-        return targetProtein.get();
-    }
-
-    public IntegerProperty targetProteinProperty() {
         return targetProtein;
     }
 
     public void setTargetProtein(int targetProtein) {
-        this.targetProtein.set(targetProtein);
+        this.targetProtein = targetProtein;
     }
 
     public int getTargetFat() {
-        return targetFat.get();
-    }
-
-    public IntegerProperty targetFatProperty() {
         return targetFat;
     }
 
     public void setTargetFat(int targetFat) {
-        this.targetFat.set(targetFat);
+        this.targetFat = targetFat;
     }
 
     public int getTargetCarbs() {
-        return targetCarbs.get();
-    }
-
-    public IntegerProperty targetCarbsProperty() {
         return targetCarbs;
     }
 
     public void setTargetCarbs(int targetCarbs) {
-        this.targetCarbs.set(targetCarbs);
+        this.targetCarbs = targetCarbs;
     }
 }

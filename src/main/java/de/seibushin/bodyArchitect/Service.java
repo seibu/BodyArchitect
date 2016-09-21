@@ -7,57 +7,36 @@
 
 package de.seibushin.bodyArchitect;
 
+import com.gluonhq.charm.down.common.JavaFXPlatform;
 import com.gluonhq.charm.down.common.PlatformFactory;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
-import com.gluonhq.connect.ConnectState;
-import com.gluonhq.connect.GluonObservableList;
-import com.gluonhq.connect.GluonObservableObject;
-import com.gluonhq.connect.gluoncloud.GluonClient;
-import com.gluonhq.connect.gluoncloud.GluonClientBuilder;
-import com.gluonhq.connect.gluoncloud.OperationMode;
-import com.gluonhq.connect.provider.DataProvider;
+import de.seibushin.bodyArchitect.model.nutrition.*;
 import de.seibushin.bodyArchitect.views.LogBook;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
-import de.seibushin.bodyArchitect.helper.SQLite;
-import de.seibushin.bodyArchitect.model.nutrition.Settings;
-import de.seibushin.bodyArchitect.model.nutrition.Day;
-import de.seibushin.bodyArchitect.model.nutrition.Food;
-import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class Service {
     private static Service service;
 
-    private final SQLite sqLite;
-
-    private GluonClient gluonClient;
-
     private LogBook logBook;
 
-    private ObjectProperty<Settings> settings = new SimpleObjectProperty<>(new Settings());
-    private static final String NUTRITION_SETTINGS = "settings-v0";
-
-    private final String FOODS = "foods-v0";
-    private final ListProperty<Food> foods = new SimpleListProperty<>(FXCollections.<Food>observableArrayList());
-
-    private final String MEALS = "meals-v0";
-    private final ListProperty<Meal> meals = new SimpleListProperty<>(FXCollections.<Meal>observableArrayList());
-
-    private final String DAYS = "days-v0";
-    private final ListProperty<Day> days = new SimpleListProperty<>(FXCollections.<Day>observableArrayList());
+    private final Settings settings = new Settings();
+    private final ObservableList<Food> foods = FXCollections.observableArrayList();
+    private final ObservableList<Meal> meals = FXCollections.observableArrayList();
+    private final ObservableList<Day> days = FXCollections.observableArrayList();
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
 
@@ -68,6 +47,25 @@ public class Service {
     private final DecimalFormat df = new DecimalFormat("#.#");
     private MealInfoLayer mealInfoLayer;
 
+    private final static String DB_NAME = "ba.sb";
+    private final static int QUERY_TIMEOUT = 30;
+
+    private final static String FOOD_TABLE = "FOOD";
+    private final static String MEAL_TABLE = "MEAL";
+    private final static String MEAL_FOOD_TABLE = "MEAL_FOOD";
+    private final static String DAYS_TABLE = "DAYS";
+    private final static String DAY_MEAL_TABLE = "DAY_MEAL";
+
+    private Connection connection = null;
+    private Statement stmt;
+    private ResultSet rs;
+
+    private String dbUrl = "jdbc:sqlite:";
+
+    private final DateTimeFormatter dtfDb = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    private final ResourceBundle stmts;
+
     public Service() {
         // create Menu Items
         home = new NavigationDrawer.Item("Home", MaterialDesignIcon.HOME.graphic());
@@ -75,18 +73,39 @@ public class Service {
         nutrition = new NavigationDrawer.Item("Nutrition", MaterialDesignIcon.LOCAL_DINING.graphic());
         workout = new NavigationDrawer.Item("Workout", MaterialDesignIcon.FITNESS_CENTER.graphic());
 
-        gluonClient = GluonClientBuilder.create().operationMode(OperationMode.LOCAL_ONLY).build();
-
         // Database Connector Object
-        sqLite = new SQLite();
-
-        foods.addListener((obs, ov, nv) -> {
-            System.out.println("foods changed");
-            System.out.println(nv);
-            if (nv != null) {
-                saveFoods();
+        try {
+            Class c = null;
+            if (JavaFXPlatform.isAndroid()) {
+                c = Class.forName("org.sqldroid.SQLDroidDriver");
+            } else if (JavaFXPlatform.isIOS()) {
+                c = Class.forName("SQLite.JDBCDriver");
+            } else if (JavaFXPlatform.isDesktop()) {
+                c = Class.forName("org.sqlite.JDBC");
             }
-        });
+            /* embedded
+            else if (System.getProperty("os.arch").toUpperCase().contains("ARM")) {
+                c = Class.forName("org.sqlite.JDBC");
+            }
+             */
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // set Url to db
+        try {
+            File db = new File(PlatformFactory.getPlatform().getPrivateStorage(), DB_NAME);
+            dbUrl = dbUrl + db.getAbsolutePath();
+            // establish connection
+            connection = DriverManager.getConnection(dbUrl);
+
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        stmts = getBundle();
+
+        createDB();
 
         // load data
         loadRelevant();
@@ -102,11 +121,66 @@ public class Service {
         return service;
     }
 
+    private ResourceBundle getBundle() {
+        try {
+            ResourceBundle rb = ResourceBundle.getBundle("de.seibushin.bodyArchitect.i18n.DbBundle");
+            return rb;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void createDB() {
+        ResultSet res = null;
+        boolean hasTables = false;
+        try {
+            // check if the database has tables
+            DatabaseMetaData meta = connection.getMetaData();
+            res = meta.getTables(null, null, "FOOD", new String[] {"TABLE"});
+
+            while (res.next()) {
+                hasTables = true;
+            }
+
+            // if the database has no tables create them
+            if (!hasTables) {
+                stmt = connection.createStatement();
+                stmt.setQueryTimeout(QUERY_TIMEOUT);
+
+                // execute every statement in the propertyFile
+                List<String> keys = Collections.list(stmts.getKeys());
+                Collections.sort(keys);
+
+                for (String key : keys) {
+                    System.out.println(key);
+                    stmt.executeUpdate(stmts.getString(key));
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                res.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (!hasTables) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public Day getDay(LocalDate date) {
         Day day = null;
 
         // stream / forEach not supported by javafxports
-        for (Day d : daysProperty().get()) {
+        for (Day d : days) {
             if (d.getDate().equals(date)) {
                 day = d;
             }
@@ -161,136 +235,173 @@ public class Service {
     }
 
     public void loadRelevant() {
-        foods.set(sqLite.getFood());
+        // load settings
 
-        //retrieveFoods();
-        //loadFoods();
-        //retrieveMeals();
-        //retrieveDays();
-        //retrieveSettings();
+        // load foods
+        retriveFoods();
+
+        // load meals
+        retrieveMeals();
+
+        // load days
+        retrieveDays();
+
     }
 
     // =================== Settings ==========================
 
-    private void retrieveSettings() {
-        GluonObservableObject<Settings> settingsTmp = DataProvider.<Settings>retrieveObject(
-                gluonClient.createObjectDataReader(NUTRITION_SETTINGS, Settings.class));
-        settingsTmp.stateProperty().addListener((obs, ov, nv) -> {
-            if (ConnectState.SUCCEEDED.equals(nv) && settingsTmp.get() != null) {
-                settings.set(settingsTmp.get());
-            }
-        });
-    }
-
     public void storeSettings() {
-        DataProvider.<Settings>storeObject(settings.get(), gluonClient.createObjectDataWriter(NUTRITION_SETTINGS, Settings.class));
-    }
-
-    public ObjectProperty<Settings> settingsProperty() {
-        return settings;
+        // move to database
     }
 
 
     // =================== Food ==========================
 
-    private void retrieveFoods() {
-        GluonObservableList<Food> tmp = DataProvider.retrieveList(gluonClient.createListDataReader(FOODS, Food.class));
-        tmp.stateProperty().addListener((obs, ov, nv) -> {
-            if (ConnectState.SUCCEEDED.equals(nv)) {
-                ObservableList<Food> loaded = FXCollections.observableArrayList();
-                loaded.addAll(tmp);
-                foods.set(loaded);
+    private void retriveFoods() {
+        try {
+            stmt = connection.createStatement();
+            stmt.setQueryTimeout(QUERY_TIMEOUT);
+
+            rs = stmt.executeQuery("select * from FOOD");
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                Double weight = rs.getDouble(3);
+                Double portion = rs.getDouble(4);
+                Double kcal = rs.getDouble(5);
+                Double protein = rs.getDouble(6);
+                Double fat = rs.getDouble(7);
+                Double carbs = rs.getDouble(8);
+                Double sugar = rs.getDouble(9);
+                foods.add(new Food(id, name, weight, portion, kcal, protein, fat, carbs, sugar));
             }
-        });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public ListProperty<Food> foodsProperty() {
+    public ObservableList<Food> getFoods() {
         return foods;
     }
 
     public void addFood(Food food) {
-        //foods.add(food);
-        // @todo check difference
-        foods.get().add(food);
+        foods.add(food);
+        // @todo add to db aswell
     }
 
     public ObservableList<Food> getFoodsClone() {
         ObservableList<Food> clone = FXCollections.observableArrayList();
-
+        clone.addAll(foods);
         return clone;
     }
 
     // =================== Meal ==========================
 
     private void retrieveMeals() {
-        GluonObservableList<Meal> tmp = DataProvider.retrieveList(gluonClient.createListDataReader(MEALS, Meal.class));
-        tmp.stateProperty().addListener((obs, ov, nv) -> {
-            if (ConnectState.SUCCEEDED.equals(nv)) {
-                meals.set(tmp);
+        try {
+            PreparedStatement ps = connection.prepareStatement("select * from MEAL_FOOD WHERE m_id = ?");
+            ps.setQueryTimeout(QUERY_TIMEOUT);
+
+            stmt = connection.createStatement();
+            stmt.setQueryTimeout(QUERY_TIMEOUT);
+
+            rs = stmt.executeQuery("select * from MEAL");
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                Type type = Type.valueOf(rs.getString(3));
+                Meal meal = new Meal(id, name, type);
+
+                // execute prepared Statement to get all the food for the meal
+                ps.setInt(1, id);
+                ResultSet res = ps.executeQuery();
+                while (res.next()) {
+                    int mf_id = res.getInt(1);
+                    int f_id = res.getInt(2);
+                    int m_id = res.getInt(3);
+                    Double weight = res.getDouble(4);
+
+                    // streams not supported by fxports :///
+                    Food f = null;
+                    for (Food tmp : foods) {
+                        if (tmp.getId() == f_id) {
+                            f = tmp;
+                            break;
+                        }
+                    }
+
+                    MealFood mf = new MealFood(mf_id, f_id, m_id, weight, f);
+                    meal.addMealFood(mf);
+                }
+
+                meals.add(meal);
             }
-        });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public ListProperty<Meal> mealsProperty() {
+    public ObservableList<Meal> getMeals() {
         return meals;
     }
 
     public void addMeal(Meal meal) {
-        meals.get().add(meal);
+        meals.add(meal);
+        // @todo add to db aswell
     }
 
     // =================== Day ==========================
 
     private void retrieveDays() {
-        GluonObservableList<Day> tmp = DataProvider.retrieveList(gluonClient.createListDataReader(DAYS, Day.class));
-        tmp.stateProperty().addListener((obs, ov, nv) -> {
-            if (ConnectState.SUCCEEDED.equals(nv)) {
-                days.set(tmp);
-            }
-        });
-    }
-
-    public ListProperty<Day> daysProperty() {
-        return days;
-    }
-
-    public void addDay(Day day) {
-        days.get().add(day);
-    }
-
-
-    // --------------------------------
-
-    private void loadFoods() {
-        File dir;
         try {
-            dir = PlatformFactory.getPlatform().getPrivateStorage();
-            File foodLoc = new File(dir, "foods.dat");
-            FileInputStream in = new FileInputStream(foodLoc);
-            ObjectInputStream ois = new ObjectInputStream(in);
-            ObservableList<Food> fs = FXCollections.observableArrayList();
-            fs.addAll((ArrayList<Food>) ois.readObject());
-            foods.set(fs);
-            ois.close();
-        } catch (Exception e) {
+            PreparedStatement ps = connection.prepareStatement("select * from DAY_MEAL WHERE d_id = ?");
+            ps.setQueryTimeout(QUERY_TIMEOUT);
+
+            stmt = connection.createStatement();
+            stmt.setQueryTimeout(QUERY_TIMEOUT);
+
+            rs = stmt.executeQuery("select * from DAYS");
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                LocalDate date = LocalDate.parse(rs.getString(2), dtfDb);
+                Day day = new Day(id, date);
+
+                // execute prepared Statement to get all the food for the meal
+                ps.setInt(1, id);
+                ResultSet res = ps.executeQuery();
+                while (res.next()) {
+                    int dm_id = res.getInt(1);
+                    int d_id = res.getInt(2);
+                    int m_id = res.getInt(3);
+
+                    // streams not supported by fxports :///
+                    Meal m = null;
+                    for (Meal tmp : meals) {
+                        if (tmp.getId() == m_id) {
+                            m = tmp;
+                            break;
+                        }
+                    }
+                    day.addMeal(m);
+                }
+
+                days.add(day);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void saveFoods() {
-        File dir;
-        try {
-            dir = PlatformFactory.getPlatform().getPrivateStorage();
-            File foodLoc = new File(dir, "foods.dat");
-            FileOutputStream outs = new FileOutputStream(foodLoc);
-            ObjectOutputStream oos = new ObjectOutputStream(outs);
-            ArrayList<Food> fs = new ArrayList<>();
-            fs.addAll(foods.get());
-            oos.writeObject(fs);
-            oos.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public ObservableList<Day> getDays() {
+        return days;
     }
 
+    public void addDay(Day day) {
+        days.add(day);
+        // @todo add to db aswell
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
 }

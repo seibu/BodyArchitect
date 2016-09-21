@@ -7,9 +7,7 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-import java.io.Serializable;
-
-public class Food implements Serializable {
+public class Food {
     private int id;
     private String name;
     private Double weight;
@@ -130,5 +128,13 @@ public class Food implements Serializable {
 
     public void setSugar(Double sugar) {
         this.sugar = sugar;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

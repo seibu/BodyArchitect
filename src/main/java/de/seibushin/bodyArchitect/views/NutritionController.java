@@ -104,35 +104,11 @@ public class NutritionController {
     }
 
     private void updateMeal() {
-
-        lv_meals.setItems(Service.getInstance().mealsProperty().get());
-        // only update if needed
-        /*
-        if (BodyArchitect.getInstance().isUpdateMeal()) {
-            System.out.println("updateMeal");
-            // set UpdateMeal to false
-            BodyArchitect.getInstance().setUpdateMeal(false);
-
-            //lv_meals.setItems(BodyArchitect.getInstance().getData(Meal.class));
-        }
-        */
+        lv_meals.setItems(Service.getInstance().getMeals());
     }
 
     private void updateFood() {
-        lv_food.setItems(Service.getInstance().foodsProperty().get());
-
-        /*
-        // only update if needed
-        if (BodyArchitect.getInstance().isUpdateFood()) {
-            System.out.println("updateFood");
-            // set UpdateFood to false
-            BodyArchitect.getInstance().setUpdateFood(false);
-
-            // @todo add option to sort the Elements
-            // keep in mind to implement the Comparable-Interface for the other classes
-            lv_food.setItems(BodyArchitect.getInstance().getData(Food.class).sorted());
-        }
-        */
+        lv_food.setItems(Service.getInstance().getFoods());
     }
 
     private void updateDay() {
@@ -155,52 +131,12 @@ public class NutritionController {
             updateGauge(mag_fat, currFat, lbl_fat_add);
             updateGauge(mag_protein, currProtein, lbl_protein_add);
         } else {
-            lv_day_meals.getItems().clear();
+            lv_day_meals.setItems(null);
             mag_kcal.setValue(0);
             mag_carbs.setValue(0);
             mag_fat.setValue(0);
             mag_protein.setValue(0);
         }
-
-
-        /*
-        // only update if needed
-        if (BodyArchitect.getInstance().isUpdateDay()) {
-            System.out.println("updateDay");
-            // set UpdateDay to false
-            BodyArchitect.getInstance().setUpdateDay(false);
-
-            // update date Label
-            btn_date.setText(BodyArchitect.getInstance().getSelectedDayString());
-
-            // get selectedDay
-            Day selectedDay = BodyArchitect.getInstance().getSelectedDayObject();
-
-            if (selectedDay != null) {
-                // udpate meals
-                lv_day_meals.setItems(BodyArchitect.getInstance().getMealsForSelectedDay());
-
-                // update gauges
-                currKcal = selectedDay.getKcal();
-                currCarbs = selectedDay.getCarbs();
-                currProtein = selectedDay.getProtein();
-                currFat = selectedDay.getFat();
-
-                updateGauge(mag_kcal, currKcal, lbl_kcal_add);
-                updateGauge(mag_carbs, currCarbs, lbl_carbs_add);
-                updateGauge(mag_fat, currFat, lbl_fat_add);
-                updateGauge(mag_protein, currProtein, lbl_protein_add);
-
-            } else {
-                // clear the elements if day is null
-                lv_day_meals.getItems().clear();
-                mag_kcal.setValue(0);
-                mag_carbs.setValue(0);
-                mag_fat.setValue(0);
-                mag_protein.setValue(0);
-            }
-        }
-        */
     }
 
     private void updateGauge(SimpleMetroArcGauge gauge, double nv, Label lbl) {
@@ -270,7 +206,7 @@ public class NutritionController {
             }
         });
 
-        mag_kcal.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetKcalProperty());
+        //mag_kcal.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetKcalProperty());
         Segment seg1 = new PercentSegment(mag_kcal, 0, 100);
         Segment seg2 = new PercentSegment(mag_kcal, 95, 100);
         mag_kcal.segments().addAll(seg1, seg2);
@@ -278,7 +214,7 @@ public class NutritionController {
             updateGauge(mag_kcal, currKcal, lbl_kcal_add);
         });
 
-        mag_protein.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetProteinProperty());
+        //mag_protein.maxValueProperty().bind(Service.getInstance().settingsProperty().get().getTargetProtein());
         seg1 = new PercentSegment(mag_protein, 0, 100);
         seg2 = new PercentSegment(mag_protein, 95, 100);
         mag_protein.segments().addAll(seg1, seg2);
@@ -286,7 +222,7 @@ public class NutritionController {
             updateGauge(mag_protein, currProtein, lbl_protein_add);
         });
 
-        mag_carbs.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetCarbsProperty());
+        //mag_carbs.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetCarbsProperty());
         seg1 = new PercentSegment(mag_carbs, 0, 100);
         seg2 = new PercentSegment(mag_carbs, 95, 100);
         mag_carbs.segments().addAll(seg1, seg2);
@@ -294,7 +230,7 @@ public class NutritionController {
             updateGauge(mag_carbs, currCarbs, lbl_carbs_add);
         });
 
-        mag_fat.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetFatProperty());
+        //mag_fat.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetFatProperty());
         seg1 = new PercentSegment(mag_fat, 0, 100);
         seg2 = new PercentSegment(mag_fat, 95, 100);
         mag_fat.segments().addAll(seg1, seg2);

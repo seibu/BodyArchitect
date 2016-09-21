@@ -7,66 +7,98 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
 public class MealFood {
-    private ObjectProperty<Food> food = new SimpleObjectProperty<>();
-    private DoubleProperty weight = new SimpleDoubleProperty();
+    private int id;
+    private int f_id;
+    private int m_id;
+    private double weight;
+    private Food food;
 
     public MealFood() {
 
     }
 
-    public MealFood(Food food, Double weight) {
-        this.food.set(food);
-        this.weight.set(weight);
+    public MealFood(int id, int f_id, int m_id, double weight, Food food) {
+        this.id = id;
+        this.f_id = f_id;
+        this.m_id = m_id;
+        this.weight = weight;
+        this.food = food;
+    }
+
+    public MealFood(Food food, double weight) {
+        this.weight = weight;
+        this.food = food;
+        this.f_id = f_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getF_id() {
+        return f_id;
+    }
+
+    public void setF_id(int f_id) {
+        this.f_id = f_id;
+    }
+
+    public int getM_id() {
+        return m_id;
+    }
+
+    public void setM_id(int m_id) {
+        this.m_id = m_id;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     public Food getFood() {
-        return food.get();
+        return food;
     }
 
     public void setFood(Food food) {
-        this.food.set(food);
+        this.food = food;
     }
 
-    public Double getWeight() {
-        return weight.get();
-    }
-
-    public void setWeight(Double weight) {
-        this.weight.set(weight);
-    }
 
     public Double getKcal() {
-        Double d = (food.get().getKcal() / food.get().getWeight()) * weight.get();
+        Double d = (food.getKcal() / food.getWeight()) * weight;
         return d;
     }
 
     public Double getFat() {
-        Double d = (food.get().getFat() / food.get().getWeight()) * weight.get();
+        Double d = (food.getFat() / food.getWeight()) * weight;
         return d;
     }
 
     public Double getProtein() {
-        Double d = (food.get().getProtein() / food.get().getWeight()) * weight.get();
+        Double d = (food.getProtein() / food.getWeight()) * weight;
         return d;
     }
 
     public Double getCarbs() {
-        Double d = (food.get().getCarbs() / food.get().getWeight()) * weight.get();
+        Double d = (food.getCarbs() / food.getWeight()) * weight;
         return d;
     }
 
     public Double getSugar() {
-        Double d = (food.get().getSugar() / food.get().getWeight()) * weight.get();
+        Double d = (food.getSugar() / food.getWeight()) * weight;
         return d;
     }
 
     public String getName() {
-        return food.get().getName();
+        return food.getName();
     }
 }

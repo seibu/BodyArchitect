@@ -39,7 +39,7 @@ public class MealCellNode {
     Icon i_info;
 
     public MealCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode2.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("MealCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {

@@ -7,52 +7,53 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Meal {
-    private StringProperty name = new SimpleStringProperty();
-    private ObjectProperty<Type> type = new SimpleObjectProperty<>();
-    private ListProperty<MealFood> mealFoods = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private int id;
+    private String name;
+    private Type type;
+    private final ObservableList<MealFood> mealFoods = FXCollections.observableArrayList();
 
     public Meal() {
     }
 
-    public Meal(String name, Type type) {
-        this.name.set(name);
-        this.type.set(type);
+    public Meal(int id, String name, Type type) {
+        this(name, type);
+        this.id = id;
     }
 
-    public Meal(String name, Type type, ObservableList<MealFood> mealFoods) {
-        this.name.set(name);
-        this.type.set(type);
-        this.mealFoods.set(mealFoods);
+    public Meal(String name, Type type) {
+        this.name = name;
+        this.type = type;
     }
 
     public void addMealFood(MealFood mealFood) {
-        mealFoods.get().add(mealFood);
+        mealFoods.add(mealFood);
     }
 
     public void removeFood(MealFood mealFood) {
-        mealFoods.get().remove(mealFood);
+        mealFoods.remove(mealFood);
     }
 
+
+
     public String getName() {
-        return name.get();
+        return name;
     }
 
     public Type getType() {
-        return type.get();
+        return type;
     }
 
     public ObservableList<MealFood> getMealFoods() {
-        return mealFoods.get();
+        return mealFoods;
     }
 
     public Double getKcal() {
         final Double[] d = {0.0};
-        mealFoods.get().forEach(mf -> {
+        mealFoods.forEach(mf -> {
             d[0] += mf.getKcal();
         });
 
@@ -61,7 +62,7 @@ public class Meal {
 
     public Double getProtein() {
         final Double[] d = {0.0};
-        mealFoods.get().forEach(mf -> {
+        mealFoods.forEach(mf -> {
             d[0] += mf.getProtein();
         });
 
@@ -70,7 +71,7 @@ public class Meal {
 
     public Double getFat() {
         final Double[] d = {0.0};
-        mealFoods.get().forEach(mf -> {
+        mealFoods.forEach(mf -> {
             d[0] += mf.getFat();
         });
 
@@ -79,7 +80,7 @@ public class Meal {
 
     public Double getCarbs() {
         final Double[] d = {0.0};
-        mealFoods.get().forEach(mf -> {
+        mealFoods.forEach(mf -> {
             d[0] += mf.getCarbs();
         });
 
@@ -88,10 +89,14 @@ public class Meal {
 
     public Double getSugar() {
         final Double[] d = {0.0};
-        mealFoods.get().forEach(mf -> {
+        mealFoods.forEach(mf -> {
             d[0] += mf.getSugar();
         });
 
         return d[0];
+    }
+
+    public int getId() {
+        return id;
     }
 }

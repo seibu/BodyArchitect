@@ -32,6 +32,7 @@ public class Utils {
         return msg.getString(key);
     }
 
+    // @todo move to service
     public static NumberFormat getNumberFormat() {
         return nf;
     }

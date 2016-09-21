@@ -14,7 +14,6 @@ import com.gluonhq.charm.glisten.layout.Layer;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import de.seibushin.bodyArchitect.views.listCell.MealCellNode;
 import de.seibushin.bodyArchitect.views.listCell.MealFoodCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

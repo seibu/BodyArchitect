@@ -41,10 +41,10 @@ public class SettingsController {
 
                 appBar.getActionItems().add(MaterialDesignIcon.SAVE.button(e -> {
                     try {
-                        Service.getInstance().settingsProperty().get().setTargetKcal(Utils.getNumberFormat().parse(tf_kcal.getText()).intValue());
-                        Service.getInstance().settingsProperty().get().setTargetCarbs(Utils.getNumberFormat().parse(tf_carbs.getText()).intValue());
-                        Service.getInstance().settingsProperty().get().setTargetFat(Utils.getNumberFormat().parse(tf_fat.getText()).intValue());
-                        Service.getInstance().settingsProperty().get().setTargetProtein(Utils.getNumberFormat().parse(tf_protein.getText()).intValue());
+                        Service.getInstance().getSettings().setTargetKcal(Utils.getNumberFormat().parse(tf_kcal.getText()).intValue());
+                        Service.getInstance().getSettings().setTargetCarbs(Utils.getNumberFormat().parse(tf_carbs.getText()).intValue());
+                        Service.getInstance().getSettings().setTargetFat(Utils.getNumberFormat().parse(tf_fat.getText()).intValue());
+                        Service.getInstance().getSettings().setTargetProtein(Utils.getNumberFormat().parse(tf_protein.getText()).intValue());
 
                         Service.getInstance().storeSettings();
                     } catch (Exception ex) {
@@ -59,9 +59,9 @@ public class SettingsController {
             }
         });
 
-        tf_kcal.setText(Utils.getNumberFormat().format(Service.getInstance().settingsProperty().get().getTargetKcal()));
-        tf_fat.setText(Utils.getNumberFormat().format(Service.getInstance().settingsProperty().get().getTargetFat()));
-        tf_carbs.setText(Utils.getNumberFormat().format(Service.getInstance().settingsProperty().get().getTargetCarbs()));
-        tf_protein.setText(Utils.getNumberFormat().format(Service.getInstance().settingsProperty().get().getTargetProtein()));
+        tf_kcal.setText(Utils.getNumberFormat().format(Service.getInstance().getSettings().getTargetKcal()));
+        tf_fat.setText(Utils.getNumberFormat().format(Service.getInstance().getSettings().getTargetFat()));
+        tf_carbs.setText(Utils.getNumberFormat().format(Service.getInstance().getSettings().getTargetCarbs()));
+        tf_protein.setText(Utils.getNumberFormat().format(Service.getInstance().getSettings().getTargetProtein()));
     }
 }

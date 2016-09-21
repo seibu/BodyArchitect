@@ -103,6 +103,6 @@ public class MealDayController {
             }
         });
 
-        lv_meals.setItems(Service.getInstance().mealsProperty().get());
+        lv_meals.setItems(Service.getInstance().getMeals());
     }
 }
