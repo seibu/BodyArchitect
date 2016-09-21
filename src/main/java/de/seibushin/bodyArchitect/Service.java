@@ -7,6 +7,7 @@
 
 package de.seibushin.bodyArchitect;
 
+import com.gluonhq.charm.down.common.PlatformFactory;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.connect.ConnectState;
@@ -16,8 +17,9 @@ import com.gluonhq.connect.gluoncloud.GluonClient;
 import com.gluonhq.connect.gluoncloud.GluonClientBuilder;
 import com.gluonhq.connect.gluoncloud.OperationMode;
 import com.gluonhq.connect.provider.DataProvider;
-import de.seibushin.bodyArchitect.helper.LogBook;
-import de.seibushin.bodyArchitect.helper.MealInfoLayer;
+import de.seibushin.bodyArchitect.views.LogBook;
+import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
+import de.seibushin.bodyArchitect.helper.SQLite;
 import de.seibushin.bodyArchitect.model.nutrition.Settings;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
@@ -29,19 +31,17 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Service {
     private static Service service;
+
+    private final SQLite sqLite;
 
     private GluonClient gluonClient;
 
@@ -77,6 +77,9 @@ public class Service {
 
         gluonClient = GluonClientBuilder.create().operationMode(OperationMode.LOCAL_ONLY).build();
 
+        // Database Connector Object
+        sqLite = new SQLite();
+
         foods.addListener((obs, ov, nv) -> {
             System.out.println("foods changed");
             System.out.println(nv);
@@ -101,10 +104,14 @@ public class Service {
 
     public Day getDay(LocalDate date) {
         Day day = null;
-        List<Day> filtered = daysProperty().stream().filter(d -> d.getDate().equals(date)).collect(Collectors.toList());
-        if (filtered.size() > 0) {
-            day = filtered.get(0);
+
+        // stream / forEach not supported by javafxports
+        for (Day d : daysProperty().get()) {
+            if (d.getDate().equals(date)) {
+                day = d;
+            }
         }
+
         return day;
     }
 
@@ -154,11 +161,13 @@ public class Service {
     }
 
     public void loadRelevant() {
+        foods.set(sqLite.getFood());
+
         //retrieveFoods();
-        loadFoods();
-        retrieveMeals();
-        retrieveDays();
-        retrieveSettings();
+        //loadFoods();
+        //retrieveMeals();
+        //retrieveDays();
+        //retrieveSettings();
     }
 
     // =================== Settings ==========================
@@ -207,9 +216,7 @@ public class Service {
 
     public ObservableList<Food> getFoodsClone() {
         ObservableList<Food> clone = FXCollections.observableArrayList();
-        foods.get().forEach(f -> {
-            clone.add(f.clone());
-        });
+
         return clone;
     }
 
@@ -255,23 +262,27 @@ public class Service {
     // --------------------------------
 
     private void loadFoods() {
-        String location = "./foods.dat";
+        File dir;
         try {
-            FileInputStream in = new FileInputStream(location);
+            dir = PlatformFactory.getPlatform().getPrivateStorage();
+            File foodLoc = new File(dir, "foods.dat");
+            FileInputStream in = new FileInputStream(foodLoc);
             ObjectInputStream ois = new ObjectInputStream(in);
             ObservableList<Food> fs = FXCollections.observableArrayList();
             fs.addAll((ArrayList<Food>) ois.readObject());
             foods.set(fs);
             ois.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void saveFoods() {
-        String location = "./foods.dat";
+        File dir;
         try {
-            FileOutputStream outs = new FileOutputStream(location);
+            dir = PlatformFactory.getPlatform().getPrivateStorage();
+            File foodLoc = new File(dir, "foods.dat");
+            FileOutputStream outs = new FileOutputStream(foodLoc);
             ObjectOutputStream oos = new ObjectOutputStream(outs);
             ArrayList<Food> fs = new ArrayList<>();
             fs.addAll(foods.get());

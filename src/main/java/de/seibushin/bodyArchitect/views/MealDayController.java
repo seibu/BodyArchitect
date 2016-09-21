@@ -13,7 +13,7 @@ import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
-import de.seibushin.bodyArchitect.helper.MealCell;
+import de.seibushin.bodyArchitect.views.listCell.MealCell;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.beans.property.BooleanProperty;

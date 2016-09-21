@@ -5,8 +5,9 @@
  * 
  */
 
-package de.seibushin.bodyArchitect.helper;
+package de.seibushin.bodyArchitect.views.listCell;
 
+import de.seibushin.bodyArchitect.helper.Utils;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;

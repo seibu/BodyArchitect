@@ -5,9 +5,10 @@
  * 
  */
 
-package de.seibushin.bodyArchitect.helper;
+package de.seibushin.bodyArchitect.views.listCell;
 
 import de.seibushin.bodyArchitect.Service;
+import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

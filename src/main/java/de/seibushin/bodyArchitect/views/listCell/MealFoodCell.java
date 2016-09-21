@@ -5,7 +5,7 @@
  * 
  */
 
-package de.seibushin.bodyArchitect.helper;
+package de.seibushin.bodyArchitect.views.listCell;
 
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
 import javafx.scene.control.ListCell;

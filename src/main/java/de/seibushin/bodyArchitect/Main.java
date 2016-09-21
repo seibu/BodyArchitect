@@ -2,14 +2,12 @@ package de.seibushin.bodyArchitect;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.Avatar;
-import com.gluonhq.charm.glisten.control.ListTile;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
 import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
-import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
-import de.seibushin.bodyArchitect.helper.MealInfoLayer;
+import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import de.seibushin.bodyArchitect.views.HomeView;
 import de.seibushin.bodyArchitect.views.NutritionView;
 import javafx.scene.Scene;

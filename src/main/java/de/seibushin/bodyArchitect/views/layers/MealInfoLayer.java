@@ -5,14 +5,17 @@
  * 
  */
 
-package de.seibushin.bodyArchitect.helper;
+package de.seibushin.bodyArchitect.views.layers;
 
 import com.gluonhq.charm.glisten.application.GlassPane;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.layout.Layer;
 import de.seibushin.bodyArchitect.Service;
+import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import de.seibushin.bodyArchitect.views.listCell.MealCellNode;
+import de.seibushin.bodyArchitect.views.listCell.MealFoodCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -48,7 +51,7 @@ public class MealInfoLayer extends Layer {
     private Meal active;
 
     public MealInfoLayer() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("mealInfo.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MealInfoLayer.class.getResource("mealInfo.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {

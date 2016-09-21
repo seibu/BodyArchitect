@@ -5,34 +5,28 @@
  * 
  */
 
-package de.seibushin.bodyArchitect.helper;
+package de.seibushin.bodyArchitect.views.listCell;
 
-import de.seibushin.bodyArchitect.model.nutrition.Food;
+import com.gluonhq.charm.glisten.application.MobileApplication;
+import de.seibushin.bodyArchitect.Service;
+import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.ListCell;
 
 import java.util.function.Consumer;
 
-public class FoodCell extends ListCell<Food> {
+public class MealCell extends ListCell<Meal> {
+    private MealCellNode mealCellNode;
 
     private SlidingListNode slidingNode;
-    private FoodCellNode foodCellNode;
 
-    private Food current;
+    private Meal current;
 
-    public FoodCell() {
-        foodCellNode = new FoodCellNode();
-        slidingNode = new SlidingListNode(foodCellNode.getNode(), true);
-    }
+    public MealCell(Consumer<Meal> consumerLeft, Consumer<Meal> consumerRight) {
+        mealCellNode = new MealCellNode();
 
-    public FoodCell(Consumer<Food> consumerLeft, Consumer<Food> consumerRight) {
-        foodCellNode = new FoodCellNode();
+        slidingNode = new SlidingListNode(mealCellNode.getNode(), true);
 
-        slidingNode = new SlidingListNode(foodCellNode.getNode(), true);
-        setConsumer(consumerLeft, consumerRight);
-    }
-
-    public void setConsumer(Consumer<Food> consumerLeft, Consumer<Food> consumerRight) {
         slidingNode.swipedLeftProperty().addListener((obs, ov, nv) -> {
             if (nv && consumerRight != null) {
                 consumerRight.accept(current);
@@ -40,32 +34,39 @@ public class FoodCell extends ListCell<Food> {
             slidingNode.resetTilePosition();
         });
 
+
         slidingNode.swipedRightProperty().addListener((obs, ov, nv) -> {
             if (nv && consumerLeft != null) {
                 consumerLeft.accept(current);
             }
             slidingNode.resetTilePosition();
         });
+
+        mealCellNode.i_info.setOnMouseClicked(e -> {
+            Service.getInstance().getMealInfoLayer().setMeal(current);
+            MobileApplication.getInstance().showLayer("MealInfo");
+        });
+    }
+
+    private void showPopup(Meal meal) {
+
     }
 
     @Override
-    public void updateItem(Food item, boolean empty) {
+    public void updateItem(Meal item, boolean empty) {
         super.updateItem(item, empty);
+
         // set the new current if current is null or current differs from the new
         if (current == null || !current.equals(item)) {
             current = item;
         }
 
-        if (item != null && !empty) {
-            foodCellNode.update(item);
+        if (item != null) {
+            mealCellNode.update(item);
             setGraphic(slidingNode);
         } else {
             setGraphic(null);
         }
-    }
-
-    public void collapse() {
-        System.out.println("collapse");
     }
 
     public BooleanProperty slidingProperty() {
