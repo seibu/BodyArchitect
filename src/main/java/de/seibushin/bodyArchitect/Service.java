@@ -21,12 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Service {
     private static Service service;
@@ -47,7 +45,7 @@ public class Service {
     private final DecimalFormat df = new DecimalFormat("#.#");
     private MealInfoLayer mealInfoLayer;
 
-    private final static String DB_NAME = "ba.sb";
+    private final static String DB_NAME = "ba.db";
     private final static int QUERY_TIMEOUT = 30;
 
     private final static String FOOD_TABLE = "FOOD";
@@ -58,6 +56,7 @@ public class Service {
 
     private Connection connection = null;
     private Statement stmt;
+    private PreparedStatement ps;
     private ResultSet rs;
 
     private String dbUrl = "jdbc:sqlite:";
@@ -66,7 +65,14 @@ public class Service {
 
     private final ResourceBundle stmts;
 
+    private final NumberFormat intNF = NumberFormat.getInstance(new Locale("de", "DE"));
+    private final NumberFormat doubleNF = NumberFormat.getInstance(new Locale("de", "DE"));
+
     public Service() {
+        // adjust numberformats
+        intNF.setMaximumFractionDigits(0);
+        doubleNF.setMaximumFractionDigits(1);
+
         // create Menu Items
         home = new NavigationDrawer.Item("Home", MaterialDesignIcon.HOME.graphic());
         home.setSelected(true);
@@ -146,14 +152,17 @@ public class Service {
             // if the database has no tables create them
             if (!hasTables) {
                 stmt = connection.createStatement();
-                stmt.setQueryTimeout(QUERY_TIMEOUT);
+                try {
+                    stmt.setQueryTimeout(QUERY_TIMEOUT);
+                } catch (Exception e) {
+                    // ignore on android...
+                }
 
                 // execute every statement in the propertyFile
                 List<String> keys = Collections.list(stmts.getKeys());
                 Collections.sort(keys);
 
                 for (String key : keys) {
-                    System.out.println(key);
                     stmt.executeUpdate(stmts.getString(key));
                 }
 
@@ -174,6 +183,14 @@ public class Service {
                 e.printStackTrace();
             }
         }
+    }
+
+    public NumberFormat getIntNF() {
+        return intNF;
+    }
+
+    public NumberFormat getDoubleNF() {
+        return doubleNF;
     }
 
     public Day getDay(LocalDate date) {
@@ -260,9 +277,13 @@ public class Service {
     private void retriveFoods() {
         try {
             stmt = connection.createStatement();
-            stmt.setQueryTimeout(QUERY_TIMEOUT);
+            try {
+                stmt.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
 
-            rs = stmt.executeQuery("select * from FOOD");
+            rs = stmt.executeQuery("select * from " + FOOD_TABLE);
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
@@ -277,6 +298,21 @@ public class Service {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -286,7 +322,47 @@ public class Service {
 
     public void addFood(Food food) {
         foods.add(food);
-        // @todo add to db aswell
+
+        try {
+            ps = connection.prepareStatement("insert into " + FOOD_TABLE + " values(null, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            ps.setString(1, food.getName());
+            ps.setDouble(2, food.getWeight());
+            ps.setDouble(3, food.getPortion());
+            ps.setDouble(4, food.getKcal());
+            ps.setDouble(5, food.getProtein());
+            ps.setDouble(6, food.getFat());
+            ps.setDouble(7, food.getCarbs());
+            ps.setDouble(8, food.getSugar());
+            ps.executeUpdate();
+
+            // get the Generated Key and Update the Object for later use we might need the id
+            rs = ps.getGeneratedKeys();
+            rs.next();
+            food.setId(rs.getInt(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public ObservableList<Food> getFoodsClone() {
@@ -298,14 +374,18 @@ public class Service {
     // =================== Meal ==========================
 
     private void retrieveMeals() {
+        ResultSet res = null;
         try {
-            PreparedStatement ps = connection.prepareStatement("select * from MEAL_FOOD WHERE m_id = ?");
-            ps.setQueryTimeout(QUERY_TIMEOUT);
-
+            ps = connection.prepareStatement("select * from " + MEAL_FOOD_TABLE + " WHERE m_id = ?");
             stmt = connection.createStatement();
-            stmt.setQueryTimeout(QUERY_TIMEOUT);
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+                stmt.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
 
-            rs = stmt.executeQuery("select * from MEAL");
+            rs = stmt.executeQuery("select * from " + MEAL_TABLE);
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
@@ -314,7 +394,7 @@ public class Service {
 
                 // execute prepared Statement to get all the food for the meal
                 ps.setInt(1, id);
-                ResultSet res = ps.executeQuery();
+                res = ps.executeQuery();
                 while (res.next()) {
                     int mf_id = res.getInt(1);
                     int f_id = res.getInt(2);
@@ -338,6 +418,36 @@ public class Service {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -347,20 +457,78 @@ public class Service {
 
     public void addMeal(Meal meal) {
         meals.add(meal);
-        // @todo add to db aswell
+
+        try {
+            ps = connection.prepareStatement("insert into " + MEAL_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            ps.setString(1, meal.getName());
+            ps.setString(2, meal.getType().toString());
+            ps.executeUpdate();
+
+            // get the Generated Key and Update the Object for later use we might need the id
+            rs = ps.getGeneratedKeys();
+            rs.next();
+            meal.setId(rs.getInt(1));
+
+            for(MealFood mf : meal.getMealFoods()) {
+                ps = connection.prepareStatement("insert into " + MEAL_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                try {
+                    ps.setQueryTimeout(QUERY_TIMEOUT);
+                } catch(Exception e) {
+                    // thrown from SQLDroid we can just ignore this
+                }
+
+                ps.setInt(1, mf.getFood().getId());
+                ps.setInt(2, meal.getId());
+                ps.setDouble(3, mf.getWeight());
+                ps.executeUpdate();
+
+                // get the Generated Key and Update the Object for later use we might need the id
+                rs = ps.getGeneratedKeys();
+                rs.next();
+                mf.setId(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // =================== Day ==========================
 
     private void retrieveDays() {
+        ResultSet res = null;
+
         try {
-            PreparedStatement ps = connection.prepareStatement("select * from DAY_MEAL WHERE d_id = ?");
-            ps.setQueryTimeout(QUERY_TIMEOUT);
-
+            PreparedStatement ps = connection.prepareStatement("select * from " + DAY_MEAL_TABLE + " WHERE d_id = ?");
             stmt = connection.createStatement();
-            stmt.setQueryTimeout(QUERY_TIMEOUT);
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+                stmt.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
 
-            rs = stmt.executeQuery("select * from DAYS");
+            rs = stmt.executeQuery("select * from " + DAYS_TABLE);
             while (rs.next()) {
                 int id = rs.getInt(1);
                 LocalDate date = LocalDate.parse(rs.getString(2), dtfDb);
@@ -368,7 +536,7 @@ public class Service {
 
                 // execute prepared Statement to get all the food for the meal
                 ps.setInt(1, id);
-                ResultSet res = ps.executeQuery();
+                res = ps.executeQuery();
                 while (res.next()) {
                     int dm_id = res.getInt(1);
                     int d_id = res.getInt(2);
@@ -389,6 +557,36 @@ public class Service {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -398,7 +596,53 @@ public class Service {
 
     public void addDay(Day day) {
         days.add(day);
-        // @todo add to db aswell
+
+        try {
+            ps = connection.prepareStatement("insert into " + DAYS_TABLE + " values(null, ?)", Statement.RETURN_GENERATED_KEYS);
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            ps.setString(1, day.getDate().format(dtfDb));
+            ps.executeUpdate();
+
+            // get the Generated Key and Update the Object for later use we might need the id
+            rs = ps.getGeneratedKeys();
+            rs.next();
+            day.setId(rs.getInt(1));
+
+            for(Meal m : day.getMeals()) {
+                ps = connection.prepareStatement("insert into " + DAY_MEAL_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                try {
+                    ps.setQueryTimeout(QUERY_TIMEOUT);
+                } catch(Exception e) {
+                    // thrown from SQLDroid we can just ignore this
+                }
+
+                ps.setInt(1, day.getId());
+                ps.setInt(2, m.getId());
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Settings getSettings() {

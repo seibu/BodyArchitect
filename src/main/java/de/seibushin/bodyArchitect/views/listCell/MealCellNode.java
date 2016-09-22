@@ -49,13 +49,7 @@ public class MealCellNode {
         }
     }
 
-    @FXML
-    public void initialize() {
-
-    }
-
     public void update(Meal item) {
-        System.out.println(item);
         lbl_name.setText(item.getName());
         lbl_type.setText(item.getType().toString());
 

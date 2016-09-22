@@ -10,13 +10,16 @@ package de.seibushin.bodyArchitect.model.nutrition;
 public class Food {
     private int id;
     private String name;
-    private Double weight;
-    private Double portion;
-    private Double kcal;
-    private Double protein;
-    private Double fat;
-    private Double carbs;
-    private Double sugar;
+    private double weight;
+    private double portion;
+    private double kcal;
+    private double protein;
+    private double fat;
+    private double carbs;
+    private double sugar;
+
+    // for resetting the portion
+    private double tmpPortion;
 
     /**
      * no argument constructor
@@ -64,70 +67,11 @@ public class Food {
         this.fat = fat;
         this.weight = weight;
         this.portion = portion;
+        this.tmpPortion = portion;
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Double getPortion() {
-        return portion;
-    }
-
-    public void setPortion(Double portion) {
-        this.portion = portion;
-    }
-
-    public Double getKcal() {
-        return kcal;
-    }
-
-    public void setKcal(Double kcal) {
-        this.kcal = kcal;
-    }
-
-    public Double getProtein() {
-        return protein;
-    }
-
-    public void setProtein(Double protein) {
-        this.protein = protein;
-    }
-
-    public Double getFat() {
-        return fat;
-    }
-
-    public void setFat(Double fat) {
-        this.fat = fat;
-    }
-
-    public Double getCarbs() {
-        return carbs;
-    }
-
-    public void setCarbs(Double carbs) {
-        this.carbs = carbs;
-    }
-
-    public Double getSugar() {
-        return sugar;
-    }
-
-    public void setSugar(Double sugar) {
-        this.sugar = sugar;
     }
 
     public int getId() {
@@ -136,5 +80,66 @@ public class Food {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public double getPortion() {
+        return portion;
+    }
+
+    public double getKcal() {
+        return kcal;
+    }
+
+    public double getPortionKcal() {
+        return kcal / weight * portion;
+    }
+
+    public double getProtein() {
+        return protein;
+    }
+
+    public double getPortionProtein() {
+        return protein / weight * portion;
+    }
+
+    public void setPortion(Double portion) {
+        this.portion = portion;
+    }
+
+    public double getFat() {
+        return fat;
+    }
+
+    public double getPortionFat() {
+        return fat / weight * portion;
+    }
+
+    public double getCarbs() {
+        return carbs;
+    }
+
+    public double getPortionCarbs() {
+        return carbs / weight * portion;
+    }
+
+    public double getSugar() {
+        return sugar;
+    }
+
+    public double getPortionSugar() {
+        return sugar / weight * portion;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    public void resetPortion() {
+        portion = tmpPortion;
     }
 }

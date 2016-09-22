@@ -32,7 +32,6 @@ public class HomeView {
             //view.setShowTransitionFactory(v -> new BounceInLeftTransition(v));
             return view;
         } catch (IOException e) {
-            System.out.println("IOException: " + e);
             e.printStackTrace();
             return new View(name);
         }

@@ -18,6 +18,12 @@ public class Day {
     private ObservableList<Meal> meals = FXCollections.observableArrayList();
     // add Settings
 
+    private Double kcal = 0.0;
+    private Double protein = 0.0;
+    private Double fat = 0.0;
+    private Double carbs = 0.0;
+    private Double sugar = 0.0;
+
     public Day() {
     }
 
@@ -36,6 +42,23 @@ public class Day {
 
     public void addMeal(Meal meal) {
         meals.add(meal);
+        // add Stats to the meal Stats
+        kcal += meal.getKcal();
+        protein += meal.getProtein();
+        fat += meal.getFat();
+        carbs += meal.getCarbs();
+        sugar += meal.getSugar();
+    }
+
+    public void removeMeal(Meal meal) {
+        if (meals.remove(meal)) {
+            // remove Stats from the meal Stats
+            kcal -= meal.getKcal();
+            protein -= meal.getProtein();
+            fat -= meal.getFat();
+            carbs -= meal.getCarbs();
+            sugar -= meal.getSugar();
+        }
     }
 
     public ObservableList<Meal> getMeals() {
@@ -43,48 +66,31 @@ public class Day {
     }
 
     public Double getKcal() {
-        final Double[] d = {0.0};
-        meals.forEach(m -> {
-
-            d[0] += m.getKcal();
-        });
-
-        return d[0];
+        return kcal;
     }
 
     public Double getProtein() {
-        final Double[] d = {0.0};
-        meals.forEach(m -> {
-            d[0] += m.getProtein();
-        });
-
-        return d[0];
+        return protein;
     }
 
     public Double getFat() {
-        final Double[] d = {0.0};
-        meals.forEach(m -> {
-            d[0] += m.getFat();
-        });
-
-        return d[0];
+        return fat;
     }
 
     public Double getCarbs() {
-        final Double[] d = {0.0};
-        meals.forEach(m -> {
-            d[0] += m.getCarbs();
-        });
-
-        return d[0];
+        return carbs;
     }
 
     public Double getSugar() {
-        final Double[] d = {0.0};
-        meals.forEach(m -> {
-            d[0] += m.getSugar();
-        });
+        return sugar;
+    }
 
-        return d[0];
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

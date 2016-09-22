@@ -35,8 +35,10 @@ public class FoodCellNode {
     @FXML
     Label lbl_protein;
 
+    private boolean usePortion;
 
-    public FoodCellNode() {
+    public FoodCellNode(boolean usePortion) {
+        this.usePortion = usePortion;
         FXMLLoader fxmlLoader = new FXMLLoader(FoodCellNode.class.getResource("mealFoodCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
@@ -45,11 +47,6 @@ public class FoodCellNode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @FXML
-    public void initialize() {
-        //
     }
 
     private void updateStats(Food item) {
@@ -62,16 +59,23 @@ public class FoodCellNode {
         lbl_protein.setText(Service.getInstance().getDf().format(item.getProtein()));
     }
 
-    public void update(Food item) {
-        lbl_name.setText(item.getName());
-        updateStats(item);
+    private void updateStatsWithPortion(Food item) {
+        lbl_kcal.setText(Service.getInstance().getDf().format(item.getPortionKcal()) + " " + Utils.getString("food.cell.kcal"));
+        lbl_weight.setText(Service.getInstance().getDf().format(item.getPortion()) + Utils.getString("food.cell.weight.unit"));
+
+        lbl_fat.setText(Service.getInstance().getDf().format(item.getPortionFat()));
+        lbl_carbs.setText(Service.getInstance().getDf().format(item.getPortionCarbs()));
+        lbl_sugar.setText(Service.getInstance().getDf().format(item.getPortionSugar()));
+        lbl_protein.setText(Service.getInstance().getDf().format(item.getPortionProtein()));
     }
 
-    @FXML
-    private void addFood() {
-        // @todo check possibility to move this to the other listview
-        System.out.println("addFood");
-
+    public void update(Food item) {
+        lbl_name.setText(item.getName());
+        if (usePortion) {
+            updateStatsWithPortion(item);
+        } else {
+            updateStats(item);
+        }
     }
 
     public VBox getNode() {

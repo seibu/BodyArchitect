@@ -13,9 +13,9 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.Service;
+import de.seibushin.bodyArchitect.model.nutrition.Day;
 import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import de.seibushin.bodyArchitect.views.listCell.MealCell;
-import de.seibushin.bodyArchitect.model.nutrition.Day;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -103,18 +103,12 @@ public class NutritionController {
         tb_nutrition.getSelectionModel().select(3);
     }
 
-    private void updateMeal() {
-        lv_meals.setItems(Service.getInstance().getMeals());
-    }
-
     private void updateFood() {
         lv_food.setItems(Service.getInstance().getFoods());
     }
 
     private void updateDay() {
-        System.out.println("update Day");
         Day selectedDay = Service.getInstance().getSelectedDayObject();
-        System.out.println(selectedDay);
         btn_date.setText(Service.getInstance().getSelectedDayString());
 
         if (selectedDay != null) {
@@ -174,17 +168,14 @@ public class NutritionController {
                 appBar.setTitleText("Nutrition");
                 appBar.getActionItems().addAll(btn_addMealToDay, btn_settings);
 
-                // refresh Day if something was updated
                 updateDay();
-                updateMeal();
-                updateFood();
             }
         });
 
         // =====================
         // day Tab
         // =====================
-        // set the cellFactory and show the data for the current Day no need to clear the list here!
+
         lv_day_meals.setCellFactory(cell -> {
             final MealCell mealCell = new MealCell(
                     c -> {
@@ -238,9 +229,12 @@ public class NutritionController {
             updateGauge(mag_fat, currFat, lbl_fat_add);
         });
 
+        //updateDay();
+
         // =====================
         // Meal Tab
         // =====================
+
         lv_meals.setCellFactory(cell -> {
             final MealCell mealCell = new MealCell(
                     c -> {
@@ -262,14 +256,14 @@ public class NutritionController {
             }
         });
 
-        updateMeal();
+        lv_meals.setItems(Service.getInstance().getMeals());
 
         // =====================
         // Food Tab
         // =====================
 
         lv_food.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell();
+            final FoodCell foodCell = new FoodCell(false);
 
             foodCell.setConsumer(
                     c -> {
@@ -293,7 +287,7 @@ public class NutritionController {
             }
         });
 
-        updateFood();
+        lv_food.setItems(Service.getInstance().getFoods());
 
         // =====================
         // Logs Tab
@@ -315,8 +309,7 @@ public class NutritionController {
         // react on tab selection
         tb_nutrition.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> {
             AppBar appBar = MobileApplication.getInstance().getAppBar();
-            System.out.println(newValue);
-
+            // search for a better way ._.
             switch (newValue.intValue()) {
                 case 0:
                     // day

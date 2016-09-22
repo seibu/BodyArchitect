@@ -30,7 +30,6 @@ public class NutritionView {
             return view;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("IOException: " + e);
             return new View(name);
         }
     }

@@ -2,20 +2,87 @@
 
 <?import com.gluonhq.charm.glisten.control.TextField?>
 <?import com.gluonhq.charm.glisten.mvc.View?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<View fx:id="food" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.FoodController">
+<View fx:id="food" stylesheets="@food.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.FoodController">
    <center>
-      <VBox>
+      <VBox fx:id="vbox" styleClass="cell-container" stylesheets="@listCell/mealFoodCellNode.css" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="tf_name" floatText="Name" />
-            <TextField fx:id="tf_weight" floatText="Weight" />
-            <TextField fx:id="tf_energy" floatText="kCal" />
-            <TextField fx:id="tf_fat" floatText="Fat" />
-            <TextField fx:id="tf_carbs" floatText="Carbs" />
-            <TextField fx:id="tf_sugar" floatText="Sugar" />
-            <TextField fx:id="tf_protein" floatText="Protein" />
+            <TextField fx:id="tf_name" floatText="Name" minWidth="5.0">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin></TextField>
+            <TextField fx:id="tf_kcal" floatText="Energy (kcal)" maxWidth="150.0" styleClass="right">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="tf_weight" floatText="Weight (g)" maxWidth="150.0" styleClass="right">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="tf_portion" floatText="Portion (g)" maxWidth="150.0" styleClass="right">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <GridPane hgap="5.0" styleClass="cell-body">
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="%food.cell.protein">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label text="%food.cell.carbs" GridPane.columnIndex="2">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label text="%food.cell.fat" GridPane.columnIndex="1">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label text="%food.cell.sugar" GridPane.columnIndex="3">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <TextField fx:id="tf_protein" prefWidth="50.0" promptText="0" styleClass="center" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                  <TextField fx:id="tf_fat" prefWidth="50.0" promptText="0" styleClass="center" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                  <TextField fx:id="tf_carbs" prefWidth="50.0" promptText="0" styleClass="center" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                  <TextField fx:id="tf_sugar" prefWidth="50.0" promptText="0" styleClass="center" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" top="25.0" />
+               </VBox.margin>
+            </GridPane>
          </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
       </VBox>
    </center>
 </View>

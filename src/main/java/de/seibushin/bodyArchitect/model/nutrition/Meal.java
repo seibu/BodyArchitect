@@ -16,6 +16,12 @@ public class Meal {
     private Type type;
     private final ObservableList<MealFood> mealFoods = FXCollections.observableArrayList();
 
+    private Double kcal = 0.0;
+    private Double protein = 0.0;
+    private Double fat = 0.0;
+    private Double carbs = 0.0;
+    private Double sugar = 0.0;
+
     public Meal() {
     }
 
@@ -31,13 +37,25 @@ public class Meal {
 
     public void addMealFood(MealFood mealFood) {
         mealFoods.add(mealFood);
+
+        // add Stats to the meal Stats
+        kcal += mealFood.getKcal();
+        protein += mealFood.getProtein();
+        fat += mealFood.getFat();
+        carbs += mealFood.getCarbs();
+        sugar += mealFood.getSugar();
     }
 
     public void removeFood(MealFood mealFood) {
-        mealFoods.remove(mealFood);
+        if (mealFoods.remove(mealFood)) {
+            // remove Stats from the meal Stats
+            kcal -= mealFood.getKcal();
+            protein -= mealFood.getProtein();
+            fat -= mealFood.getFat();
+            carbs -= mealFood.getCarbs();
+            sugar -= mealFood.getSugar();
+        }
     }
-
-
 
     public String getName() {
         return name;
@@ -51,52 +69,33 @@ public class Meal {
         return mealFoods;
     }
 
-    public Double getKcal() {
-        final Double[] d = {0.0};
-        mealFoods.forEach(mf -> {
-            d[0] += mf.getKcal();
-        });
-
-        return d[0];
-    }
-
-    public Double getProtein() {
-        final Double[] d = {0.0};
-        mealFoods.forEach(mf -> {
-            d[0] += mf.getProtein();
-        });
-
-        return d[0];
-    }
-
-    public Double getFat() {
-        final Double[] d = {0.0};
-        mealFoods.forEach(mf -> {
-            d[0] += mf.getFat();
-        });
-
-        return d[0];
-    }
-
-    public Double getCarbs() {
-        final Double[] d = {0.0};
-        mealFoods.forEach(mf -> {
-            d[0] += mf.getCarbs();
-        });
-
-        return d[0];
-    }
-
-    public Double getSugar() {
-        final Double[] d = {0.0};
-        mealFoods.forEach(mf -> {
-            d[0] += mf.getSugar();
-        });
-
-        return d[0];
-    }
-
     public int getId() {
         return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Double getKcal() {
+        return kcal;
+    }
+
+    public Double getProtein() {
+        return protein;
+    }
+
+    public Double getFat() {
+        return fat;
+    }
+
+    public Double getCarbs() {
+        return carbs;
+    }
+
+    public Double getSugar() {
+        return sugar;
+    }
+
+
 }

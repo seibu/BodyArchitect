@@ -14,21 +14,19 @@ import javafx.scene.control.ListCell;
 import java.util.function.Consumer;
 
 public class FoodCell extends ListCell<Food> {
-
     private SlidingListNode slidingNode;
+
     private FoodCellNode foodCellNode;
 
     private Food current;
 
-    public FoodCell() {
-        foodCellNode = new FoodCellNode();
+    public FoodCell(boolean usePortion) {
+        foodCellNode = new FoodCellNode(usePortion);
         slidingNode = new SlidingListNode(foodCellNode.getNode(), true);
     }
 
-    public FoodCell(Consumer<Food> consumerLeft, Consumer<Food> consumerRight) {
-        foodCellNode = new FoodCellNode();
-
-        slidingNode = new SlidingListNode(foodCellNode.getNode(), true);
+    public FoodCell(boolean usePortion, Consumer<Food> consumerLeft, Consumer<Food> consumerRight) {
+        this(usePortion);
         setConsumer(consumerLeft, consumerRight);
     }
 
@@ -64,9 +62,6 @@ public class FoodCell extends ListCell<Food> {
         }
     }
 
-    public void collapse() {
-        System.out.println("collapse");
-    }
 
     public BooleanProperty slidingProperty() {
         return slidingNode.slidingProperty();

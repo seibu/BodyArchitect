@@ -71,8 +71,6 @@ public class MealInfoLayer extends Layer {
 
     private void prepareMealInfo() {
         if (!meal.equals(active)) {
-            System.out.println("new Meal");
-
             // set the header
             lbl_name.setText(meal.getName());
             lbl_type.setText(meal.getType().toString());

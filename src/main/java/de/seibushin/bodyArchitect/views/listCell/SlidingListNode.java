@@ -131,7 +131,8 @@ public class SlidingListNode extends StackPane {
                         swipedLeft.set(true);
                     } else {
                         // reset without transition
-                        translateNode(0);
+                        //translateNode(0);
+                        resetTilePosition();
                     }
                 }
 

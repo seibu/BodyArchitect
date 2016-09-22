@@ -36,8 +36,6 @@ public class MealDayController {
     private void addMeal() {
         String result = "";
         try {
-            System.out.println("addMeal " + lv_meals.getSelectionModel().getSelectedItem());
-
             // get the selected meal
             Meal meal = lv_meals.getSelectionModel().getSelectedItem();
             // get the selected date
@@ -45,12 +43,9 @@ public class MealDayController {
             if (day == null) {
                 day = new Day();
                 day.setDate(Service.getInstance().getSelectedDay());
-                Service.getInstance().addDay(day);
             }
-
-            System.out.println(day);
-
             day.addMeal(meal);
+            Service.getInstance().addDay(day);
 
             result = "Meal added to selected Date " + Service.getInstance().getSelectedDayString();
         } catch (Exception e) {
@@ -70,12 +65,11 @@ public class MealDayController {
                 AppBar appBar = MobileApplication.getInstance().getAppBar();
 
                 appBar.setNavIcon(MaterialDesignIcon.ARROW_BACK.button(e ->  {
-                    System.out.println("show previous");
                     MobileApplication.getInstance().switchToPreviousView();
 
                 }));
-                appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> addMeal()));
 
+                appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> addMeal()));
                 appBar.setTitleText("Add Meal to Day");
             }
         });

@@ -57,9 +57,9 @@ public class MealController {
 
             Meal meal = new Meal(name, type);
 
-            lv_food.getItems().stream().forEach(f -> {
-                meal.addMealFood(new MealFood(f, slider_portion.getValue()));
-            });
+            for (Food f :lv_food.getItems()) {
+                meal.addMealFood(new MealFood(f, f.getPortion()));
+            }
 
             Service.getInstance().addMeal(meal);
 
@@ -81,7 +81,17 @@ public class MealController {
         cb_type.getSelectionModel().clearSelection();
         tf_name.clear();
 
+        // both ways should be equal in this case
+        //lv_food.setItems(null);
+
+        // we work with the actual object for the food, so we need to restore the acurate portion
+        for (Food f : lv_food.getItems()) {
+            f.resetPortion();
+        }
+
         lv_food.getItems().clear();
+
+
         lv_allFood.setItems(Service.getInstance().getFoodsClone());
     }
 
@@ -107,7 +117,7 @@ public class MealController {
 
         // ListView with the Foods for the new Meal
         lv_food.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell(
+            final FoodCell foodCell = new FoodCell(true,
                     c -> {
                         System.out.println("left");
                         lv_food.getItems().remove(c);
@@ -139,7 +149,7 @@ public class MealController {
 
         // ListView with all the Foods available
         lv_allFood.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell(
+            final FoodCell foodCell = new FoodCell(false,
                     c -> {
                         System.out.println("left");
                         lv_allFood.getItems().remove(c);

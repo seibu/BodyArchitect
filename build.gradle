@@ -24,7 +24,7 @@ dependencies {
     compile 'org.jfxtras:jfxtras-gauge-linear:8.0-r5'
 
     androidRuntime 'com.gluonhq:charm-android:3.0.0'
-    androidRuntime 'org.sqldroid:sqldroid:1.0.3'
+    androidRuntime files('./lib/sqldroid-1.1.0-SNAPSHOT.jar')
 
     iosRuntime 'com.gluonhq:charm-ios:3.0.0'
 
