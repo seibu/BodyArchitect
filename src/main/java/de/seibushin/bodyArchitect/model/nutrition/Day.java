@@ -13,9 +13,9 @@ import javafx.collections.ObservableList;
 import java.time.LocalDate;
 
 public class Day {
-    private int id;
+    private Integer id = null;
     private LocalDate date;
-    private ObservableList<Meal> meals = FXCollections.observableArrayList();
+    private ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
     // add Settings
 
     private Double kcal = 0.0;
@@ -40,7 +40,7 @@ public class Day {
         return date;
     }
 
-    public void addMeal(Meal meal) {
+    public void addMeal(SimpleMeal meal) {
         meals.add(meal);
         // add Stats to the meal Stats
         kcal += meal.getKcal();
@@ -61,7 +61,7 @@ public class Day {
         }
     }
 
-    public ObservableList<Meal> getMeals() {
+    public ObservableList<SimpleMeal> getMeals() {
         return meals;
     }
 
@@ -86,7 +86,7 @@ public class Day {
     }
 
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

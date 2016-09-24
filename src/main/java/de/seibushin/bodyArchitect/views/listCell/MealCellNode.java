@@ -10,7 +10,9 @@ package de.seibushin.bodyArchitect.views.listCell;
 import com.gluonhq.charm.glisten.control.Icon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
+import de.seibushin.bodyArchitect.model.nutrition.DayFood;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -49,9 +51,15 @@ public class MealCellNode {
         }
     }
 
-    public void update(Meal item) {
+    public void update(SimpleMeal item) {
+        if (item.isMeal()) {
+            lbl_type.setText(item.getType().toString());
+        } else {
+            lbl_type.setText(((DayFood)item).getWeight() + " " + Utils.getString("food.cell.weight.unit"));
+            i_info.setDisable(true);
+        }
         lbl_name.setText(item.getName());
-        lbl_type.setText(item.getType().toString());
+
 
         lbl_kcal.setText(Service.getInstance().getDf().format(item.getKcal()) + " " + Utils.getString("meal.cell.kcal"));
         lbl_fat.setText(Service.getInstance().getDf().format(item.getFat()));

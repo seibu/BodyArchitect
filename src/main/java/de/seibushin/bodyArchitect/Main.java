@@ -1,5 +1,6 @@
 package de.seibushin.bodyArchitect;
 
+import com.gluonhq.charm.down.common.JavaFXPlatform;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.Avatar;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
@@ -7,6 +8,7 @@ import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
 import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.visual.Swatch;
+import de.seibushin.bodyArchitect.views.SettingsView;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import de.seibushin.bodyArchitect.views.HomeView;
 import de.seibushin.bodyArchitect.views.NutritionView;
@@ -21,8 +23,7 @@ public class Main extends MobileApplication {
     public static final String NUTRITION_VIEW = "Nutrition";
     public static final String WORKOUT_VIEW = "Workout";
     public static final String MENU_LAYER = "Side Menu";
-    public static final String SNACK_LAYER = "Snackbar Bottom";
-
+    public static final String SETTINGS_VIEW = "Settings";
 
     @Override
     public void init() {
@@ -40,6 +41,7 @@ public class Main extends MobileApplication {
         addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
         addViewFactory(NUTRITION_VIEW, () -> new NutritionView(NUTRITION_VIEW).getView());
         //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
+        addViewFactory(SETTINGS_VIEW, () -> new SettingsView(SETTINGS_VIEW).getView());
 
         // side Navigation
         NavigationDrawer drawer = new NavigationDrawer();
@@ -66,6 +68,8 @@ public class Main extends MobileApplication {
                 case "Workout":
                     switchView(WORKOUT_VIEW);
                     break;
+                case "Settings":
+                    switchView(SETTINGS_VIEW);
             }
         });
 
@@ -75,7 +79,6 @@ public class Main extends MobileApplication {
 
         // add sidemenu
         addLayerFactory(MENU_LAYER, () -> new SidePopupView(drawer));
-        addLayerFactory(SNACK_LAYER, () -> new SnackbarPopupView());
     }
 
     @Override
@@ -86,6 +89,9 @@ public class Main extends MobileApplication {
 
         scene.getStylesheets().add(Main.class.getResource("style.css").toExternalForm());
         ((Stage) scene.getWindow()).getIcons().add(new Image(Main.class.getResourceAsStream("/icon.png")));
+        if (JavaFXPlatform.isDesktop()) {
+            scene.getWindow().setWidth(400);
+        }
     }
 
 

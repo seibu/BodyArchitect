@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.control.Icon?>
 <?import com.gluonhq.charm.glisten.mvc.View?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
 <View fx:id="meal_day" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.MealDayController">
    <center>
-      <ListView fx:id="lv_meals" styleClass="list-view-sliding" BorderPane.alignment="CENTER" />
+      <TabPane fx:id="tp_simpleMeals" BorderPane.alignment="CENTER">
+         <tabs>
+            <Tab closable="false" text="Meal">
+               <content>
+                  <ListView fx:id="lv_meals" styleClass="list-view-sliding">
+                  <placeholder>
+                     <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                  </placeholder>
+                  </ListView>
+               </content>
+            </Tab>
+            <Tab closable="false" text="Food">
+               <content>
+                  <VBox>
+                     <children>
+                        <Slider fx:id="slider_portion" majorTickUnit="100.0" max="500.0" minorTickCount="100" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                        <ListView fx:id="lv_food" styleClass="list-view-sliding">
+                           <placeholder>
+                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                           </placeholder>
+                        </ListView>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
    </center>
 </View>

@@ -10,17 +10,18 @@ package de.seibushin.bodyArchitect.model.nutrition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Meal {
+public class Meal implements SimpleMeal {
     private int id;
     private String name;
     private Type type;
     private final ObservableList<MealFood> mealFoods = FXCollections.observableArrayList();
 
-    private Double kcal = 0.0;
-    private Double protein = 0.0;
-    private Double fat = 0.0;
-    private Double carbs = 0.0;
-    private Double sugar = 0.0;
+    private double kcal = 0.0;
+    private double protein = 0.0;
+    private double fat = 0.0;
+    private double carbs = 0.0;
+    private double sugar = 0.0;
+    private boolean saved = false;
 
     public Meal() {
     }
@@ -65,37 +66,57 @@ public class Meal {
         return type;
     }
 
+    @Override
+    public boolean isMeal() {
+        return true;
+    }
+
+    @Override
+    public boolean isSaved() {
+        return saved;
+    }
+
+    @Override
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+    }
+
     public ObservableList<MealFood> getMealFoods() {
         return mealFoods;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
-    public Double getKcal() {
+    @Override
+    public double getKcal() {
         return kcal;
     }
 
-    public Double getProtein() {
+    @Override
+    public double getProtein() {
         return protein;
     }
 
-    public Double getFat() {
+    @Override
+    public double getFat() {
         return fat;
     }
 
-    public Double getCarbs() {
+    @Override
+    public double getCarbs() {
         return carbs;
     }
 
-    public Double getSugar() {
+    @Override
+    public double getSugar() {
         return sugar;
     }
-
-
 }

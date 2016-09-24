@@ -7,13 +7,13 @@
 
 package de.seibushin.bodyArchitect.views.listCell;
 
+import com.gluonhq.charm.glisten.control.CharmListCell;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import javafx.beans.property.BooleanProperty;
-import javafx.scene.control.ListCell;
 
 import java.util.function.Consumer;
 
-public class FoodCell extends ListCell<Food> {
+public class FoodCell extends CharmListCell<Food> {
     private SlidingListNode slidingNode;
 
     private FoodCellNode foodCellNode;

@@ -9,6 +9,7 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
+import com.gluonhq.charm.glisten.control.CharmListView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Main;
@@ -18,22 +19,22 @@ import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import de.seibushin.bodyArchitect.views.listCell.MealCell;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
 import jfxtras.scene.control.gauge.linear.elements.Segment;
+import org.omg.CORBA.MARSHAL;
 
 public class NutritionController {
     public static final String MEAL_DAY_VIEW = "Day";
     public static final String MEAL_VIEW = "Meal";
     public static final String FOOD_VIEW = "Food";
-    public static final String SETTINGS_VIEW = "Settings";
 
     @FXML
     View nutrition;
@@ -52,13 +53,11 @@ public class NutritionController {
     @FXML
     TabPane tb_nutrition;
     @FXML
-    ListView lv_day_meals;
+    CharmListView lv_day_meals;
     @FXML
-    ListView lv_meals;
+    CharmListView lv_meals;
     @FXML
-    ListView lv_food;
-    @FXML
-    Button btn_date;
+    CharmListView lv_food;
 
     @FXML
     Label lbl_kcal_add;
@@ -72,7 +71,7 @@ public class NutritionController {
     private Button btn_addMealToDay = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMealToDay());
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
     private Button btn_addFood = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddFood());
-    private Button btn_settings = MaterialDesignIcon.SETTINGS.button(e -> showSettings());
+    private Button btn_date = MaterialDesignIcon.TODAY.button(e -> showLogBook());
 
     private double currKcal;
     private double currFat;
@@ -93,23 +92,17 @@ public class NutritionController {
         nutrition.getApplication().switchView(MEAL_VIEW);
     }
 
-    private void showSettings() {
-        nutrition.getApplication().switchView(SETTINGS_VIEW);
-    }
-
     @FXML
     private void showLogBook() {
         // show LogBook
         tb_nutrition.getSelectionModel().select(3);
     }
 
-    private void updateFood() {
-        lv_food.setItems(Service.getInstance().getFoods());
-    }
-
     private void updateDay() {
         Day selectedDay = Service.getInstance().getSelectedDayObject();
-        btn_date.setText(Service.getInstance().getSelectedDayString());
+        //btn_date.setText(Service.getInstance().getSelectedDayString());
+        MobileApplication.getInstance().getAppBar().setTitleText("Nutrition - " + Service.getInstance().getSelectedDayString());
+
 
         if (selectedDay != null) {
             lv_day_meals.setItems(Service.getInstance().getMealsForSelectedDay());
@@ -125,7 +118,7 @@ public class NutritionController {
             updateGauge(mag_fat, currFat, lbl_fat_add);
             updateGauge(mag_protein, currProtein, lbl_protein_add);
         } else {
-            lv_day_meals.setItems(null);
+            lv_day_meals.setItems(FXCollections.emptyObservableList());
             mag_kcal.setValue(0);
             mag_carbs.setValue(0);
             mag_fat.setValue(0);
@@ -134,6 +127,7 @@ public class NutritionController {
     }
 
     private void updateGauge(SimpleMetroArcGauge gauge, double nv, Label lbl) {
+        nv = Math.ceil(nv);
         if (nv > gauge.getMaxValue()) {
             double diff = nv - gauge.getMaxValue();
             lbl.setText("+" + diff);
@@ -150,7 +144,6 @@ public class NutritionController {
         MobileApplication.getInstance().addViewFactory(MEAL_DAY_VIEW, () -> new MealDayView(MEAL_DAY_VIEW).getView());
         MobileApplication.getInstance().addViewFactory(MEAL_VIEW, () -> new MealView(MEAL_VIEW).getView());
         MobileApplication.getInstance().addViewFactory(FOOD_VIEW, () -> new FoodView(FOOD_VIEW).getView());
-        MobileApplication.getInstance().addViewFactory(SETTINGS_VIEW, () -> new SettingsView(SETTINGS_VIEW).getView());
 
         // add the mealInfoLayer (popup)
         MobileApplication.getInstance().addLayerFactory("MealInfo", () -> Service.getInstance().getMealInfoLayer());
@@ -165,8 +158,7 @@ public class NutritionController {
             if (newValue) {
                 AppBar appBar = MobileApplication.getInstance().getAppBar();
                 appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> MobileApplication.getInstance().showLayer(Main.MENU_LAYER)));
-                appBar.setTitleText("Nutrition");
-                appBar.getActionItems().addAll(btn_addMealToDay, btn_settings);
+                appBar.getActionItems().addAll(btn_addMealToDay, btn_date);
 
                 updateDay();
             }
@@ -229,8 +221,6 @@ public class NutritionController {
             updateGauge(mag_fat, currFat, lbl_fat_add);
         });
 
-        //updateDay();
-
         // =====================
         // Meal Tab
         // =====================
@@ -268,7 +258,6 @@ public class NutritionController {
             foodCell.setConsumer(
                     c -> {
                         System.out.println("left");
-
                     },
                     c -> {
                         System.out.println("right");
@@ -310,22 +299,23 @@ public class NutritionController {
         tb_nutrition.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> {
             AppBar appBar = MobileApplication.getInstance().getAppBar();
             // search for a better way ._.
+            System.out.println(newValue);
             switch (newValue.intValue()) {
                 case 0:
                     // day
-                    appBar.getActionItems().setAll(btn_addMealToDay, btn_settings);
+                    appBar.getActionItems().setAll(btn_addMealToDay, btn_date);
                     break;
                 case 1:
                     // meal
-                    appBar.getActionItems().setAll(btn_addMeal, btn_settings);
+                    appBar.getActionItems().setAll(btn_addMeal);
                     break;
                 case 2:
                     // food
-                    appBar.getActionItems().setAll(btn_addFood, btn_settings);
+                    appBar.getActionItems().setAll(btn_addFood);
                     break;
                 case 3:
                     // logs
-                    appBar.getActionItems().setAll(btn_settings);
+                    appBar.getActionItems().clear();
                     break;
             }
         });

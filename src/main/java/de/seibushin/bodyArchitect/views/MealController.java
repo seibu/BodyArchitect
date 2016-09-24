@@ -9,23 +9,20 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
-import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
+import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
-import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import de.seibushin.bodyArchitect.helper.Utils;
-import de.seibushin.bodyArchitect.model.nutrition.Type;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
+import de.seibushin.bodyArchitect.model.nutrition.Type;
+import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.ScrollEvent;
 
 public class MealController {
@@ -44,8 +41,6 @@ public class MealController {
 
     @FXML
     View meal;
-
-    private SnackbarPopupView snackbarPopupView = new SnackbarPopupView();
 
     private final BooleanProperty sliding = new SimpleBooleanProperty();
 
@@ -72,7 +67,7 @@ public class MealController {
             result = Utils.getString("addMeal_error");
         }
 
-        snackbarPopupView.show(result);
+        MobileApplication.getInstance().showMessage(result);
     }
 
     private void clear() {
@@ -90,8 +85,6 @@ public class MealController {
         }
 
         lv_food.getItems().clear();
-
-
         lv_allFood.setItems(Service.getInstance().getFoodsClone());
     }
 
@@ -113,7 +106,11 @@ public class MealController {
             }
         });
 
-        MobileApplication.getInstance().addLayerFactory("snackbar2", () -> snackbarPopupView);
+        //lv_food.setPlaceholder(new Label(Utils.getString("meal.add.food.placeholder")));
+        //lv_allFood.setPlaceholder(new Label(Utils.getString("meal.add.allFood.placeholder")));
+
+        lv_allFood.setItems(Service.getInstance().getFoodsClone());
+        cb_type.getItems().setAll(Type.values());
 
         // ListView with the Foods for the new Meal
         lv_food.setCellFactory(cell -> {
@@ -131,13 +128,6 @@ public class MealController {
             sliding.bind(foodCell.slidingProperty());
 
             return foodCell;
-        });
-        lv_food.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                slider_portion.setValue(newValue.getPortion());
-            } else {
-                slider_portion.setValue(0);
-            }
         });
 
         // prevent the list from scrolling while sliding
@@ -171,15 +161,20 @@ public class MealController {
             }
         });
 
-        lv_allFood.setItems(Service.getInstance().getFoodsClone());
-
         slider_portion.valueProperty().addListener(e -> {
             if (lv_food.getSelectionModel().getSelectedItem() != null) {
                 lv_food.getSelectionModel().getSelectedItem().setPortion(Math.ceil(slider_portion.getValue()));
+                // @todo search way to remove this
                 lv_food.refresh();
             }
         });
 
-        cb_type.getItems().setAll(Type.values());
+        lv_food.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                slider_portion.setValue(newValue.getPortion());
+            } else {
+                slider_portion.setValue(0);
+            }
+        });
     }
 }

@@ -7,9 +7,11 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
+import javafx.scene.control.MenuItem;
+
 public enum Type {
     BREAKFAST,
     LUNCH,
     DINNER,
-    SNACK
+    SNACK;
 }

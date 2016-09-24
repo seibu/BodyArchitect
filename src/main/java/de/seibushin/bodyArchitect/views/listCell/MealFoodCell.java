@@ -7,10 +7,10 @@
 
 package de.seibushin.bodyArchitect.views.listCell;
 
+import com.gluonhq.charm.glisten.control.CharmListCell;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
-import javafx.scene.control.ListCell;
 
-public class MealFoodCell extends ListCell<MealFood> {
+public class MealFoodCell extends CharmListCell<MealFood> {
     private MealFoodCellNode mealFoodCellNode;
 
     private MealFood current;

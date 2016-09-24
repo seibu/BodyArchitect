@@ -8,21 +8,23 @@
 package de.seibushin.bodyArchitect.views.listCell;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
+import com.gluonhq.charm.glisten.control.CharmListCell;
 import de.seibushin.bodyArchitect.Service;
+import de.seibushin.bodyArchitect.model.nutrition.DayMeal;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
 import javafx.beans.property.BooleanProperty;
-import javafx.scene.control.ListCell;
 
 import java.util.function.Consumer;
 
-public class MealCell extends ListCell<Meal> {
+public class MealCell extends CharmListCell<SimpleMeal> {
     private MealCellNode mealCellNode;
 
     private SlidingListNode slidingNode;
 
-    private Meal current;
+    private SimpleMeal current;
 
-    public MealCell(Consumer<Meal> consumerLeft, Consumer<Meal> consumerRight) {
+    public MealCell(Consumer<SimpleMeal> consumerLeft, Consumer<SimpleMeal> consumerRight) {
         mealCellNode = new MealCellNode();
 
         slidingNode = new SlidingListNode(mealCellNode.getNode(), true);
@@ -43,17 +45,15 @@ public class MealCell extends ListCell<Meal> {
         });
 
         mealCellNode.i_info.setOnMouseClicked(e -> {
-            Service.getInstance().getMealInfoLayer().setMeal(current);
-            MobileApplication.getInstance().showLayer("MealInfo");
+            if (current.isMeal()) {
+                Service.getInstance().getMealInfoLayer().setMeal(((DayMeal)current).getMeal());
+                MobileApplication.getInstance().showLayer("MealInfo");
+            }
         });
     }
 
-    private void showPopup(Meal meal) {
-
-    }
-
     @Override
-    public void updateItem(Meal item, boolean empty) {
+    public void updateItem(SimpleMeal item, boolean empty) {
         super.updateItem(item, empty);
 
         // set the new current if current is null or current differs from the new

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.control.CharmListView?>
 <?import com.gluonhq.charm.glisten.control.Icon?>
 <?import com.gluonhq.charm.glisten.mvc.View?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge?>
@@ -19,73 +19,73 @@
             <tabs>
                 <Tab text="Day">
                     <content>
-                        <VBox fx:id="vbox_day" spacing="5.0">
+                        <VBox fx:id="vbox_day" alignment="CENTER" spacing="5.0">
                             <children>
-                        <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
-                           <children>
-                              <Button fx:id="btn_date" mnemonicParsing="false" onAction="#showLogBook" styleClass="calendar" text="Mo 05.09.2016">
-                                 <graphic>
-                                    <Icon content="TODAY" />
-                                 </graphic>
-                              </Button>
-                           </children>
-                           <VBox.margin>
+                                <HBox VBox.vgrow="NEVER">
+                                    <children>
+                                        <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="lbl_gauge" text="kcal" textOverrun="CLIP" VBox.vgrow="ALWAYS" />
+                                                <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                                    <children>
+                                                        <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <Label fx:id="lbl_kcal_add" />
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </VBox>
+                                        <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="lbl_gauge" text="protein" />
+                                                <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                                    <children>
+                                                        <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <Label fx:id="lbl_protein_add" />
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </VBox>
+                                        <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="lbl_gauge" text="fat" />
+                                                <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                                    <children>
+                                                        <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <Label fx:id="lbl_fat_add" />
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </VBox>
+                                        <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label styleClass="lbl_gauge" text="carbs" />
+                                                <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
+                                                    <children>
+                                                        <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <Label fx:id="lbl_carbs_add" />
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                           <padding>
                               <Insets left="5.0" right="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox VBox.vgrow="NEVER">
-                           <children>
-                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label styleClass="lbl_gauge" text="kcal" textOverrun="CLIP" VBox.vgrow="ALWAYS" />
-                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
-                                       <children>
-                                          <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="100.0" prefWidth="100.0" />
-                                          <Label fx:id="lbl_kcal_add" />
-                                       </children>
-                                    </StackPane>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label styleClass="lbl_gauge" text="protein" />
-                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
-                                       <children>
-                                          <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
-                                          <Label fx:id="lbl_protein_add" />
-                                       </children>
-                                    </StackPane>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label styleClass="lbl_gauge" text="fat" />
-                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
-                                       <children>
-                                          <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
-                                          <Label fx:id="lbl_fat_add" />
-                                       </children>
-                                    </StackPane>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label styleClass="lbl_gauge" text="carbs" />
-                                    <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
-                                       <children>
-                                          <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
-                                          <Label fx:id="lbl_carbs_add" />
-                                       </children>
-                                    </StackPane>
-                                 </children>
-                              </VBox>
-                           </children>
+                           </padding>
+                                </HBox>
+                                <Label alignment="CENTER" styleClass="container-hl" text="Meals" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+                        <Region styleClass="sep-bottom">
                            <VBox.margin>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets bottom="10.0" left="50.0" right="50.0" />
                            </VBox.margin>
-                        </HBox>
-                        <Label text="Meals" />
-                                <ListView fx:id="lv_day_meals" prefHeight="100.0" prefWidth="400.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS" />
+                        </Region>
+                                <CharmListView fx:id="lv_day_meals" prefHeight="100.0" prefWidth="400.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
+                                    <placeholder>
+                                        <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                                    </placeholder>
+                                </CharmListView>
                             </children>
                         </VBox>
                     </content>
@@ -93,9 +93,13 @@
                 <Tab text="Meal">
                     <content>
                         <VBox spacing="5.0">
-                     <children>
-                        <ListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS" />
-                     </children>
+                            <children>
+                                <CharmListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
+                                    <placeholder>
+                                        <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                                    </placeholder>
+                                </CharmListView>
+                            </children>
                         </VBox>
                     </content>
                 </Tab>
@@ -105,21 +109,25 @@
                             <opaqueInsets>
                                 <Insets />
                             </opaqueInsets>
-                     <children>
-                        <ListView fx:id="lv_food" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS" />
-                     </children>
+                            <children>
+                                <CharmListView fx:id="lv_food" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
+                                    <placeholder>
+                                        <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                                    </placeholder>
+                                </CharmListView>
+                            </children>
                         </VBox>
                     </content>
                 </Tab>
-            <Tab text="Logs">
-               <content>
-                  <VBox fx:id="vbox_logs" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </VBox>
-               </content>
-            </Tab>
+                <Tab text="Logs">
+                    <content>
+                        <VBox fx:id="vbox_logs" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </padding>
+                        </VBox>
+                    </content>
+                </Tab>
             </tabs>
         </TabPane>
     </center>

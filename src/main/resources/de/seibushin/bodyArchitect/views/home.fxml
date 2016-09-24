@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge?>
 
@@ -37,25 +38,45 @@
                         <VBox alignment="TOP_CENTER">
                            <children>
                               <Label text="%home.nutriton.kcal" />
-                              <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="80.0" prefWidth="80.0" />
+                              <StackPane alignment="BOTTOM_CENTER">
+                                 <children>
+                                    <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="80.0" prefWidth="80.0" />
+                                    <Label fx:id="lbl_kcal_add" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER">
                            <children>
                               <Label text="%home.nutriton.protein" />
-                              <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="80.0" prefWidth="80.0" />
+                              <StackPane alignment="BOTTOM_CENTER">
+                                 <children>
+                                    <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="80.0" prefWidth="80.0" />
+                                    <Label fx:id="lbl_protein_add" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER">
                            <children>
                               <Label text="%home.nutriton.fat" />
-                              <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="80.0" prefWidth="80.0" />
+                              <StackPane alignment="BOTTOM_CENTER">
+                                 <children>
+                                    <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="80.0" prefWidth="80.0" />
+                                    <Label fx:id="lbl_fat_add" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER">
                            <children>
                               <Label text="%home.nutriton.carbs" />
-                              <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="80.0" prefWidth="80.0" />
+                              <StackPane alignment="BOTTOM_CENTER">
+                                 <children>
+                                    <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="80.0" prefWidth="80.0" />
+                                    <Label fx:id="lbl_carbs_add" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                      </children>

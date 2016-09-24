@@ -1,3 +1,9 @@
+.list-placeholder .label {
+    -fx-text-fill: #d8d8d8;
+    -fx-font-size: 96px;
+    -fx-font-family: 'Material Icons';
+}
+
 .SimpleMetroArcGauge {
     -fxx-segment0-color: #888888;
     -fxx-segment1-color: #fba71b;
@@ -145,4 +151,19 @@
 }
 .icon-clickable:hover .text {
     -fx-fill: #000;
+}
+
+.list-placeholder .label {
+    -fx-text-fill: #d8d8d8;
+    -fx-font-size: 96px;
+    -fx-font-family: 'Material Icons';
+}
+
+.sep-bottom {
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: #d8d8d8;
+}
+
+.container-hl {
+    -fx-font-size: 16px;
 }

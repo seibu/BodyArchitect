@@ -15,6 +15,7 @@ import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 
 import java.time.LocalDate;
@@ -33,9 +34,31 @@ public class HomeController {
     SimpleMetroArcGauge mag_carbs;
 
     @FXML
+    Label lbl_kcal_add;
+    @FXML
+    Label lbl_fat_add;
+    @FXML
+    Label lbl_carbs_add;
+    @FXML
+    Label lbl_protein_add;
+
+    @FXML
     public void showNutrition() {
         MobileApplication.getInstance().switchView(Main.NUTRITION_VIEW);
         // refresh navigation set nutrition active
+    }
+
+    // @todo define globally
+    private void updateGauge(SimpleMetroArcGauge gauge, double nv, Label lbl) {
+        nv = Math.ceil(nv);
+        if (nv > gauge.getMaxValue()) {
+            double diff = nv - gauge.getMaxValue();
+            lbl.setText("+" + diff);
+            gauge.setValue(gauge.getMaxValue());
+        } else {
+            gauge.setValue(nv);
+            lbl.setText("");
+        }
     }
 
     @FXML
@@ -51,11 +74,10 @@ public class HomeController {
                 Day today = Service.getInstance().getDay(LocalDate.now());
                 if (today != null) {
                     // update gauges
-                    // @todo check for maxValue and change the maxValue accordingly
-                    mag_kcal.setValue(today.getKcal());
-                    mag_carbs.setValue(today.getCarbs());
-                    mag_fat.setValue(today.getFat());
-                    mag_protein.setValue(today.getProtein());
+                    updateGauge(mag_kcal, today.getKcal(), lbl_kcal_add);
+                    updateGauge(mag_carbs, today.getCarbs(), lbl_carbs_add);
+                    updateGauge(mag_fat, today.getFat(), lbl_fat_add);
+                    updateGauge(mag_protein, today.getProtein(), lbl_protein_add);
                 }
             }
         });
