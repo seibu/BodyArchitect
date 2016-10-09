@@ -19,6 +19,7 @@ public class DayMeal implements SimpleMeal {
 
     public DayMeal(SimpleMeal meal) {
         this.meal = meal;
+        this.id = meal.getId();
     }
 
     @Override
@@ -85,6 +86,7 @@ public class DayMeal implements SimpleMeal {
         this.saved = saved;
     }
 
+    @Override
     public Meal getMeal() {
         return (Meal)meal;
     }

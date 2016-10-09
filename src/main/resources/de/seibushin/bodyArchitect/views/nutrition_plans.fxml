@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.CharmListView?>
+<?import com.gluonhq.charm.glisten.control.Icon?>
+<?import com.gluonhq.charm.glisten.mvc.View?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+
+
+<View fx:id="plans" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionPlansController">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Plans">
+            <content>
+                  <StackPane>
+                     <children>
+                        <CharmListView fx:id="lv_plans" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding">
+                           <placeholder>
+                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                           </placeholder>
+                        </CharmListView>
+                     </children>
+                  </StackPane>
+            </content>
+          </Tab>
+          <Tab text="Days">
+            <content>
+                  <StackPane>
+                     <children>
+                        <CharmListView fx:id="lv_days" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding">
+                           <placeholder>
+                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                           </placeholder>
+                        </CharmListView>
+                     </children>
+                  </StackPane>
+            </content>
+          </Tab>
+            <Tab text="Meals">
+              <content>
+                  <StackPane>
+                     <children>
+                        <CharmListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding">
+                           <placeholder>
+                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                           </placeholder>
+                        </CharmListView>
+                     </children>
+                  </StackPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+</View>

@@ -12,6 +12,9 @@ import com.gluonhq.charm.down.common.PlatformFactory;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.model.nutrition.*;
+import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
+import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
+import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDayMeal;
 import de.seibushin.bodyArchitect.views.LogBook;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import javafx.collections.FXCollections;
@@ -37,12 +40,9 @@ public class Service {
     private final ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
     private final ObservableList<Day> days = FXCollections.observableArrayList();
 
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
+    private final ObservableList<Plan> plans = FXCollections.observableArrayList();
 
-    private NavigationDrawer.Item home;
-    private NavigationDrawer.Item nutrition;
-    private NavigationDrawer.Item workout;
-    private NavigationDrawer.Item setting;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
 
     private final DecimalFormat df = new DecimalFormat("#.#");
     private MealInfoLayer mealInfoLayer;
@@ -56,6 +56,9 @@ public class Service {
     private final static String DAYS_TABLE = "DAYS";
     private final static String DAY_MEAL_TABLE = "DAY_MEAL";
     private static final String DAY_FOOD_TABLE = "DAY_FOOD";
+    private static final String NUTRITON_PLANS_TABLE = "NUTRITION_PLANS";
+    private static final String NUTRITON_PLAN_DAYS_TABLE = "NUTRITION_PLAN_DAYS";
+    private static final String NUTRITON_PLAN_DAY_MEALS_TABLE = "NUTRITION_PLAN_DAY_MEALS";
 
     private Connection connection = null;
     private Statement stmt;
@@ -75,13 +78,6 @@ public class Service {
         // adjust numberformats
         intNF.setMaximumFractionDigits(0);
         doubleNF.setMaximumFractionDigits(1);
-
-        // create Menu Items
-        home = new NavigationDrawer.Item("Home", MaterialDesignIcon.HOME.graphic());
-        home.setSelected(true);
-        nutrition = new NavigationDrawer.Item("Nutrition", MaterialDesignIcon.LOCAL_DINING.graphic());
-        workout = new NavigationDrawer.Item("Workout", MaterialDesignIcon.FITNESS_CENTER.graphic());
-        setting = new NavigationDrawer.Item("Settings", MaterialDesignIcon.TODAY.graphic());
 
         // Database Connector Object
         try {
@@ -239,15 +235,6 @@ public class Service {
         return df;
     }
 
-    public List<NavigationDrawer.Item> getDrawerItems() {
-        List items = new ArrayList();
-        items.add(home);
-        items.add(nutrition);
-        items.add(workout);
-        items.add(setting);
-        return items;
-    }
-
     public MealInfoLayer getMealInfoLayer() {
         return mealInfoLayer;
     }
@@ -268,6 +255,8 @@ public class Service {
         // load days
         retrieveDays();
 
+        // load plans
+        retrieveNutritionPlans();
     }
 
     // =================== Settings ==========================
@@ -620,13 +609,7 @@ public class Service {
         return days;
     }
 
-    //@todo add Food to Day
-    //@todo add Meal to Day
-
     public void addDay(Day day) {
-        days.add(day);
-
-        // mirror operation to database
         try {
             if (day.getId() == null) {
                 ps = connection.prepareStatement("insert into " + DAYS_TABLE + " values(null, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -670,6 +653,9 @@ public class Service {
                     m.setSaved(true);
                 }
             }
+
+            // add the day to the list
+            days.add(day);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -688,6 +674,148 @@ public class Service {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void deleteDayMeal(SimpleMeal simpleMeal) {
+        System.out.println("deleteDayMeal");
+        try {
+            if (simpleMeal.isMeal()) {
+                ps = connection.prepareStatement("DELETE FROM " + DAY_MEAL_TABLE + " WHERE id IN (SELECT id FROM " + DAY_MEAL_TABLE + " WHERE d_id = ? AND m_id = ? ORDER BY id DESC LIMIT 1)");
+            } else {
+                ps = connection.prepareStatement("DELETE FROM " + DAY_FOOD_TABLE + " WHERE id IN (SELECT id FROM " + DAY_FOOD_TABLE + " WHERE d_id = ? AND f_id = ? ORDER BY id DESC LIMIT 1)");
+            }
+
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            //noinspection JpaQueryApiInspection
+            ps.setInt(1, getSelectedDayObject().getId());
+            //noinspection JpaQueryApiInspection
+            ps.setInt(2, simpleMeal.getId());
+
+            ps.executeUpdate();
+            getSelectedDayObject().removeMeal(simpleMeal);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // =================== Plan ==========================
+
+    private void retrieveNutritionPlans() {
+        ResultSet res = null;
+        ResultSet res2 = null;
+
+        try {
+            ps = connection.prepareStatement("SELECT * FROM " + NUTRITON_PLAN_DAYS_TABLE + " WHERE np_id = ?");
+            PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE npd_id = ?");
+            stmt = connection.createStatement();
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+                ps2.setQueryTimeout(QUERY_TIMEOUT);
+                stmt.setQueryTimeout(QUERY_TIMEOUT);
+            } catch(Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            rs = stmt.executeQuery("SELECT * FROM " + NUTRITON_PLANS_TABLE);
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double kcal = rs.getDouble(3);
+                double protein = rs.getDouble(4);
+                double fat = rs.getDouble(5);
+                double carbs = rs.getDouble(6);
+                double sugar = rs.getDouble(7);
+                boolean selected = rs.getBoolean(8);
+
+                Plan plan = new Plan(id, name, kcal, protein, fat, carbs, sugar, selected);
+
+                // execute prepared Statement to get all the days for the plan
+                ps.setInt(1, id);
+                res = ps.executeQuery();
+                while (res.next()) {
+                    int d_id = res.getInt(1);
+                    int np_id = res.getInt(2);
+                    int d_order = res.getInt(3);
+
+                    PlanDay planDay = new PlanDay(d_id, np_id, d_order);
+                    plan.addDay(planDay);
+
+                    ps2.setInt(1, d_id);
+                    res2 = ps2.executeQuery();
+                    // @todo add support for Food
+                    while (res2.next()) {
+                        int m_id = res2.getInt("m_id");
+
+                        SimpleMeal m = null;
+                        for (SimpleMeal tmp : meals) {
+                            if (tmp.getId() == m_id) {
+                                m = new PlanDayMeal(tmp);
+                                m.setSaved(true);
+                            }
+                        }
+                        planDay.addMeal(m);
+                    }
+                }
+
+                plans.add(plan);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (res2 != null) {
+                    res2.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public ObservableList<Plan> getPlans() {
+        return plans;
     }
 
     public Settings getSettings() {

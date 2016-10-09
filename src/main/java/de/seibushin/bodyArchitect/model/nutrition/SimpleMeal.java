@@ -32,4 +32,6 @@ public interface SimpleMeal {
     public boolean isSaved();
 
     public void setSaved(boolean saved);
+
+    public Meal getMeal();
 }

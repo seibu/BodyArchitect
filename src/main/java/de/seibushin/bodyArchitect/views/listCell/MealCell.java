@@ -46,7 +46,7 @@ public class MealCell extends CharmListCell<SimpleMeal> {
 
         mealCellNode.i_info.setOnMouseClicked(e -> {
             if (current.isMeal()) {
-                Service.getInstance().getMealInfoLayer().setMeal(((DayMeal)current).getMeal());
+                Service.getInstance().getMealInfoLayer().setMeal(current.getMeal());
                 MobileApplication.getInstance().showLayer("MealInfo");
             }
         });

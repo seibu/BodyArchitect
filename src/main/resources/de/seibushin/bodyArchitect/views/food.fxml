@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -19,21 +20,32 @@
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin></TextField>
-            <TextField fx:id="tf_kcal" floatText="Energy (kcal)" maxWidth="150.0" styleClass="right">
+            <HBox>
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
-            </TextField>
-            <TextField fx:id="tf_weight" floatText="Weight (g)" maxWidth="150.0" styleClass="right">
+               <children>
+                  <TextField fx:id="tf_weight" floatText="Weight (g)" maxWidth="150.0" styleClass="right" />
+                  <TextField fx:id="tf_portion" floatText="Portion (g)" maxWidth="150.0" styleClass="right">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
-            </TextField>
-            <TextField fx:id="tf_portion" floatText="Portion (g)" maxWidth="150.0" styleClass="right">
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </TextField>
+               <children>
+                  <TextField fx:id="tf_kcal" floatText="Energy (kcal)" maxWidth="150.0" styleClass="right" />
+                  <Label fx:id="lbl_calc" styleClass="light">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
             <GridPane hgap="5.0" styleClass="cell-body">
                <columnConstraints>
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
@@ -42,6 +54,7 @@
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
                </columnConstraints>
                <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                </rowConstraints>

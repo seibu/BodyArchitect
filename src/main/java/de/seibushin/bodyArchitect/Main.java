@@ -7,7 +7,9 @@ import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
 import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
+import de.seibushin.bodyArchitect.views.NutritionPlansView;
 import de.seibushin.bodyArchitect.views.SettingsView;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import de.seibushin.bodyArchitect.views.HomeView;
@@ -21,16 +23,16 @@ public class Main extends MobileApplication {
     // Views and Layers
     public static final String HOME_VIEW = "home";
     public static final String NUTRITION_VIEW = "Nutrition";
+    public static final String NUTRITION_PLANS_VIEW = "Nutrition Plans";
     public static final String WORKOUT_VIEW = "Workout";
     public static final String MENU_LAYER = "Side Menu";
     public static final String SETTINGS_VIEW = "Settings";
+    public static final String FILTER_FOOD = "Filter Food";
 
     @Override
     public void init() {
         // @todo switch to ORMLite instead of Hibernate for better mobile support
-        // @todo switch to SQLite instead of h2 for better mobile support
 
-        // @todo try saving the data in local storage as Objects
         // maybe try this for the settings first
         // http://gluonhq.com/learn-to-build-gluon-charm-apps-with-three-new-charm-samples/
 
@@ -40,6 +42,7 @@ public class Main extends MobileApplication {
         // Views
         addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
         addViewFactory(NUTRITION_VIEW, () -> new NutritionView(NUTRITION_VIEW).getView());
+        addViewFactory(NUTRITION_PLANS_VIEW, () -> new NutritionPlansView(NUTRITION_PLANS_VIEW).getView());
         //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
         addViewFactory(SETTINGS_VIEW, () -> new SettingsView(SETTINGS_VIEW).getView());
 
@@ -52,29 +55,39 @@ public class Main extends MobileApplication {
                 new Avatar(21, new Image(Main.class.getResourceAsStream("/icon.png"))));
         drawer.setHeader(header);
 
+        Item home = new NavigationDrawer.Item(HOME_VIEW, MaterialDesignIcon.HOME.graphic());
+        home.setSelected(true);
+        Item nutrition = new NavigationDrawer.Item(NUTRITION_VIEW, MaterialDesignIcon.LOCAL_DINING.graphic());
+        Item nutritionPlans = new NavigationDrawer.Item(NUTRITION_PLANS_VIEW, MaterialDesignIcon.ASSIGNMENT.graphic());
+        Item workout = new NavigationDrawer.Item(WORKOUT_VIEW, MaterialDesignIcon.FITNESS_CENTER.graphic());
+        Item setting = new NavigationDrawer.Item(SETTINGS_VIEW, MaterialDesignIcon.TODAY.graphic());
+
         // add the Items to the menu
-        drawer.getItems().addAll(Service.getInstance().getDrawerItems());
+        drawer.getItems().addAll(home, nutrition, nutritionPlans, workout, setting);
 
         // add Listener for the menu to change the View
         drawer.selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             hideLayer(MENU_LAYER);
             switch (((Item)newItem).getTitle()) {
-                case "Home":
+                case HOME_VIEW:
                     switchView(HOME_VIEW);
                     break;
-                case "Nutrition":
+                case NUTRITION_VIEW:
                     switchView(NUTRITION_VIEW);
                     break;
-                case "Workout":
+                case NUTRITION_PLANS_VIEW:
+                    switchView(NUTRITION_PLANS_VIEW);
+                    break;
+                case WORKOUT_VIEW:
                     switchView(WORKOUT_VIEW);
                     break;
-                case "Settings":
+                case SETTINGS_VIEW:
                     switchView(SETTINGS_VIEW);
             }
         });
 
         viewProperty().addListener(e -> {
-
+            System.out.println("test this");
         });
 
         // add sidemenu
@@ -93,6 +106,4 @@ public class Main extends MobileApplication {
             scene.getWindow().setWidth(400);
         }
     }
-
-
 }

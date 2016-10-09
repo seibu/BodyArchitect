@@ -50,7 +50,7 @@ public class Day {
         sugar += meal.getSugar();
     }
 
-    public void removeMeal(Meal meal) {
+    public void removeMeal(SimpleMeal meal) {
         if (meals.remove(meal)) {
             // remove Stats from the meal Stats
             kcal -= meal.getKcal();

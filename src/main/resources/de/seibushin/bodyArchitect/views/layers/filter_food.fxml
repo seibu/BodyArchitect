@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.Icon?>
+<?import com.gluonhq.charm.glisten.mvc.View?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<View fx:id="filter" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.layers.FilterFoodController">
+   <center>
+      <ToolBar fx:id="tb_toolbar" BorderPane.alignment="CENTER">
+        <items>
+            <TextField fx:id="tf_search" promptText="Search Food" />
+          <Button mnemonicParsing="false" onAction="#search">
+               <graphic>
+                  <Icon content="SEARCH" />
+               </graphic>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#close">
+               <graphic>
+                  <Icon content="CLEAR" />
+               </graphic>
+            </Button>
+        </items>
+      </ToolBar>
+   </center>
+</View>

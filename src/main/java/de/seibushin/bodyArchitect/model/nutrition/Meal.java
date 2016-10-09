@@ -81,6 +81,11 @@ public class Meal implements SimpleMeal {
         this.saved = saved;
     }
 
+    @Override
+    public Meal getMeal() {
+        return this;
+    }
+
     public ObservableList<MealFood> getMealFoods() {
         return mealFoods;
     }

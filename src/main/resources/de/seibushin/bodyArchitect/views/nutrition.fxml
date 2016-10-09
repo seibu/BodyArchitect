@@ -28,7 +28,7 @@
                                                 <Label styleClass="lbl_gauge" text="kcal" textOverrun="CLIP" VBox.vgrow="ALWAYS" />
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="5000.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="2400.0" prefHeight="100.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_kcal_add" />
                                                     </children>
                                                 </StackPane>
@@ -39,7 +39,7 @@
                                                 <Label styleClass="lbl_gauge" text="protein" />
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_protein" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_protein" maxValue="160.0" prefHeight="100.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_protein_add" />
                                                     </children>
                                                 </StackPane>
@@ -50,7 +50,7 @@
                                                 <Label styleClass="lbl_gauge" text="fat" />
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_fat" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_fat" maxValue="70.0" prefHeight="100.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_fat_add" />
                                                     </children>
                                                 </StackPane>
@@ -61,7 +61,7 @@
                                                 <Label styleClass="lbl_gauge" text="carbs" />
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="250.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="300.0" prefHeight="100.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_carbs_add" />
                                                     </children>
                                                 </StackPane>
@@ -69,7 +69,7 @@
                                         </VBox>
                                     </children>
                                     <VBox.margin>
-                                        <Insets />
+                                        <Insets top="5.0" />
                                     </VBox.margin>
                            <padding>
                               <Insets left="5.0" right="5.0" />
@@ -121,7 +121,7 @@
                 </Tab>
                 <Tab text="Logs">
                     <content>
-                        <VBox fx:id="vbox_logs" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+                        <VBox fx:id="vbox_logs" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </padding>

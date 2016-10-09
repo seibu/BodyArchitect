@@ -167,3 +167,7 @@
 .container-hl {
     -fx-font-size: 16px;
 }
+
+.in-range {
+    -fx-text-fill: #80FF6B;
+}

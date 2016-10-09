@@ -10,17 +10,24 @@ package de.seibushin.bodyArchitect.views;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.control.CharmListView;
+import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
+import de.seibushin.bodyArchitect.model.nutrition.Food;
+import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
+import de.seibushin.bodyArchitect.views.layers.FilterFoodController;
+import de.seibushin.bodyArchitect.views.layers.FilterView;
 import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import de.seibushin.bodyArchitect.views.listCell.MealCell;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
@@ -55,9 +62,9 @@ public class NutritionController {
     @FXML
     CharmListView lv_day_meals;
     @FXML
-    CharmListView lv_meals;
+    CharmListView<SimpleMeal, String> lv_meals;
     @FXML
-    CharmListView lv_food;
+    CharmListView<Food, String> lv_food;
 
     @FXML
     Label lbl_kcal_add;
@@ -72,6 +79,8 @@ public class NutritionController {
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
     private Button btn_addFood = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddFood());
     private Button btn_date = MaterialDesignIcon.TODAY.button(e -> showLogBook());
+    private Button btn_searchFood = MaterialDesignIcon.SEARCH.button(e -> showSearch());
+
 
     private double currKcal;
     private double currFat;
@@ -98,11 +107,14 @@ public class NutritionController {
         tb_nutrition.getSelectionModel().select(3);
     }
 
+    private void showSearch() {
+        nutrition.getApplication().showLayer(Main.FILTER_FOOD);
+    }
+
     private void updateDay() {
         Day selectedDay = Service.getInstance().getSelectedDayObject();
         //btn_date.setText(Service.getInstance().getSelectedDayString());
         MobileApplication.getInstance().getAppBar().setTitleText("Nutrition - " + Service.getInstance().getSelectedDayString());
-
 
         if (selectedDay != null) {
             lv_day_meals.setItems(Service.getInstance().getMealsForSelectedDay());
@@ -171,7 +183,11 @@ public class NutritionController {
         lv_day_meals.setCellFactory(cell -> {
             final MealCell mealCell = new MealCell(
                     c -> {
-                        System.out.println("left -> delete");
+                        Service.getInstance().deleteDayMeal(c);
+                        // @todo we only need to update the gauges
+                        // but we dont have a reference to the selectedDay present so we would need to get it again
+                        // fix this ...
+                        updateDay();
                     },
                     c -> {
                         System.out.println("right");
@@ -183,7 +199,7 @@ public class NutritionController {
         });
 
         // prevent the list from scrolling while sliding
-        lv_meals.addEventFilter(ScrollEvent.ANY, e -> {
+        lv_day_meals.addEventFilter(ScrollEvent.ANY, e -> {
             if (sliding.get() && e.getDeltaY() != 0) {
                 e.consume();
             }
@@ -246,6 +262,8 @@ public class NutritionController {
             }
         });
 
+        // order by name
+        lv_meals.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
         lv_meals.setItems(Service.getInstance().getMeals());
 
         // =====================
@@ -276,7 +294,23 @@ public class NutritionController {
             }
         });
 
+        // filter for food
+        nutrition.getApplication().addLayerFactory(Main.FILTER_FOOD, () -> {
+            FilterView filterView = new FilterView("");
+            SidePopupView sidePopupView = new SidePopupView(filterView.getView(), Side.TOP, true);
+            FilterFoodController filterFoodController = filterView.getController();
+            sidePopupView.showingProperty().addListener((obs, ov, nv) -> {
+                if (ov && !nv) {
+                    FilteredList<Food> filteredList = new FilteredList(Service.getInstance().getFoods());
+                    filteredList.setPredicate(filterFoodController.getPredicate());
+                    lv_food.setItems(filteredList);
+                }
+            });
+            return sidePopupView;
+        });
+
         lv_food.setItems(Service.getInstance().getFoods());
+        lv_food.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
 
         // =====================
         // Logs Tab
@@ -311,7 +345,7 @@ public class NutritionController {
                     break;
                 case 2:
                     // food
-                    appBar.getActionItems().setAll(btn_addFood);
+                    appBar.getActionItems().setAll(btn_addFood, btn_searchFood);
                     break;
                 case 3:
                     // logs

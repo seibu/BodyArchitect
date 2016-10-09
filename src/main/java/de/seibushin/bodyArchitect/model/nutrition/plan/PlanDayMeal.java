@@ -5,28 +5,30 @@
  * 
  */
 
-package de.seibushin.bodyArchitect.model.nutrition;
+package de.seibushin.bodyArchitect.model.nutrition.plan;
 
-public class DayFood implements SimpleMeal {
+import de.seibushin.bodyArchitect.model.nutrition.Meal;
+import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
+import de.seibushin.bodyArchitect.model.nutrition.Type;
+
+public class PlanDayMeal implements SimpleMeal {
 
     private int id;
-    private Food food;
-    private double weight;
+    private SimpleMeal meal;
     private boolean saved = false;
 
-    public DayFood() {
+    public PlanDayMeal() {
 
     }
 
-    public DayFood(Food food, double weight) {
-        this.food = food;
-        this.weight = weight;
-        this.id = food.getId();
+    public PlanDayMeal(SimpleMeal meal) {
+        this.meal = meal;
+        this.id = meal.getId();
     }
 
     @Override
     public String getName() {
-        return food.getName();
+        return meal.getName();
     }
 
     @Override
@@ -41,50 +43,41 @@ public class DayFood implements SimpleMeal {
 
     @Override
     public double getKcal() {
-        double d = (food.getKcal() / food.getWeight()) * weight;
-        return d;
+        return meal.getKcal();
     }
 
     @Override
     public double getFat() {
-        double d = (food.getFat() / food.getWeight()) * weight;
-        return d;
+        return meal.getFat();
     }
 
     @Override
     public double getProtein() {
-        double d = (food.getProtein() / food.getWeight()) * weight;
-        return d;
+        return meal.getProtein();
     }
 
     @Override
     public double getCarbs() {
-        double d = (food.getCarbs() / food.getWeight()) * weight;
-        return d;
+        return meal.getCarbs();
     }
 
     @Override
     public double getSugar() {
-        double d = (food.getSugar() / food.getWeight()) * weight;
-        return d;
+        return meal.getSugar();
     }
 
-    public double getWeight() {
-        return weight;
-    }
-
-    public int getFoodId() {
-        return food.getId();
+    public int getMealId() {
+        return meal.getId();
     }
 
     @Override
     public Type getType() {
-        return Type.SNACK;
+        return meal.getType();
     }
 
     @Override
     public boolean isMeal() {
-        return false;
+        return true;
     }
 
     @Override
@@ -99,6 +92,6 @@ public class DayFood implements SimpleMeal {
 
     @Override
     public Meal getMeal() {
-        return null;
+        return (Meal)meal;
     }
 }

@@ -34,3 +34,26 @@ create table if not exists DAY_FOOD(
   f_id integer REFERENCES FOOD(id),
   weight DOUBLE NOT NULL
 );
+
+create table if not exists NUTRITION_PLANS(
+  id integer primary key autoincrement,
+  name VARCHAR NOT NULL,
+  kcal DOUBLE,
+	protein DOUBLE,
+	fat DOUBLE,
+	carbs DOUBLE,
+	sugar DOUBLE,
+	selected BOOLEAN  NOT NULL
+);
+
+create table if not exists NUTRITION_PLAN_DAYS(
+  id integer primary key autoincrement,
+  np_id integer REFERENCES NUTRITION_PLANS(id),
+  d_order integer NOT NULL
+);
+
+create table if not exists NUTRITION_PLAN_DAY_MEALS(
+  id integer primary key autoincrement,
+  npd_id integer REFERENCES NUTRITION_PLAN_DAYS(id),
+  m_id integer REFERENCES MEAL(id)
+);

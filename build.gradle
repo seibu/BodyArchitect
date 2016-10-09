@@ -28,8 +28,10 @@ dependencies {
 
     iosRuntime 'com.gluonhq:charm-ios:3.0.0'
 
-    desktopRuntime 'com.gluonhq:charm-desktop:3.0.0'
-    desktopRuntime 'org.xerial:sqlite-jdbc:3.8.11.2:'
+    //desktopRuntime 'com.gluonhq:charm-desktop:3.0.0'
+    //desktopRuntime 'org.xerial:sqlite-jdbc:3.8.11.2:'
+    compile 'com.gluonhq:charm-desktop:3.0.0'
+    compile 'org.xerial:sqlite-jdbc:3.8.11.2:'
 }
 
 jfxmobile {

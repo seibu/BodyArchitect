@@ -17,7 +17,9 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 public class FoodController {
     @FXML
@@ -36,6 +38,8 @@ public class FoodController {
     TextField tf_sugar;
     @FXML
     TextField tf_protein;
+    @FXML
+    Label lbl_calc;
 
     @FXML
     View food;
@@ -98,6 +102,32 @@ public class FoodController {
                 appBar.setTitleText("Add Food");
             }
         });
+
+
+        lbl_calc.textProperty().bind(Bindings.createStringBinding(() -> {
+                    String ret = "";
+                    try {
+                        double p = Service.getInstance().getDoubleNF().parse(tf_protein.textProperty().get()).doubleValue() * 4;
+                        double f = Service.getInstance().getDoubleNF().parse(tf_fat.textProperty().get()).doubleValue() * 9;
+                        double c = Service.getInstance().getDoubleNF().parse(tf_carbs.textProperty().get()).doubleValue() * 4;
+                        double sum = p + f + c;
+                        double exp = Service.getInstance().getDoubleNF().parse(tf_kcal.textProperty().get()).doubleValue();
+                        ret = Service.getInstance().getDoubleNF().format(p) + " + " +
+                                Service.getInstance().getDoubleNF().format(f) + " + " +
+                                Service.getInstance().getDoubleNF().format(c) + " = " +
+                                Service.getInstance().getDoubleNF().format(sum);
+                        if (Math.abs(sum - exp) <= exp*0.05) {
+                            lbl_calc.getStyleClass().add("in-range");
+                        } else {
+                            lbl_calc.getStyleClass().remove("in-range");
+                        }
+                    } catch (Exception e) {
+
+                    }
+                    return ret;
+                },
+                tf_protein.textProperty(), tf_fat.textProperty(), tf_carbs.textProperty(), tf_kcal.textProperty()
+        ));
 
         /*// this wont work for mobile since javafxports is not supporting streams
         atf_name.setCompleter(s -> Service.getInstance().getFoods().filtered(f ->  f.getName().toLowerCase().startsWith(s.toLowerCase())));
