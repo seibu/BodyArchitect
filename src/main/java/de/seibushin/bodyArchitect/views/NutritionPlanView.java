@@ -13,25 +13,24 @@ import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 
-public class HomeView {
+public class NutritionPlanView {
 
     private final String name;
 
-    public HomeView(String name) {
+    public NutritionPlanView(String name) {
         this.name = name;
     }
 
     public View getView() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(HomeView.class.getResource("home.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(HomeView.class.getResource("nutrition_plan.fxml"));
             fxmlLoader.setResources(Utils.getBundle());
             View view = fxmlLoader.load();
             view.setName(name);
-            // set Transition
-            //view.setShowTransitionFactory(v -> new BounceInLeftTransition(v));
             return view;
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("IOException: " + e);
             return new View(name);
         }
     }

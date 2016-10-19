@@ -34,4 +34,6 @@ public interface SimpleMeal {
     public void setSaved(boolean saved);
 
     public Meal getMeal();
+
+    public boolean isForPlan();
 }

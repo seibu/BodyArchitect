@@ -30,6 +30,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
@@ -39,7 +40,6 @@ import jfxtras.scene.control.gauge.linear.elements.Segment;
 import org.omg.CORBA.MARSHAL;
 
 public class NutritionController {
-    public static final String MEAL_DAY_VIEW = "Day";
     public static final String MEAL_VIEW = "Meal";
     public static final String FOOD_VIEW = "Food";
 
@@ -90,7 +90,8 @@ public class NutritionController {
     private final BooleanProperty sliding = new SimpleBooleanProperty();
 
     private void showAddMealToDay() {
-        nutrition.getApplication().switchView(MEAL_DAY_VIEW);
+        MealDayController.setForPlan(false);
+        nutrition.getApplication().switchView(Main.MEAL_DAY_VIEW);
     }
 
     private void showAddFood() {
@@ -150,29 +151,51 @@ public class NutritionController {
         }
     }
 
+    /**
+     * Update the ActionItems accordingly to the given tab
+     * @param tab
+     */
+    private void showTabActionItems(Tab tab) {
+        AppBar appBar = MobileApplication.getInstance().getAppBar();
+
+        switch (tab.getId()) {
+            case "day":
+                appBar.getActionItems().setAll(btn_addMealToDay, btn_date);
+                break;
+            case "meal":
+                appBar.getActionItems().setAll(btn_addMeal);
+                break;
+            case "food":
+                appBar.getActionItems().setAll(btn_addFood, btn_searchFood);
+                break;
+            case "logs":
+                appBar.getActionItems().clear();
+                break;
+        }
+    }
+
     @FXML
     public void initialize() {
-        // add the views
-        MobileApplication.getInstance().addViewFactory(MEAL_DAY_VIEW, () -> new MealDayView(MEAL_DAY_VIEW).getView());
+        // add the views only needed by the Nutrition
         MobileApplication.getInstance().addViewFactory(MEAL_VIEW, () -> new MealView(MEAL_VIEW).getView());
         MobileApplication.getInstance().addViewFactory(FOOD_VIEW, () -> new FoodView(FOOD_VIEW).getView());
-
-        // add the mealInfoLayer (popup)
-        MobileApplication.getInstance().addLayerFactory("MealInfo", () -> Service.getInstance().getMealInfoLayer());
-
-        // create the logbook
-        // NOTE: creating the LogBook directly in the bodyArchitect class would result in the icons not showing correctly
-        LogBook logBook = new LogBook();
-        Service.getInstance().setLogBook(logBook);
 
         // update appBar
         nutrition.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
                 AppBar appBar = MobileApplication.getInstance().getAppBar();
                 appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> MobileApplication.getInstance().showLayer(Main.MENU_LAYER)));
-                appBar.getActionItems().addAll(btn_addMealToDay, btn_date);
+                // show the actionItems for the selectedTab
+                showTabActionItems(tb_nutrition.getSelectionModel().getSelectedItem());
 
                 updateDay();
+            }
+        });
+
+        // react on tab selection and show the correct ActionItems
+        tb_nutrition.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
+            if (nv != null) {
+                showTabActionItems(nv);
             }
         });
 
@@ -311,6 +334,7 @@ public class NutritionController {
 
         lv_food.setItems(Service.getInstance().getFoods());
         lv_food.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
+        lv_food.setHeadersFunction(n -> n.getName().substring(0, 1));
 
         // =====================
         // Logs Tab
@@ -325,32 +349,6 @@ public class NutritionController {
                 updateDay();
                 // switch to Day tab
                 tb_nutrition.getSelectionModel().select(0);
-            }
-        });
-
-
-        // react on tab selection
-        tb_nutrition.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> {
-            AppBar appBar = MobileApplication.getInstance().getAppBar();
-            // search for a better way ._.
-            System.out.println(newValue);
-            switch (newValue.intValue()) {
-                case 0:
-                    // day
-                    appBar.getActionItems().setAll(btn_addMealToDay, btn_date);
-                    break;
-                case 1:
-                    // meal
-                    appBar.getActionItems().setAll(btn_addMeal);
-                    break;
-                case 2:
-                    // food
-                    appBar.getActionItems().setAll(btn_addFood, btn_searchFood);
-                    break;
-                case 3:
-                    // logs
-                    appBar.getActionItems().clear();
-                    break;
             }
         });
     }

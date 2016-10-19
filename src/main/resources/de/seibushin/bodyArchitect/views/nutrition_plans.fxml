@@ -3,56 +3,131 @@
 <?import com.gluonhq.charm.glisten.control.CharmListView?>
 <?import com.gluonhq.charm.glisten.control.Icon?>
 <?import com.gluonhq.charm.glisten.mvc.View?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-
-<View fx:id="plans" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionPlansController">
+<View fx:id="plans" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionPlansController">
    <center>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Plans">
-            <content>
-                  <StackPane>
-                     <children>
-                        <CharmListView fx:id="lv_plans" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding">
-                           <placeholder>
-                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
-                           </placeholder>
-                        </CharmListView>
-                     </children>
-                  </StackPane>
-            </content>
-          </Tab>
-          <Tab text="Days">
-            <content>
-                  <StackPane>
-                     <children>
-                        <CharmListView fx:id="lv_days" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding">
-                           <placeholder>
-                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
-                           </placeholder>
-                        </CharmListView>
-                     </children>
-                  </StackPane>
-            </content>
-          </Tab>
-            <Tab text="Meals">
-              <content>
-                  <StackPane>
-                     <children>
-                        <CharmListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding">
-                           <placeholder>
-                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
-                           </placeholder>
-                        </CharmListView>
-                     </children>
-                  </StackPane>
-              </content>
-            </Tab>
-        </tabs>
-      </TabPane>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <Region styleClass="sep-bottom">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+               </VBox.margin>
+            </Region>
+            <StackPane>
+               <children>
+                  <Label styleClass="container-hl" text="Days" />
+                  <Button mnemonicParsing="false" onAction="#addDay" styleClass="btn_trans" StackPane.alignment="TOP_RIGHT">
+                     <graphic>
+                        <Icon content="ADD" onDragDetected="#addDay" />
+                     </graphic>
+                  </Button>
+               </children>
+            </StackPane>
+            <HBox fx:id="hb_days" minHeight="35.0" prefHeight="35.0">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin></HBox>
+            <Region styleClass="sep-bottom">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+               </VBox.margin>
+            </Region>
+         </children>
+      </VBox>
    </center>
+   <top>
+      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="container-hl" text="Plans" />
+            <CharmListView fx:id="lv_plans" prefHeight="100.0" prefWidth="200.0" styleClass="list-view-sliding">
+               <placeholder>
+                  <Icon content="CLEAR_ALL" prefHeight="100.0" styleClass="list-placeholder" />
+               </placeholder>
+            </CharmListView>
+         </children>
+      </VBox>
+   </top>
+   <bottom>
+      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <StackPane>
+               <children>
+                  <Label styleClass="container-hl" text="Meals" />
+                  <Button mnemonicParsing="false" onAction="#addMeal" styleClass="btn_trans" StackPane.alignment="TOP_RIGHT">
+                     <graphic>
+                        <Icon content="ADD" />
+                     </graphic>
+                  </Button>
+               </children>
+            </StackPane>
+            <GridPane hgap="5.0" styleClass="cell-body">
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="%food.cell.protein" GridPane.columnIndex="1">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label text="%food.cell.carbs" GridPane.columnIndex="3">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label text="%food.cell.fat" GridPane.columnIndex="2">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label text="%food.cell.sugar" GridPane.columnIndex="4">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label fx:id="lbl_protein" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_fat" text="0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_carbs" text="0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <Label fx:id="lbl_sugar" text="0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                  <Label text="%food.cell.kcal">
+                     <styleClass>
+                        <String fx:value="light" />
+                        <String fx:value="lowlight" />
+                     </styleClass>
+                  </Label>
+                  <Label fx:id="lbl_kcal" text="0" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+            <CharmListView fx:id="lv_meals" prefWidth="200.0" styleClass="list-view-sliding">
+               <placeholder>
+                  <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+               </placeholder>
+            </CharmListView>
+         </children>
+      </VBox>
+   </bottom>
 </View>

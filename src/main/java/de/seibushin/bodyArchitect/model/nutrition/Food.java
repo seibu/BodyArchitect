@@ -17,6 +17,7 @@ public class Food {
     private double fat;
     private double carbs;
     private double sugar;
+    private boolean snack;
 
     // for resetting the portion
     private double tmpPortion;
@@ -41,8 +42,8 @@ public class Food {
      * @param weight  - weight
      * @param portion - portion
      */
-    public Food(int id, String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar) {
-        this(name, weight, portion, kcal, protein, fat, carbs, sugar);
+    public Food(int id, String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar, boolean snack) {
+        this(name, weight, portion, kcal, protein, fat, carbs, sugar, snack);
         this.id = id;
     }
 
@@ -58,7 +59,7 @@ public class Food {
      * @param weight  - weight
      * @param portion - portion
      */
-    public Food(String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar) {
+    public Food(String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar, boolean snack) {
         this.name = name;
         this.kcal = kcal;
         this.protein = protein;
@@ -68,6 +69,7 @@ public class Food {
         this.weight = weight;
         this.portion = portion;
         this.tmpPortion = portion;
+        this.snack = snack;
     }
 
     public String getName() {
@@ -132,6 +134,10 @@ public class Food {
 
     public double getPortionSugar() {
         return sugar / weight * portion;
+    }
+
+    public boolean isSnack() {
+        return snack;
     }
 
     @Override

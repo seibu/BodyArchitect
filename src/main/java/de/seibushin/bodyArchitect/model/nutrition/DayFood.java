@@ -9,6 +9,8 @@ package de.seibushin.bodyArchitect.model.nutrition;
 
 public class DayFood implements SimpleMeal {
 
+    //@todo prepare for plan usage
+
     private int id;
     private Food food;
     private double weight;
@@ -100,5 +102,10 @@ public class DayFood implements SimpleMeal {
     @Override
     public Meal getMeal() {
         return null;
+    }
+
+    @Override
+    public boolean isForPlan() {
+        return false;
     }
 }

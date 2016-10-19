@@ -8,6 +8,9 @@
 package de.seibushin.bodyArchitect.model.nutrition.plan;
 
 import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,7 +22,7 @@ public class Plan {
     private double fat = 0.0;
     private double carbs = 0.0;
     private double sugar = 0.0;
-    private boolean selected = false;
+    private BooleanProperty selected = new SimpleBooleanProperty(false);
 
     private ObservableList<PlanDay> planDays = FXCollections.observableArrayList();
 
@@ -27,15 +30,19 @@ public class Plan {
 
     }
 
-    public Plan(int id, String name, double kcal, double protein, double fat, double carbs, double sugar, boolean selected) {
+    public Plan(String name, double kcal, double protein, double fat, double carbs, double sugar) {
         this.name = name;
-        this.id = id;
         this.kcal = kcal;
         this.protein = protein;
         this.fat = fat;
         this.carbs = carbs;
         this.sugar = sugar;
-        this.selected = selected;
+    }
+
+    public Plan(int id, String name, double kcal, double protein, double fat, double carbs, double sugar, boolean selected) {
+        this(name, kcal, protein, fat, carbs, sugar);
+        this.id = id;
+        this.selected.set(selected);
     }
 
     public void addDay(PlanDay planDay) {
@@ -99,11 +106,11 @@ public class Plan {
     }
 
     public boolean isSelected() {
-        return selected;
+        return selected.get();
     }
 
     public void setSelected(boolean selected) {
-        this.selected = selected;
+        this.selected.set(selected);
     }
 
     public ObservableList<PlanDay> getPlanDays() {
@@ -112,5 +119,15 @@ public class Plan {
 
     public void setPlanDays(ObservableList<PlanDay> planDays) {
         this.planDays = planDays;
+    }
+
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+
+    public PlanDay addNewDay() {
+        PlanDay planDay = new PlanDay(id, planDays.size());
+        planDays.add(planDay);
+        return planDay;
     }
 }

@@ -17,7 +17,7 @@
     <center>
         <TabPane fx:id="tb_nutrition" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab text="Day">
+                <Tab fx:id="day" text="Day">
                     <content>
                         <VBox fx:id="vbox_day" alignment="CENTER" spacing="5.0">
                             <children>
@@ -90,7 +90,7 @@
                         </VBox>
                     </content>
                 </Tab>
-                <Tab text="Meal">
+                <Tab fx:id="meal" text="Meal">
                     <content>
                         <VBox spacing="5.0">
                             <children>
@@ -103,7 +103,7 @@
                         </VBox>
                     </content>
                 </Tab>
-                <Tab text="Food">
+                <Tab fx:id="food" text="Food">
                     <content>
                         <VBox spacing="5.0">
                             <opaqueInsets>
@@ -119,7 +119,7 @@
                         </VBox>
                     </content>
                 </Tab>
-                <Tab text="Logs">
+                <Tab fx:id="logs" text="Logs">
                     <content>
                         <VBox fx:id="vbox_logs" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
                             <padding>

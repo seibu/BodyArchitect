@@ -27,8 +27,13 @@
     -fx-effect: dropshadow(three-pass-box, #ccc, 0, 0, 0, 0);
 }
 
+#logBook #gp_calendar .button.has-data {
+    -fx-text-fill: #57b757;
+}
+
 #logBook #gp_calendar .button.today {
     -fx-text-fill: #ff1237;
+    -fx-font-weight: bold;
 }
 
 #logBook #gp_calendar .label {

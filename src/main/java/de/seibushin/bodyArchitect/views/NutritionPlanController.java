@@ -9,26 +9,23 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
-import com.gluonhq.charm.glisten.control.AutoCompleteTextField;
 import com.gluonhq.charm.glisten.control.TextField;
-import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.Food;
+import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 
-public class FoodController {
+public class NutritionPlanController {
+    @FXML
+    private View nutritionPlan;
     @FXML
     TextField tf_name;
-    @FXML
-    TextField tf_weight;
-    @FXML
-    TextField tf_portion;
     @FXML
     TextField tf_kcal;
     @FXML
@@ -41,36 +38,32 @@ public class FoodController {
     TextField tf_protein;
     @FXML
     Label lbl_calc;
-    @FXML
-    CheckBox cb_snack;
 
     @FXML
     View food;
 
-    private void addFood() {
+    private void addPlan() {
         String result = "";
         try {
             String name = tf_name.getText();
-            Double weight = Utils.getNumberFormat().parse(tf_weight.getText()).doubleValue();
-            Double portion = Utils.getNumberFormat().parse(tf_portion.getText()).doubleValue();
             Double kcal = Utils.getNumberFormat().parse(tf_kcal.getText()).doubleValue();
             Double fat = Utils.getNumberFormat().parse(tf_fat.getText()).doubleValue();
             Double carbs = Utils.getNumberFormat().parse(tf_carbs.getText()).doubleValue();
             Double sugar = Utils.getNumberFormat().parse(tf_sugar.getText()).doubleValue();
             Double protein = Utils.getNumberFormat().parse(tf_protein.getText()).doubleValue();
-            boolean snack = cb_snack.isSelected();
 
-            // add the food
-            Food food = new Food(name, weight, portion, kcal, protein, fat, carbs, sugar, snack);
-            Service.getInstance().addFood(food);
+            // add the Plan
+            Plan plan = new Plan(name, kcal, protein, fat, carbs, sugar);
+            plan.setSelected(false);
+            Service.getInstance().addPlan(plan);
 
             // clear the fields
             clear();
 
-            result = Utils.getString("addFood_success");
+            result = "Plan added";
         } catch (Exception e) {
             e.printStackTrace();
-            result = Utils.getString("addFood_error");
+            result = "Error while adding plan";
         }
 
         MobileApplication.getInstance().showMessage(result);
@@ -85,24 +78,21 @@ public class FoodController {
         tf_carbs.setText("");
         tf_sugar.setText("");
         tf_protein.setText("");
-        tf_weight.setText("");
-        tf_portion.setText("");
-        cb_snack.setSelected(false);
     }
 
     @FXML
     private void initialize() {
-        food.showingProperty().addListener((obs, oldValue, newValue) -> {
+        nutritionPlan.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
                 AppBar appBar = MobileApplication.getInstance().getAppBar();
 
                 appBar.setNavIcon(MaterialDesignIcon.ARROW_BACK.button(e -> {
                     MobileApplication.getInstance().switchToPreviousView();
                 }));
-                appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> addFood()));
+                appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> addPlan()));
 
                 // set Title
-                appBar.setTitleText("Add Food");
+                appBar.setTitleText("Add Nutrition Plan");
             }
         });
 

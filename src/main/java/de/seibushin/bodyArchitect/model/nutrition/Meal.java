@@ -86,6 +86,11 @@ public class Meal implements SimpleMeal {
         return this;
     }
 
+    @Override
+    public boolean isForPlan() {
+        return false;
+    }
+
     public ObservableList<MealFood> getMealFoods() {
         return mealFoods;
     }

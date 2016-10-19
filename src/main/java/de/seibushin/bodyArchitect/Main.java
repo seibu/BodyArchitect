@@ -9,30 +9,31 @@ import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
-import de.seibushin.bodyArchitect.views.NutritionPlansView;
-import de.seibushin.bodyArchitect.views.SettingsView;
+import de.seibushin.bodyArchitect.views.*;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
-import de.seibushin.bodyArchitect.views.HomeView;
-import de.seibushin.bodyArchitect.views.NutritionView;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class Main extends MobileApplication {
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+public class Main extends MobileApplication {
     // Views and Layers
-    public static final String HOME_VIEW = "home";
+    public static final String BA_VIEW = HOME_VIEW;
     public static final String NUTRITION_VIEW = "Nutrition";
     public static final String NUTRITION_PLANS_VIEW = "Nutrition Plans";
     public static final String WORKOUT_VIEW = "Workout";
     public static final String MENU_LAYER = "Side Menu";
     public static final String SETTINGS_VIEW = "Settings";
     public static final String FILTER_FOOD = "Filter Food";
+    public static final String MEAL_DAY_VIEW = "Meal Day";
 
     @Override
     public void init() {
-        // @todo switch to ORMLite instead of Hibernate for better mobile support
-
         // maybe try this for the settings first
         // http://gluonhq.com/learn-to-build-gluon-charm-apps-with-three-new-charm-samples/
 
@@ -40,58 +41,68 @@ public class Main extends MobileApplication {
         Service.init();
 
         // Views
-        addViewFactory(HOME_VIEW, () -> new HomeView(HOME_VIEW).getView());
+        addViewFactory(BA_VIEW, () -> new HomeView(BA_VIEW).getView());
         addViewFactory(NUTRITION_VIEW, () -> new NutritionView(NUTRITION_VIEW).getView());
         addViewFactory(NUTRITION_PLANS_VIEW, () -> new NutritionPlansView(NUTRITION_PLANS_VIEW).getView());
         //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
         addViewFactory(SETTINGS_VIEW, () -> new SettingsView(SETTINGS_VIEW).getView());
+        addViewFactory(MEAL_DAY_VIEW, () -> new MealDayView(MEAL_DAY_VIEW).getView());
 
         // side Navigation
         NavigationDrawer drawer = new NavigationDrawer();
-
         // set Navigation Header
         NavigationDrawer.Header header = new NavigationDrawer.Header("BodyArchitect",
                 "Nutrition Edition",
                 new Avatar(21, new Image(Main.class.getResourceAsStream("/icon.png"))));
         drawer.setHeader(header);
 
-        Item home = new NavigationDrawer.Item(HOME_VIEW, MaterialDesignIcon.HOME.graphic());
-        home.setSelected(true);
-        Item nutrition = new NavigationDrawer.Item(NUTRITION_VIEW, MaterialDesignIcon.LOCAL_DINING.graphic());
-        Item nutritionPlans = new NavigationDrawer.Item(NUTRITION_PLANS_VIEW, MaterialDesignIcon.ASSIGNMENT.graphic());
-        Item workout = new NavigationDrawer.Item(WORKOUT_VIEW, MaterialDesignIcon.FITNESS_CENTER.graphic());
-        Item setting = new NavigationDrawer.Item(SETTINGS_VIEW, MaterialDesignIcon.TODAY.graphic());
+        final Item home = new Item(BA_VIEW, MaterialDesignIcon.HOME.graphic());
+        final Item nutrition = new Item(NUTRITION_VIEW, MaterialDesignIcon.LOCAL_DINING.graphic());
+        final Item nutritionPlans = new Item(NUTRITION_PLANS_VIEW, MaterialDesignIcon.ASSIGNMENT.graphic());
+        final Item workout = new Item(WORKOUT_VIEW, MaterialDesignIcon.FITNESS_CENTER.graphic());
+        final Item setting = new Item(SETTINGS_VIEW, MaterialDesignIcon.TODAY.graphic());
+
+        // @todo not yet implemented
+        workout.setDisable(true);
 
         // add the Items to the menu
         drawer.getItems().addAll(home, nutrition, nutritionPlans, workout, setting);
+        // add sidemenu
+        addLayerFactory(MENU_LAYER, () -> new SidePopupView(drawer));
 
-        // add Listener for the menu to change the View
-        drawer.selectedItemProperty().addListener((obs, oldItem, newItem) -> {
-            hideLayer(MENU_LAYER);
-            switch (((Item)newItem).getTitle()) {
-                case HOME_VIEW:
-                    switchView(HOME_VIEW);
-                    break;
-                case NUTRITION_VIEW:
-                    switchView(NUTRITION_VIEW);
-                    break;
-                case NUTRITION_PLANS_VIEW:
-                    switchView(NUTRITION_PLANS_VIEW);
-                    break;
-                case WORKOUT_VIEW:
-                    switchView(WORKOUT_VIEW);
-                    break;
-                case SETTINGS_VIEW:
-                    switchView(SETTINGS_VIEW);
+        home.setSelected(true);
+        // if a new item in the drawer is selected we need to switchView
+        drawer.selectedItemProperty().addListener((obs, ov, nv) -> {
+            if (nv != null) {
+                hideLayer(MENU_LAYER);
+                Item item = (Item) nv;
+                switchView(item.getTitle());
             }
         });
 
-        viewProperty().addListener(e -> {
-            System.out.println("test this");
+        // react on a change of the view
+        viewProperty().addListener((obs, ov, nv) -> {
+            if (nv != null) {
+                // iterate through all drawer items so determine the selected view
+                // if the view is not a element of the menu every item is deselected keep this in mind
+                // this should not be a problem normally since these views dont use the menu instead they get a
+                // return button
+                for (Node node : drawer.getItems()) {
+                    Item item = (Item) node;
+                    if (nv.getName().equals(item.getTitle())) {
+                        // select the new menu item
+                        drawer.setSelectedItem(node);
+                        item.setSelected(true);
+                    } else {
+                        // deselect all other items
+                        item.setSelected(false);
+                    }
+                }
+            }
         });
 
-        // add sidemenu
-        addLayerFactory(MENU_LAYER, () -> new SidePopupView(drawer));
+        // add the mealInfoLayer (popup)
+        addLayerFactory("MealInfo", () -> Service.getInstance().getMealInfoLayer());
     }
 
     @Override

@@ -9,40 +9,52 @@ package de.seibushin.bodyArchitect.views.listCell;
 
 import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.control.ListTile;
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
-import de.seibushin.bodyArchitect.model.nutrition.DayFood;
-import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
+import de.seibushin.bodyArchitect.model.nutrition.Food;
+import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-public class MealCellNode {
+public class PlanCellNode {
     @FXML
-    public ListTile tile;
+    ListTile tile;
     @FXML
-    public Label lbl_name;
+    Label lbl_name;
     @FXML
-    private Label lbl_type;
+    Label lbl_kcal;
     @FXML
-    public Label lbl_kcal;
+    Label lbl_fat;
     @FXML
-    public Label lbl_fat;
+    Label lbl_carbs;
     @FXML
-    public Label lbl_carbs;
+    Label lbl_sugar;
     @FXML
-    public Label lbl_sugar;
+    Label lbl_protein;
     @FXML
-    public Label lbl_protein;
+    Icon i_selected;
     @FXML
-    Icon i_info;
+    Button btn_select;
 
-    public MealCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("simpleMealCellNode.fxml"));
+    @FXML
+    public void initialize() {
+    }
+
+    @FXML
+    public void selectPlan(Event event) {
+        System.out.println(event.getSource());
+        System.out.println(event.getTarget());
+    }
+
+    public PlanCellNode() {
+        FXMLLoader fxmlLoader = new FXMLLoader(PlanCellNode.class.getResource("planCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {
@@ -52,24 +64,18 @@ public class MealCellNode {
         }
     }
 
-    public void update(SimpleMeal item) {
-        if (item.isMeal()) {
-            lbl_type.setText(item.getType().toString());
-        } else {
-            lbl_type.setText(((DayFood)item).getWeight() + " " + Utils.getString("food.cell.weight.unit"));
-            i_info.setDisable(true);
-        }
+    public void update(Plan item) {
         lbl_name.setText(item.getName());
-
-
         lbl_kcal.setText(Service.getInstance().getDf().format(item.getKcal()) + " " + Utils.getString("meal.cell.kcal"));
         lbl_fat.setText(Service.getInstance().getDf().format(item.getFat()));
         lbl_carbs.setText(Service.getInstance().getDf().format(item.getCarbs()));
         lbl_sugar.setText(Service.getInstance().getDf().format(item.getSugar()));
         lbl_protein.setText(Service.getInstance().getDf().format(item.getProtein()));
-    }
 
-    public ListTile getNode() {
-        return tile;
+        if (item.isSelected()) {
+            i_selected.setContent(MaterialDesignIcon.CHECK_CIRCLE);
+        } else {
+            i_selected.setContent(MaterialDesignIcon.DONE);
+        }
     }
 }

@@ -9,15 +9,20 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
+import com.gluonhq.charm.glisten.control.CharmListView;
 import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.*;
+import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
+import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
 import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import de.seibushin.bodyArchitect.views.listCell.MealCell;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
@@ -25,37 +30,56 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.ScrollEvent;
 
 public class MealDayController {
+    private static boolean forPlan = false;
+
     @FXML
     private View meal_day;
     @FXML
-    ListView<SimpleMeal> lv_meals;
+    CharmListView<SimpleMeal, String> lv_meals;
     @FXML
-    ListView<Food> lv_food;
+    CharmListView<Food, String> lv_food;
     @FXML
     TabPane tp_simpleMeals;
     @FXML
     Slider slider_portion;
 
-    private SnackbarPopupView snackbarPopupView = new SnackbarPopupView();
     private BooleanProperty sliding = new SimpleBooleanProperty();
+
+    public static void setForPlan(boolean nv) {
+        forPlan = nv;
+    }
+
 
     private void addMeal() {
         String result = "Meal could not be added, please try again";
         try {
             // get the selected meal
-            SimpleMeal meal = lv_meals.getSelectionModel().getSelectedItem();
+            //SimpleMeal meal = lv_meals.getSelectionModel().getSelectedItem();
+            SimpleMeal meal = ((ListView<SimpleMeal>) lv_meals.lookup(".list-view")).getSelectionModel().getSelectedItem();
+
             if (meal != null) {
                 DayMeal dayMeal = new DayMeal(meal);
                 // get the selected date
-                Day day = Service.getInstance().getSelectedDayObject();
-                if (day == null) {
-                    day = new Day();
-                    day.setDate(Service.getInstance().getSelectedDay());
+
+                //@todo check if we are using this for a plan or for a day
+                if (forPlan) {
+
+                    //@todo get planId of selectedPlan !?
+                    NutritionPlansController.getSelectedPlanDay().addMeal(dayMeal);
+                    Service.getInstance().addSimpleMealToPlanDay(dayMeal, NutritionPlansController.getSelectedPlanDay().getId());
+                    result = "Meal added to selected Day of Plan";
+                } else {
+                    Day day = Service.getInstance().getSelectedDayObject();
+                    if (day == null) {
+                        day = new Day();
+                        day.setDate(Service.getInstance().getSelectedDay());
+                        Service.getInstance().addDay(day);
+                    }
+                    //@todo dont use day.getId() it might be for a plan and not for the active Day!!!
+                    day.addMeal(dayMeal);
+                    Service.getInstance().addSimpleMealToDay(dayMeal, day.getId());
+                    result = "Meal added to selected Date " + Service.getInstance().getSelectedDayString();
                 }
-                day.addMeal(dayMeal);
-                // check this shit
-                Service.getInstance().addDay(day);
-                result = "Meal added to selected Date " + Service.getInstance().getSelectedDayString();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,19 +91,30 @@ public class MealDayController {
         String result = "Food could not be added, please try again";
         try {
             // get the selected food
-            Food food = lv_food.getSelectionModel().getSelectedItem();
+            Food food = ((ListView<Food>) lv_food.lookup(".list-view")).getSelectionModel().getSelectedItem();
             if (food != null) {
                 DayFood dayFood = new DayFood(food, food.getPortion());
-                // get the selected date
-                Day day = Service.getInstance().getSelectedDayObject();
-                if (day == null) {
-                    day = new Day();
-                    day.setDate(Service.getInstance().getSelectedDay());
+
+                //@todo check if we are using this for a plan or for a day
+                if (forPlan) {
+
+                    NutritionPlansController.getSelectedPlanDay().addMeal(dayFood);
+                    Service.getInstance().addSimpleMealToPlanDay(dayFood, NutritionPlansController.getSelectedPlanDay().getId());
+                    result = "Meal added to selected Day of Plan";
+                } else {
+                    // get the selected date
+                    Day day = Service.getInstance().getSelectedDayObject();
+                    if (day == null) {
+                        day = new Day();
+                        day.setDate(Service.getInstance().getSelectedDay());
+                        Service.getInstance().addDay(day);
+                    }
+                    day.addMeal(dayFood);
+                    Service.getInstance().addSimpleMealToDay(dayFood, day.getId());
+                    // check this shit
+                    //Service.getInstance().addDay(day);
+                    result = "Food added to selected Date " + Service.getInstance().getSelectedDayString();
                 }
-                day.addMeal(dayFood);
-                // check this shit
-                Service.getInstance().addDay(day);
-                result = "Food added to selected Date " + Service.getInstance().getSelectedDayString();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,6 +173,7 @@ public class MealDayController {
         });
 
         lv_meals.setItems(Service.getInstance().getMeals());
+        lv_meals.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
 
         // ======================= food listview =======================
 
@@ -156,24 +192,31 @@ public class MealDayController {
             }
         });
 
-        lv_food.setItems(Service.getInstance().getFoods());
+        // use a filterdList to only show Food which is a Snack in the list
+        // if the wrappedList is updated the changes are although shown in the filteredList
+        lv_food.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
+        FilteredList<Food> filteredList = new FilteredList(Service.getInstance().getFoods());
+        filteredList.setPredicate(n -> n.isSnack());
+        lv_food.setItems(filteredList);
 
-        // portion slider
+        // delay enough to be able to get the list-view of the charmlistview
+        Platform.runLater(() -> {
+            // portion slider
+            slider_portion.valueProperty().addListener(e -> {
+                if (((ListView<Food>) lv_food.lookup(".list-view")).getSelectionModel().getSelectedItem() != null) {
+                    ((ListView<Food>) lv_food.lookup(".list-view")).getSelectionModel().getSelectedItem().setPortion(Math.ceil(slider_portion.getValue()));
+                    // @todo remove for better solution
+                    ((ListView<Food>) lv_food.lookup(".list-view")).refresh();
+                }
+            });
 
-        slider_portion.valueProperty().addListener(e -> {
-            if (lv_food.getSelectionModel().getSelectedItem() != null) {
-                lv_food.getSelectionModel().getSelectedItem().setPortion(Math.ceil(slider_portion.getValue()));
-                // @todo search way to remove this
-                lv_food.refresh();
-            }
-        });
-
-        lv_food.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                slider_portion.setValue(newValue.getPortion());
-            } else {
-                slider_portion.setValue(0);
-            }
+            ((ListView<Food>) lv_food.lookup(".list-view")).getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+                if (newValue != null) {
+                    slider_portion.setValue(newValue.getPortion());
+                } else {
+                    slider_portion.setValue(0);
+                }
+            });
         });
     }
 }

@@ -12,16 +12,14 @@ import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.DayFood;
-import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-public class MealCellNode {
+public class SimpleMealCellNode {
     @FXML
     public ListTile tile;
     @FXML
@@ -41,8 +39,8 @@ public class MealCellNode {
     @FXML
     Icon i_info;
 
-    public MealCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("simpleMealCellNode.fxml"));
+    public SimpleMealCellNode() {
+        FXMLLoader fxmlLoader = new FXMLLoader(SimpleMealCellNode.class.getResource("simpleMealCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {

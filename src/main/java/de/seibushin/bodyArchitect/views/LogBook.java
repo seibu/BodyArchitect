@@ -7,8 +7,11 @@
 
 package de.seibushin.bodyArchitect.views;
 
+import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
+import de.seibushin.bodyArchitect.model.nutrition.Day;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -36,8 +39,10 @@ public class LogBook {
     private LocalDate month;
     private int today = LocalDate.now().getDayOfMonth() - 1;
     private ObjectProperty<LocalDate> selectedDay = new SimpleObjectProperty<>(LocalDate.now());
+    private ObservableList<Day> data;
 
-    public LogBook() {
+    public LogBook(ObservableList<Day> data) {
+        this.data = data;
         FXMLLoader fxmlLoader = new FXMLLoader(LogBook.class.getResource("LogBook.fxml"));
         fxmlLoader.setController(this);
 
@@ -77,6 +82,21 @@ public class LogBook {
         return selectedDay.getValue();
     }
 
+    public void highlightDays() {
+        // remove the styleclass if present
+        //@todo better way? lambda not allowed...
+        for (Button d : days) {
+            d.getStyleClass().remove("has-data");
+        }
+
+        for (Day d : data) {
+            if (d.getDate().withDayOfMonth(1).equals(month)) {
+                //days.get(d.getDate().getDayOfMonth() - 1).setGraphic(MaterialDesignIcon.ACCESS_TIME.graphic());
+                days.get(d.getDate().getDayOfMonth() - 1).getStyleClass().add("has-data");
+            }
+        }
+    }
+
     private void populateCalendar() {
         lbl_month.setText(month.format(dtf));
 
@@ -86,7 +106,7 @@ public class LogBook {
         }
 
         // highlight Days with data
-        // @todo
+        highlightDays();
 
         gp_calendar.getChildren().removeAll(days);
 

@@ -9,17 +9,13 @@ package de.seibushin.bodyArchitect;
 
 import com.gluonhq.charm.down.common.JavaFXPlatform;
 import com.gluonhq.charm.down.common.PlatformFactory;
-import com.gluonhq.charm.glisten.control.NavigationDrawer;
-import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.model.nutrition.*;
 import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
 import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
-import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDayMeal;
 import de.seibushin.bodyArchitect.views.LogBook;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Service {
+
     private static Service service;
 
     private LogBook logBook;
@@ -41,6 +38,7 @@ public class Service {
     private final ObservableList<Day> days = FXCollections.observableArrayList();
 
     private final ObservableList<Plan> plans = FXCollections.observableArrayList();
+    private Plan selectedPlan;
 
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("E dd.MM.yyyy");
 
@@ -59,6 +57,7 @@ public class Service {
     private static final String NUTRITON_PLANS_TABLE = "NUTRITION_PLANS";
     private static final String NUTRITON_PLAN_DAYS_TABLE = "NUTRITION_PLAN_DAYS";
     private static final String NUTRITON_PLAN_DAY_MEALS_TABLE = "NUTRITION_PLAN_DAY_MEALS";
+    private static final String NUTRITON_PLAN_DAY_FOOD_TABLE = "NUTRITION_PLAN_DAY_FOOD";
 
     private Connection connection = null;
     private Statement stmt;
@@ -115,6 +114,8 @@ public class Service {
 
         // load data
         loadRelevant();
+
+        logBook = new LogBook(days);
     }
 
     public static void init() {
@@ -143,7 +144,7 @@ public class Service {
         try {
             // check if the database has tables
             DatabaseMetaData meta = connection.getMetaData();
-            res = meta.getTables(null, null, "FOOD", new String[] {"TABLE"});
+            res = meta.getTables(null, null, "FOOD", new String[]{"TABLE"});
 
             while (res.next()) {
                 hasTables = true;
@@ -223,10 +224,6 @@ public class Service {
         return logBook;
     }
 
-    public void setLogBook(LogBook logBook) {
-        this.logBook = logBook;
-    }
-
     public String getSelectedDayString() {
         return getSelectedDay().format(dtf);
     }
@@ -273,7 +270,7 @@ public class Service {
             stmt = connection.createStatement();
             try {
                 stmt.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -281,14 +278,15 @@ public class Service {
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
-                Double weight = rs.getDouble(3);
-                Double portion = rs.getDouble(4);
-                Double kcal = rs.getDouble(5);
-                Double protein = rs.getDouble(6);
-                Double fat = rs.getDouble(7);
-                Double carbs = rs.getDouble(8);
-                Double sugar = rs.getDouble(9);
-                foods.add(new Food(id, name, weight, portion, kcal, protein, fat, carbs, sugar));
+                double weight = rs.getDouble(3);
+                double portion = rs.getDouble(4);
+                double kcal = rs.getDouble(5);
+                double protein = rs.getDouble(6);
+                double fat = rs.getDouble(7);
+                double carbs = rs.getDouble(8);
+                double sugar = rs.getDouble(9);
+                boolean snack = rs.getBoolean(10);
+                foods.add(new Food(id, name, weight, portion, kcal, protein, fat, carbs, sugar, snack));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -318,10 +316,10 @@ public class Service {
         foods.add(food);
 
         try {
-            ps = connection.prepareStatement("insert into " + FOOD_TABLE + " values(null, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps = connection.prepareStatement("insert into " + FOOD_TABLE + " values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             try {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -333,6 +331,7 @@ public class Service {
             ps.setDouble(6, food.getFat());
             ps.setDouble(7, food.getCarbs());
             ps.setDouble(8, food.getSugar());
+            ps.setBoolean(9, food.isSnack());
             ps.executeUpdate();
 
             // get the Generated Key and Update the Object for later use we might need the id
@@ -375,7 +374,7 @@ public class Service {
             try {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
                 stmt.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -456,7 +455,7 @@ public class Service {
             ps = connection.prepareStatement("insert into " + MEAL_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             try {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -469,11 +468,11 @@ public class Service {
             rs.next();
             meal.setId(rs.getInt(1));
 
-            for(MealFood mf : meal.getMealFoods()) {
+            for (MealFood mf : meal.getMealFoods()) {
                 ps = connection.prepareStatement("insert into " + MEAL_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 try {
                     ps.setQueryTimeout(QUERY_TIMEOUT);
-                } catch(Exception e) {
+                } catch (Exception e) {
                     // thrown from SQLDroid we can just ignore this
                 }
 
@@ -520,7 +519,7 @@ public class Service {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
                 ps2.setQueryTimeout(QUERY_TIMEOUT);
                 stmt.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -528,7 +527,8 @@ public class Service {
             while (rs.next()) {
                 int id = rs.getInt(1);
                 LocalDate date = LocalDate.parse(rs.getString(2), dtfDb);
-                Day day = new Day(id, date);
+                String notice = rs.getString(3);
+                Day day = new Day(id, date, notice);
 
                 // execute prepared Statement to get all the food for the meal
                 ps.setInt(1, id);
@@ -609,53 +609,30 @@ public class Service {
         return days;
     }
 
-    public void addDay(Day day) {
+    public void addSimpleMealToDay(SimpleMeal simpleMeal, int dayId) {
         try {
-            if (day.getId() == null) {
-                ps = connection.prepareStatement("insert into " + DAYS_TABLE + " values(null, ?)", Statement.RETURN_GENERATED_KEYS);
-
-                try {
-                    ps.setQueryTimeout(QUERY_TIMEOUT);
-                } catch(Exception e) {
-                    // thrown from SQLDroid we can just ignore this
-                }
-
-                ps.setString(1, day.getDate().format(dtfDb));
-                ps.executeUpdate();
-
-                // get the Generated Key and Update the Object for later use we might need the id
-                rs = ps.getGeneratedKeys();
-                rs.next();
-                day.setId(rs.getInt(1));
-            }
-            System.out.println(day.getId());
-
             ps = connection.prepareStatement("insert into " + DAY_MEAL_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             PreparedStatement ps2 = connection.prepareStatement("insert into " + DAY_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
             try {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
                 ps2.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
-            for(SimpleMeal m : day.getMeals()) {
-                if (m.isMeal() && !m.isSaved()) {
-                    ps.setInt(1, day.getId());
-                    ps.setInt(2, ((DayMeal)m).getMealId());
-                    ps.executeUpdate();
-                    m.setSaved(true);
-                } else if (!m.isMeal() && !m.isSaved()) {
-                    ps2.setInt(1, day.getId());
-                    ps2.setInt(2, ((DayFood)m).getFoodId()); // -> Food-ID
-                    ps2.setDouble(3, ((DayFood)m).getWeight());
-                    ps2.executeUpdate();
-                    m.setSaved(true);
-                }
+            if (simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+                ps.setInt(1, dayId);
+                ps.setInt(2, ((DayMeal) simpleMeal).getMealId());
+                ps.executeUpdate();
+                simpleMeal.setSaved(true);
+            } else if (!simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+                ps2.setInt(1, dayId);
+                ps2.setInt(2, ((DayFood) simpleMeal).getFoodId()); // -> Food-ID
+                ps2.setDouble(3, ((DayFood) simpleMeal).getWeight());
+                ps2.executeUpdate();
+                simpleMeal.setSaved(true);
             }
-
-            // add the day to the list
-            days.add(day);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -676,6 +653,33 @@ public class Service {
         }
     }
 
+    public void addDay(Day day) {
+        try {
+            if (day.getId() == null) {
+                ps = connection.prepareStatement("insert into " + DAYS_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
+                try {
+                    ps.setQueryTimeout(QUERY_TIMEOUT);
+                } catch (Exception e) {
+                    // thrown from SQLDroid we can just ignore this
+                }
+
+                ps.setString(1, day.getDate().format(dtfDb));
+                ps.setString(2, day.getNotice());
+                ps.executeUpdate();
+
+                // get the Generated Key and Update the Object for later use we might need the id
+                rs = ps.getGeneratedKeys();
+                rs.next();
+                day.setId(rs.getInt(1));
+
+                days.add(day);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void deleteDayMeal(SimpleMeal simpleMeal) {
         System.out.println("deleteDayMeal");
         try {
@@ -687,7 +691,7 @@ public class Service {
 
             try {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -725,7 +729,7 @@ public class Service {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
                 ps2.setQueryTimeout(QUERY_TIMEOUT);
                 stmt.setQueryTimeout(QUERY_TIMEOUT);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // thrown from SQLDroid we can just ignore this
             }
 
@@ -762,7 +766,7 @@ public class Service {
                         SimpleMeal m = null;
                         for (SimpleMeal tmp : meals) {
                             if (tmp.getId() == m_id) {
-                                m = new PlanDayMeal(tmp);
+                                m = new DayMeal(tmp);
                                 m.setSaved(true);
                             }
                         }
@@ -771,6 +775,9 @@ public class Service {
                 }
 
                 plans.add(plan);
+                if (plan.isSelected()) {
+                    selectedPlan = plan;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -814,6 +821,207 @@ public class Service {
         }
     }
 
+    public void addSimpleMealToPlanDay(SimpleMeal simpleMeal, int planId) {
+        try {
+            ps = connection.prepareStatement("insert into " + NUTRITON_PLAN_DAY_MEALS_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps2 = connection.prepareStatement("insert into " + NUTRITON_PLAN_DAY_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+                ps2.setQueryTimeout(QUERY_TIMEOUT);
+            } catch (Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            if (simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+                ps.setInt(1, planId);
+                ps.setInt(2, ((DayMeal) simpleMeal).getMealId());
+                ps.executeUpdate();
+                simpleMeal.setSaved(true);
+            } else if (!simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+                ps2.setInt(1, planId);
+                ps2.setInt(2, ((DayFood) simpleMeal).getFoodId()); // -> Food-ID
+                ps2.setDouble(3, ((DayFood) simpleMeal).getWeight());
+                ps2.executeUpdate();
+                simpleMeal.setSaved(true);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deletePlanDayMeal(SimpleMeal simpleMeal, int planDayId) {
+        System.out.println("deletePlanDayMeal");
+        try {
+            if (simpleMeal.isMeal()) {
+                ps = connection.prepareStatement("DELETE FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE id IN (SELECT id FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE npd_id = ? AND m_id = ? ORDER BY id DESC LIMIT 1)");
+            } else {
+                ps = connection.prepareStatement("DELETE FROM " + NUTRITON_PLAN_DAY_FOOD_TABLE + " WHERE id IN (SELECT id FROM " + NUTRITON_PLAN_DAY_FOOD_TABLE + " WHERE npd_id = ? AND f_id = ? ORDER BY id DESC LIMIT 1)");
+            }
+
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+            } catch (Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            //noinspection JpaQueryApiInspection
+            ps.setInt(1, planDayId);
+            //noinspection JpaQueryApiInspection
+            ps.setInt(2, simpleMeal.getId());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void selectPlan(Plan selected) {
+        try {
+            ps = connection.prepareStatement("UPDATE " + NUTRITON_PLANS_TABLE + " SET selected = 1 WHERE id = ?");
+            stmt = connection.createStatement();
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+                stmt.setQueryTimeout(QUERY_TIMEOUT);
+            } catch (Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            // deselect all
+            stmt.execute("UPDATE " + NUTRITON_PLANS_TABLE + " SET selected = 0 WHERE selected = 1");
+            // select the new
+            ps.setInt(1, selected.getId());
+            ps.execute();
+
+            // deselect all Plans and selecte the newly selected one
+            for (Plan p : plans) {
+                p.setSelected(false);
+            }
+            selected.setSelected(true);
+            selectedPlan = selected;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void addPlan(Plan plan) {
+        try {
+            // existing plan update!!
+            if (plan.getId() != null) {
+                //@todo implement
+            }
+            // new plan insert
+            else {
+                ps = connection.prepareStatement("INSERT INTO " + NUTRITON_PLANS_TABLE + " VALUES(null, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
+                try {
+                    ps.setQueryTimeout(QUERY_TIMEOUT);
+                } catch (Exception e) {
+                    // thrown from SQLDroid we can just ignore this
+                }
+
+                // set the values
+                ps.setString(1, plan.getName());
+                ps.setDouble(2, plan.getKcal());
+                ps.setDouble(3, plan.getProtein());
+                ps.setDouble(4, plan.getFat());
+                ps.setDouble(5, plan.getCarbs());
+                ps.setDouble(6, plan.getSugar());
+                ps.setBoolean(7, plan.isSelected());
+
+                ps.execute();
+                rs = ps.getGeneratedKeys();
+                rs.next();
+                plan.setId(rs.getInt(1));
+
+                // add the plan to the list
+                plans.add(plan);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void addPlanDay(PlanDay pd) {
+        try {
+            ps = connection.prepareStatement("INSERT INTO " + NUTRITON_PLAN_DAYS_TABLE + " VALUES(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
+            try {
+                ps.setQueryTimeout(QUERY_TIMEOUT);
+            } catch (Exception e) {
+                // thrown from SQLDroid we can just ignore this
+            }
+
+            // set the values
+            ps.setInt(1, pd.getNp_id());
+            ps.setInt(2, pd.getOrder());
+
+            ps.execute();
+            rs = ps.getGeneratedKeys();
+            rs.next();
+            pd.setId(rs.getInt(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public ObservableList<Plan> getPlans() {
         return plans;
     }
@@ -821,4 +1029,5 @@ public class Service {
     public Settings getSettings() {
         return settings;
     }
+
 }

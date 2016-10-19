@@ -9,6 +9,8 @@ package de.seibushin.bodyArchitect.model.nutrition;
 
 public class DayMeal implements SimpleMeal {
 
+    //@todo prepare for plan usage
+
     private int id;
     private SimpleMeal meal;
     private boolean saved = false;
@@ -89,5 +91,10 @@ public class DayMeal implements SimpleMeal {
     @Override
     public Meal getMeal() {
         return (Meal)meal;
+    }
+
+    @Override
+    public boolean isForPlan() {
+        return false;
     }
 }

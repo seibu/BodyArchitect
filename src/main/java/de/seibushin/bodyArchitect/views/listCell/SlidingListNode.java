@@ -7,6 +7,7 @@
 
 package de.seibushin.bodyArchitect.views.listCell;
 
+import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.helper.Utils;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
@@ -58,7 +59,7 @@ public class SlidingListNode extends StackPane {
     private final BooleanProperty swipedRight = new SimpleBooleanProperty();
 
     // @todo change VBox to StackPane????
-    public SlidingListNode(VBox frontPane, boolean slideable) {
+    public SlidingListNode(ListTile frontPane, boolean slideable) {
         // BackPane
         HBox backPane;
         FXMLLoader fxmlLoader = new FXMLLoader(SlidingListNode.class.getResource("SlidingBackPane.fxml"));

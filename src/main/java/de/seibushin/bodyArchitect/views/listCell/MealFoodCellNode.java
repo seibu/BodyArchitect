@@ -7,6 +7,7 @@
 
 package de.seibushin.bodyArchitect.views.listCell;
 
+import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
@@ -19,13 +20,13 @@ import java.io.IOException;
 
 public class MealFoodCellNode {
     @FXML
-    public VBox vbox;
+    public ListTile tile;
     @FXML
     Label lbl_name;
     @FXML
     Label lbl_kcal;
     @FXML
-    Label lbl_weight;
+    Label lbl_type;
     @FXML
     Label lbl_fat;
     @FXML
@@ -37,7 +38,7 @@ public class MealFoodCellNode {
 
 
     public MealFoodCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MealFoodCellNode.class.getResource("mealFoodCellNode.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MealFoodCellNode.class.getResource("simpleMealCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {
@@ -54,7 +55,7 @@ public class MealFoodCellNode {
 
     private void updateStats(MealFood item) {
         lbl_kcal.setText(Service.getInstance().getDf().format(item.getKcal()) + " " + Utils.getString("meal.info.kcal"));
-        lbl_weight.setText(Service.getInstance().getDf().format(item.getWeight()) + Utils.getString("meal.info.weight.unit"));
+        lbl_type.setText(Service.getInstance().getDf().format(item.getWeight()) + Utils.getString("meal.info.weight.unit"));
 
         lbl_fat.setText(Service.getInstance().getDf().format(item.getFat()));
         lbl_carbs.setText(Service.getInstance().getDf().format(item.getCarbs()));
@@ -67,7 +68,7 @@ public class MealFoodCellNode {
         updateStats(item);
     }
 
-    public VBox getNode() {
-        return vbox;
+    public ListTile getNode() {
+        return tile;
     }
 }

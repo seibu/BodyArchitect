@@ -15,6 +15,8 @@ import java.time.LocalDate;
 public class Day {
     private Integer id = null;
     private LocalDate date;
+    private String notice;
+
     private ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
     // add Settings
 
@@ -24,12 +26,15 @@ public class Day {
     private Double carbs = 0.0;
     private Double sugar = 0.0;
 
+    private boolean saved = false;
+
     public Day() {
     }
 
-    public Day(int id, LocalDate date) {
+    public Day(int id, LocalDate date, String notice) {
         this.id = id;
         this.date = date;
+        this.notice = notice;
     }
 
     public void setDate(LocalDate date) {
@@ -85,12 +90,23 @@ public class Day {
         return sugar;
     }
 
-
     public Integer getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getNotice() {
+        return notice;
+    }
+
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
     }
 }

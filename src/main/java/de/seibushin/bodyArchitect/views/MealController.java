@@ -96,7 +96,7 @@ public class MealController {
 
                 appBar.setNavIcon(MaterialDesignIcon.ARROW_BACK.button(e -> {
                     MobileApplication.getInstance().switchToPreviousView();
-                    // clear maybe not used inserted values
+                    // clear the maybe not used inserted values of the textfields
                     clear();
                 }));
                 appBar.getActionItems().add(MaterialDesignIcon.ADD.button(e -> addMeal()));
