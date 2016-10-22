@@ -41,6 +41,8 @@ public class MealCellNode {
     @FXML
     Icon i_info;
 
+    private SimpleMeal item;
+
     public MealCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(MealCellNode.class.getResource("simpleMealCellNode.fxml"));
         fxmlLoader.setController(this);
@@ -53,10 +55,12 @@ public class MealCellNode {
     }
 
     public void update(SimpleMeal item) {
+        this.item = item;
+
         if (item.isMeal()) {
             lbl_type.setText(item.getType().toString());
         } else {
-            lbl_type.setText(((DayFood)item).getWeight() + " " + Utils.getString("food.cell.weight.unit"));
+            lbl_type.setText(item.getWeight() + " " + Utils.getString("food.cell.weight.unit"));
             i_info.setDisable(true);
         }
         lbl_name.setText(item.getName());

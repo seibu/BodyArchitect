@@ -91,6 +91,11 @@ public class Meal implements SimpleMeal {
         return false;
     }
 
+    @Override
+    public double getWeight() {
+        return 0;
+    }
+
     public ObservableList<MealFood> getMealFoods() {
         return mealFoods;
     }

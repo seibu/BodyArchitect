@@ -7,7 +7,7 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-public class Food implements SimpleMeal {
+public class BAFood implements BANutritionUnit, Portionable {
     private int id;
     private String name;
     private double weight;
@@ -17,7 +17,6 @@ public class Food implements SimpleMeal {
     private double fat;
     private double carbs;
     private double sugar;
-    private boolean snack;
 
     // for resetting the portion
     private double tmpPortion;
@@ -25,7 +24,7 @@ public class Food implements SimpleMeal {
     /**
      * no argument constructor
      */
-    public Food() {
+    public BAFood() {
 
     }
 
@@ -42,8 +41,8 @@ public class Food implements SimpleMeal {
      * @param weight  - weight
      * @param portion - portion
      */
-    public Food(int id, String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar, boolean snack) {
-        this(name, weight, portion, kcal, protein, fat, carbs, sugar, snack);
+    public BAFood(int id, String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar) {
+        this(name, weight, portion, kcal, protein, fat, carbs, sugar);
         this.id = id;
     }
 
@@ -59,7 +58,7 @@ public class Food implements SimpleMeal {
      * @param weight  - weight
      * @param portion - portion
      */
-    public Food(String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar, boolean snack) {
+    public BAFood(String name, double weight, double portion, double kcal, double protein, double fat, double carbs, double sugar) {
         this.name = name;
         this.kcal = kcal;
         this.protein = protein;
@@ -69,113 +68,98 @@ public class Food implements SimpleMeal {
         this.weight = weight;
         this.portion = portion;
         this.tmpPortion = portion;
-        this.snack = snack;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public double getWeight() {
         return weight;
     }
 
-    public double getPortion() {
-        return portion;
+    @Override
+    public String getName() {
+        return name;
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
     public double getKcal() {
         return kcal;
     }
 
-    public double getPortionKcal() {
-        return kcal / weight * portion;
-    }
-
+    @Override
     public double getProtein() {
         return protein;
     }
 
-    public double getPortionProtein() {
-        return protein / weight * portion;
-    }
-
-    public void setPortion(Double portion) {
-        this.portion = portion;
-    }
-
+    @Override
     public double getFat() {
         return fat;
     }
 
-    public double getPortionFat() {
-        return fat / weight * portion;
-    }
-
+    @Override
     public double getCarbs() {
         return carbs;
     }
 
-    public double getPortionCarbs() {
-        return carbs / weight * portion;
-    }
-
+    @Override
     public double getSugar() {
         return sugar;
     }
 
     @Override
-    public Type getType() {
-        return null;
+    public double getPortion() {
+        return portion;
     }
 
     @Override
-    public boolean isMeal() {
-        return false;
+    public void setPortion(double portion) {
+        this.portion = portion;
     }
 
     @Override
-    public boolean isSaved() {
-        return false;
-    }
-
-    @Override
-    public void setSaved(boolean saved) {
-
-    }
-
-    @Override
-    public Meal getMeal() {
-        return null;
-    }
-
-    @Override
-    public boolean isForPlan() {
-        return false;
-    }
-
-    public double getPortionSugar() {
-        return sugar / weight * portion;
-    }
-
-    public boolean isSnack() {
-        return snack;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
     public void resetPortion() {
         portion = tmpPortion;
+    }
+
+    @Override
+    public double getPortionedKcal() {
+        return portioning(kcal);
+    }
+
+    @Override
+    public double getPortionedProtein() {
+        return portioning(protein);
+    }
+
+    @Override
+    public double getPortionedFat() {
+        return portioning(fat);
+    }
+
+    @Override
+    public double getPortionedCarbs() {
+        return portioning(carbs);
+    }
+
+    @Override
+    public double getPortionedSugar() {
+        return portioning(sugar);
+    }
+
+    /**
+     * Used for portioning a specific value
+     * @param value
+     * @return
+     */
+    private double portioning(double value) {
+        return value / weight * portion;
     }
 }

@@ -35,6 +35,7 @@ public class Service {
     private final Settings settings = new Settings();
     private final ObservableList<Food> foods = FXCollections.observableArrayList();
     private final ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
+    private final ObservableList<SimpleMeal> all = FXCollections.observableArrayList();
     private final ObservableList<Day> days = FXCollections.observableArrayList();
 
     private final ObservableList<Plan> plans = FXCollections.observableArrayList();
@@ -286,7 +287,9 @@ public class Service {
                 double carbs = rs.getDouble(8);
                 double sugar = rs.getDouble(9);
                 boolean snack = rs.getBoolean(10);
-                foods.add(new Food(id, name, weight, portion, kcal, protein, fat, carbs, sugar, snack));
+                Food f = new Food(id, name, weight, portion, kcal, protein, fat, carbs, sugar, snack);
+                foods.add(f);
+                all.add(f);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -314,6 +317,7 @@ public class Service {
 
     public void addFood(Food food) {
         foods.add(food);
+        all.add(food);
 
         try {
             ps = connection.prepareStatement("insert into " + FOOD_TABLE + " values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -408,6 +412,7 @@ public class Service {
                 }
 
                 meals.add(meal);
+                all.add(meal);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -448,8 +453,13 @@ public class Service {
         return meals;
     }
 
+    public ObservableList<SimpleMeal> getAllSimpleMeals() {
+        return all;
+    }
+
     public void addMeal(Meal meal) {
         meals.add(meal);
+        all.add(meal);
 
         try {
             ps = connection.prepareStatement("insert into " + MEAL_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);

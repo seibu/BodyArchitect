@@ -7,21 +7,15 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-public class DayMeal implements SimpleMeal {
-
-    //@todo prepare for plan usage
-
+public class BAMealPortion implements BANutritionUnit, Synchronizable {
     private int id;
-    private SimpleMeal meal;
+    private BAMeal meal;
+    private double portionSize;
     private boolean saved = false;
 
-    public DayMeal() {
-
-    }
-
-    public DayMeal(SimpleMeal meal) {
+    public BAMealPortion(BAMeal meal, double portionSize) {
         this.meal = meal;
-        this.id = meal.getId();
+        this.portionSize = portionSize;
     }
 
     @Override
@@ -41,41 +35,27 @@ public class DayMeal implements SimpleMeal {
 
     @Override
     public double getKcal() {
-        return meal.getKcal();
-    }
-
-    @Override
-    public double getFat() {
-        return meal.getFat();
+        return portioning(meal.getKcal());
     }
 
     @Override
     public double getProtein() {
-        return meal.getProtein();
+        return portioning(meal.getProtein());
+    }
+
+    @Override
+    public double getFat() {
+        return portioning(meal.getFat());
     }
 
     @Override
     public double getCarbs() {
-        return meal.getCarbs();
+        return portioning(meal.getCarbs());
     }
 
     @Override
     public double getSugar() {
-        return meal.getSugar();
-    }
-
-    public int getMealId() {
-        return meal.getId();
-    }
-
-    @Override
-    public Type getType() {
-        return meal.getType();
-    }
-
-    @Override
-    public boolean isMeal() {
-        return true;
+        return portioning(meal.getSugar());
     }
 
     @Override
@@ -89,17 +69,26 @@ public class DayMeal implements SimpleMeal {
     }
 
     @Override
-    public Meal getMeal() {
-        return (Meal)meal;
+    public double getPortionSize() {
+        return portionSize;
     }
 
     @Override
-    public boolean isForPlan() {
-        return false;
+    public BANutritionUnit getNutritionUnit() {
+        return meal;
     }
 
     @Override
-    public double getWeight() {
-        return 0;
+    public int getNutritionUnitId() {
+        return meal.getId();
+    }
+
+    /**
+     * Used for portioning a specific value
+     * @param value
+     * @return
+     */
+    private double portioning(double value) {
+        return value * portionSize;
     }
 }

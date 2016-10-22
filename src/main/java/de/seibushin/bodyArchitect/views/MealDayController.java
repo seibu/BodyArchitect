@@ -19,15 +19,18 @@ import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
 import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
 import de.seibushin.bodyArchitect.views.listCell.FoodCell;
 import de.seibushin.bodyArchitect.views.listCell.MealCell;
+import de.seibushin.bodyArchitect.views.listCell.MealCellNode;
+import de.seibushin.bodyArchitect.views.listCell.SimpleMealCellNode;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class MealDayController {
     private static boolean forPlan = false;
@@ -42,6 +45,10 @@ public class MealDayController {
     TabPane tp_simpleMeals;
     @FXML
     Slider slider_portion;
+    @FXML
+    ListView<SimpleMeal> lv_items;
+    @FXML
+    TextField tf_test;
 
     private BooleanProperty sliding = new SimpleBooleanProperty();
 
@@ -133,8 +140,59 @@ public class MealDayController {
         }
     }
 
+    FilteredList<SimpleMeal> filtered = new FilteredList(Service.getInstance().getAllSimpleMeals());
+
+    @FXML
+    public void search() {
+        filtered.setPredicate(n -> n.getName().toLowerCase().contains(tf_test.getText().toLowerCase()));
+    }
+
+    @FXML
+    StackPane c_item;
+    @FXML
+    TextField tf_portion;
+
+    private SimpleMealCellNode selected = new SimpleMealCellNode();
+
+    @FXML
+    public void clearSearch() {
+        tf_test.clear();
+        search();
+    }
+
+    @FXML
+    public void add() {
+        System.out.println(selected.getItem());
+    }
+
     @FXML
     public void initialize() {
+        tf_portion.textProperty().addListener((obs, ov, nv) -> {
+            if (nv != null && nv != "") {
+                try {
+                    if (!selected.getItem().isMeal()) {
+                        System.out.println(((Food)selected.getItem()).getPortion());
+                        double d = Double.parseDouble(nv);
+                        ((Food)selected.getItem()).setPortion(d);
+                        System.out.println(((Food)selected.getItem()).getPortion());
+                        selected.refresh();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        c_item.getChildren().add(selected.getNode());
+
+        lv_items.getSelectionModel().selectedItemProperty().addListener(((obs, ov, nv) -> {
+            if (nv != null) {
+                selected.update(nv);
+            }
+        }));
+
+        lv_items.setItems(filtered);
+
         meal_day.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
                 AppBar appBar = MobileApplication.getInstance().getAppBar();

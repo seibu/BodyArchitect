@@ -5,12 +5,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import com.gluonhq.charm.glisten.control.CharmListView?>
 <View fx:id="meal" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.seibushin.bodyArchitect.views.MealController">
     <center>
@@ -43,16 +43,17 @@
                         <Insets left="5.0" right="5.0"/>
                     </VBox.margin>
                 </Slider>
-                <ListView fx:id="lv_food" prefHeight="100.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
+                <TextField fx:id="tf_weight" />
+                <CharmListView fx:id="lv_food" prefHeight="100.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
                     <placeholder>
                         <Icon styleClass="list-placeholder" content="CLEAR_ALL"/>
                     </placeholder>
-                </ListView>
-                <ListView fx:id="lv_allFood" prefHeight="100.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
+                </CharmListView>
+                <CharmListView fx:id="lv_allFood" prefHeight="100.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
                     <placeholder>
                         <Icon styleClass="list-placeholder" content="CLEAR_ALL"/>
                     </placeholder>
-                </ListView>
+                </CharmListView>
             </children>
         </VBox>
     </center>

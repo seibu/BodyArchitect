@@ -39,6 +39,8 @@ public class SimpleMealCellNode {
     @FXML
     Icon i_info;
 
+    private SimpleMeal item;
+
     public SimpleMealCellNode() {
         FXMLLoader fxmlLoader = new FXMLLoader(SimpleMealCellNode.class.getResource("simpleMealCellNode.fxml"));
         fxmlLoader.setController(this);
@@ -50,11 +52,22 @@ public class SimpleMealCellNode {
         }
     }
 
+    public SimpleMeal getItem() {
+        return item;
+    }
+
+    public void refresh() {
+        System.out.println("refresh");
+        update(item);
+    }
+
     public void update(SimpleMeal item) {
+        this.item = item;
+
         if (item.isMeal()) {
             lbl_type.setText(item.getType().toString());
         } else {
-            lbl_type.setText(((DayFood)item).getWeight() + " " + Utils.getString("food.cell.weight.unit"));
+            lbl_type.setText(item.getWeight() + " " + Utils.getString("food.cell.weight.unit"));
             i_info.setDisable(true);
         }
         lbl_name.setText(item.getName());

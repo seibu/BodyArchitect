@@ -28,10 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
@@ -74,6 +71,9 @@ public class NutritionController {
     Label lbl_carbs_add;
     @FXML
     Label lbl_protein_add;
+
+    @FXML
+    TextField tf_search;
 
     private Button btn_addMealToDay = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMealToDay());
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
@@ -172,6 +172,13 @@ public class NutritionController {
                 appBar.getActionItems().clear();
                 break;
         }
+    }
+
+    @FXML
+    public void search() {
+        FilteredList<Food> filteredList = new FilteredList(Service.getInstance().getFoods());
+        filteredList.setPredicate(n -> n.getName().toLowerCase().contains(tf_search.getText().toLowerCase()));
+        lv_food.setItems(filteredList);
     }
 
     @FXML
@@ -318,6 +325,7 @@ public class NutritionController {
         });
 
         // filter for food
+        /**
         nutrition.getApplication().addLayerFactory(Main.FILTER_FOOD, () -> {
             FilterView filterView = new FilterView("");
             SidePopupView sidePopupView = new SidePopupView(filterView.getView(), Side.TOP, true);
@@ -331,6 +339,7 @@ public class NutritionController {
             });
             return sidePopupView;
         });
+         */
 
         lv_food.setItems(Service.getInstance().getFoods());
         lv_food.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));

@@ -9,6 +9,8 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
+import com.gluonhq.charm.glisten.control.CharmListView;
+import com.gluonhq.charm.glisten.control.ExceptionDialog;
 import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
@@ -18,9 +20,14 @@ import de.seibushin.bodyArchitect.model.nutrition.Food;
 import de.seibushin.bodyArchitect.model.nutrition.Meal;
 import de.seibushin.bodyArchitect.model.nutrition.MealFood;
 import de.seibushin.bodyArchitect.model.nutrition.Type;
+import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
+import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
 import de.seibushin.bodyArchitect.views.listCell.FoodCell;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.ScrollEvent;
@@ -31,9 +38,9 @@ public class MealController {
     @FXML
     ComboBox<Type> cb_type;
     @FXML
-    ListView<Food> lv_food;
+    CharmListView<Food, String> lv_food;
     @FXML
-    ListView<Food> lv_allFood;
+    CharmListView<Food, String> lv_allFood;
     @FXML
     TextField tf_weight;
     @FXML
@@ -44,6 +51,8 @@ public class MealController {
 
     private final BooleanProperty sliding = new SimpleBooleanProperty();
 
+    private Food selected = null;
+
     private void addMeal() {
         String result = "";
         try {
@@ -52,7 +61,7 @@ public class MealController {
 
             Meal meal = new Meal(name, type);
 
-            for (Food f :lv_food.getItems()) {
+            for (Food f : lv_food.itemsProperty().get()) {
                 meal.addMealFood(new MealFood(f, f.getPortion()));
             }
 
@@ -80,11 +89,11 @@ public class MealController {
         //lv_food.setItems(null);
 
         // we work with the actual object for the food, so we need to restore the acurate portion
-        for (Food f : lv_food.getItems()) {
+        for (Food f : lv_food.itemsProperty().get()) {
             f.resetPortion();
         }
 
-        lv_food.getItems().clear();
+        lv_food.setItems(FXCollections.emptyObservableList());
         lv_allFood.setItems(Service.getInstance().getFoodsClone());
     }
 
@@ -110,6 +119,7 @@ public class MealController {
         //lv_allFood.setPlaceholder(new Label(Utils.getString("meal.add.allFood.placeholder")));
 
         lv_allFood.setItems(Service.getInstance().getFoodsClone());
+        lv_allFood.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
         cb_type.getItems().setAll(Type.values());
 
         // ListView with the Foods for the new Meal
@@ -117,8 +127,8 @@ public class MealController {
             final FoodCell foodCell = new FoodCell(true,
                     c -> {
                         System.out.println("left");
-                        lv_food.getItems().remove(c);
-                        lv_allFood.getItems().add(c);
+                        lv_food.itemsProperty().remove(c);
+                        lv_allFood.itemsProperty().add(c);
                     },
                     c -> {
                         System.out.println("right");
@@ -142,8 +152,8 @@ public class MealController {
             final FoodCell foodCell = new FoodCell(false,
                     c -> {
                         System.out.println("left");
-                        lv_allFood.getItems().remove(c);
-                        lv_food.getItems().add(c);
+                        lv_allFood.itemsProperty().remove(c);
+                        lv_food.itemsProperty().add(c);
                     },
                     c -> {
                         System.out.println("right");
@@ -161,19 +171,28 @@ public class MealController {
             }
         });
 
-        slider_portion.valueProperty().addListener(e -> {
-            if (lv_food.getSelectionModel().getSelectedItem() != null) {
-                lv_food.getSelectionModel().getSelectedItem().setPortion(Math.ceil(slider_portion.getValue()));
-                // @todo search way to remove this
-                lv_food.refresh();
-            }
+        Platform.runLater(() -> {
+            ((ListView<Food>) lv_food.lookup(".list-view")).getSelectionModel().selectedItemProperty().addListener(
+                    (obs, ov, nv) -> {
+                        if (nv != null) {
+                            slider_portion.setValue(nv.getPortion());
+                            selected = nv;
+                        } else {
+                            slider_portion.setValue(0);
+                        }
+                    }
+            );
         });
 
-        lv_food.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                slider_portion.setValue(newValue.getPortion());
-            } else {
-                slider_portion.setValue(0);
+        tf_weight.textProperty().addListener((obs, ov, nv) -> {
+            if (nv != null && nv != "") {
+                try {
+                    double d = Double.parseDouble(nv);
+                    selected.setPortion(d);
+                    ((ListView<Food>) lv_food.lookup(".list-view")).refresh();
+                } catch (Exception e){
+                    //e.printStackTrace();
+                }
             }
         });
     }
