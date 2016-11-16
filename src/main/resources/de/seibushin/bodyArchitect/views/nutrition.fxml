@@ -3,13 +3,12 @@
 <?import com.gluonhq.charm.glisten.control.CharmListView?>
 <?import com.gluonhq.charm.glisten.control.Icon?>
 <?import com.gluonhq.charm.glisten.mvc.View?>
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -20,7 +19,7 @@
     <center>
         <TabPane fx:id="tb_nutrition" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab fx:id="day" text="Day">
+                <Tab fx:id="day" text="%nutrition.day">
                     <content>
                         <VBox fx:id="vbox_day" alignment="CENTER" spacing="5.0">
                             <children>
@@ -28,10 +27,14 @@
                                     <children>
                                         <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label styleClass="lbl_gauge" text="kcal" textOverrun="CLIP" VBox.vgrow="ALWAYS" />
+                                                <Label text="%nutrition.kcal" textOverrun="CLIP" VBox.vgrow="ALWAYS">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass></Label>
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="2400.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_kcal" maxValue="2400.0" prefHeight="80.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_kcal_add" />
                                                     </children>
                                                 </StackPane>
@@ -39,10 +42,14 @@
                                         </VBox>
                                         <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label styleClass="lbl_gauge" text="protein" />
+                                                <Label text="%nutrition.protein">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass></Label>
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_protein" maxValue="160.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_protein" maxValue="160.0" prefHeight="80.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_protein_add" />
                                                     </children>
                                                 </StackPane>
@@ -50,10 +57,14 @@
                                         </VBox>
                                         <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label styleClass="lbl_gauge" text="fat" />
+                                                <Label text="%nutrition.fat">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass></Label>
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_fat" maxValue="70.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_fat" maxValue="70.0" prefHeight="80.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_fat_add" />
                                                     </children>
                                                 </StackPane>
@@ -61,10 +72,14 @@
                                         </VBox>
                                         <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label styleClass="lbl_gauge" text="carbs" />
+                                                <Label text="%nutrition.carbs">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass></Label>
                                                 <StackPane alignment="BOTTOM_CENTER" VBox.vgrow="NEVER">
                                                     <children>
-                                                        <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="300.0" prefHeight="100.0" prefWidth="100.0" />
+                                                        <SimpleMetroArcGauge fx:id="mag_carbs" maxValue="300.0" prefHeight="80.0" prefWidth="100.0" />
                                                         <Label fx:id="lbl_carbs_add" />
                                                     </children>
                                                 </StackPane>
@@ -78,7 +93,7 @@
                               <Insets left="5.0" right="5.0" />
                            </padding>
                                 </HBox>
-                                <Label alignment="CENTER" styleClass="container-hl" text="Meals" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+                                <Label alignment="CENTER" styleClass="container-hl" text="%nutrition.day.meals" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
                         <Region styleClass="sep-bottom">
                            <VBox.margin>
                               <Insets bottom="10.0" left="50.0" right="50.0" />
@@ -93,10 +108,11 @@
                         </VBox>
                     </content>
                 </Tab>
-                <Tab fx:id="meal" text="Meal">
+                <Tab fx:id="meal" text="%nutrition.meal">
                     <content>
                         <VBox spacing="5.0">
                             <children>
+                        <TextField fx:id="tf_searchMeal" onKeyReleased="#searchMeal" promptText="%ba.search" />
                                 <CharmListView fx:id="lv_meals" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
                                     <placeholder>
                                         <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
@@ -106,23 +122,14 @@
                         </VBox>
                     </content>
                 </Tab>
-                <Tab fx:id="food" text="Food">
+                <Tab fx:id="food" text="%nutrition.food">
                     <content>
                         <VBox spacing="5.0">
                             <opaqueInsets>
                                 <Insets />
                             </opaqueInsets>
                             <children>
-                        <ToolBar prefHeight="40.0" prefWidth="200.0">
-                          <items>
-                              <TextField fx:id="tf_search" />
-                            <Button mnemonicParsing="false" onAction="#search" styleClass="btn_trans">
-                                 <graphic>
-                                    <Icon content="SEARCH" />
-                                 </graphic>
-                              </Button>
-                          </items>
-                        </ToolBar>
+                        <TextField fx:id="tf_searchFood" onKeyReleased="#searchFood" promptText="%ba.search" />
                                 <CharmListView fx:id="lv_food" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-sliding" VBox.vgrow="ALWAYS">
                                     <placeholder>
                                         <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
@@ -132,7 +139,7 @@
                         </VBox>
                     </content>
                 </Tab>
-                <Tab fx:id="logs" text="Logs">
+                <Tab fx:id="logs" text="%nutrition.log">
                     <content>
                         <VBox fx:id="vbox_logs" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
                             <padding>

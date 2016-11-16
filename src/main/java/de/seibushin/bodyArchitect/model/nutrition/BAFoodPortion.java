@@ -7,15 +7,17 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
+import de.seibushin.bodyArchitect.helper.Utils;
+
 public class BAFoodPortion implements BANutritionUnit, Synchronizable {
     private int id;
     private BAFood food;
-    private double portionSize;
+    private double portion;
     private boolean saved = false;
 
-    public BAFoodPortion(BAFood food, double portionSize) {
+    public BAFoodPortion(BAFood food, double portion) {
         this.food = food;
-        this.portionSize = portionSize;
+        this.portion = portion;
     }
 
     @Override
@@ -35,27 +37,37 @@ public class BAFoodPortion implements BANutritionUnit, Synchronizable {
 
     @Override
     public double getKcal() {
-        return portioning(food.getKcal());
+        return portioning(food.kcal);
     }
 
     @Override
     public double getProtein() {
-        return portioning(food.getProtein());
+        return portioning(food.protein);
     }
 
     @Override
     public double getFat() {
-        return portioning(food.getFat());
+        return portioning(food.fat);
     }
 
     @Override
     public double getCarbs() {
-        return portioning(food.getCarbs());
+        return portioning(food.carbs);
     }
 
     @Override
     public double getSugar() {
-        return portioning(food.getSugar());
+        return portioning(food.sugar);
+    }
+
+    @Override
+    public String getSubText() {
+        return portion + Utils.getString("food.cell.weight.unit");
+    }
+
+    @Override
+    public boolean isMeal() {
+        return false;
     }
 
     @Override
@@ -69,8 +81,18 @@ public class BAFoodPortion implements BANutritionUnit, Synchronizable {
     }
 
     @Override
-    public double getPortionSize() {
-        return portionSize;
+    public double getPortion() {
+        return portion;
+    }
+
+    @Override
+    public void setPortion(double portion) {
+        this.portion = portion;
+    }
+
+    @Override
+    public void resetPortion() {
+        // to nothing kapapapapapap
     }
 
     @Override
@@ -89,6 +111,6 @@ public class BAFoodPortion implements BANutritionUnit, Synchronizable {
      * @return
      */
     private double portioning(double value) {
-        return value / food.getWeight() * portionSize;
+        return value / food.getWeight() * portion;
     }
 }

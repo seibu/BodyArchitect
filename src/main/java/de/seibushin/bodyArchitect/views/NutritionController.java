@@ -10,31 +10,26 @@ package de.seibushin.bodyArchitect.views;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.control.CharmListView;
-import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.Service;
+import de.seibushin.bodyArchitect.model.nutrition.BAFood;
+import de.seibushin.bodyArchitect.model.nutrition.BAMeal;
+import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
 import de.seibushin.bodyArchitect.model.nutrition.Day;
-import de.seibushin.bodyArchitect.model.nutrition.Food;
-import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
-import de.seibushin.bodyArchitect.views.layers.FilterFoodController;
-import de.seibushin.bodyArchitect.views.layers.FilterView;
-import de.seibushin.bodyArchitect.views.listCell.FoodCell;
-import de.seibushin.bodyArchitect.views.listCell.MealCell;
+import de.seibushin.bodyArchitect.views.listCell.NutritionUnitCell;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
 import jfxtras.scene.control.gauge.linear.elements.Segment;
-import org.omg.CORBA.MARSHAL;
 
 public class NutritionController {
     public static final String MEAL_VIEW = "Meal";
@@ -59,9 +54,9 @@ public class NutritionController {
     @FXML
     CharmListView lv_day_meals;
     @FXML
-    CharmListView<SimpleMeal, String> lv_meals;
+    CharmListView<BAMeal, String> lv_meals;
     @FXML
-    CharmListView<Food, String> lv_food;
+    CharmListView<BAFood, String> lv_food;
 
     @FXML
     Label lbl_kcal_add;
@@ -73,21 +68,19 @@ public class NutritionController {
     Label lbl_protein_add;
 
     @FXML
-    TextField tf_search;
+    TextField tf_searchFood;
+    @FXML
+    TextField tf_searchMeal;
 
     private Button btn_addMealToDay = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMealToDay());
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
     private Button btn_addFood = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddFood());
     private Button btn_date = MaterialDesignIcon.TODAY.button(e -> showLogBook());
-    private Button btn_searchFood = MaterialDesignIcon.SEARCH.button(e -> showSearch());
-
 
     private double currKcal;
     private double currFat;
     private double currProtein;
     private double currCarbs;
-
-    private final BooleanProperty sliding = new SimpleBooleanProperty();
 
     private void showAddMealToDay() {
         MealDayController.setForPlan(false);
@@ -106,10 +99,6 @@ public class NutritionController {
     private void showLogBook() {
         // show LogBook
         tb_nutrition.getSelectionModel().select(3);
-    }
-
-    private void showSearch() {
-        nutrition.getApplication().showLayer(Main.FILTER_FOOD);
     }
 
     private void updateDay() {
@@ -166,7 +155,7 @@ public class NutritionController {
                 appBar.getActionItems().setAll(btn_addMeal);
                 break;
             case "food":
-                appBar.getActionItems().setAll(btn_addFood, btn_searchFood);
+                appBar.getActionItems().setAll(btn_addFood);
                 break;
             case "logs":
                 appBar.getActionItems().clear();
@@ -175,11 +164,17 @@ public class NutritionController {
     }
 
     @FXML
-    public void search() {
-        FilteredList<Food> filteredList = new FilteredList(Service.getInstance().getFoods());
-        filteredList.setPredicate(n -> n.getName().toLowerCase().contains(tf_search.getText().toLowerCase()));
-        lv_food.setItems(filteredList);
+    public void searchFood() {
+        filteredFood.setPredicate(n -> n.getName().toLowerCase().contains(tf_searchFood.getText().toLowerCase()));
     }
+
+    @FXML
+    public void searchMeal() {
+        filteredMeal.setPredicate(n -> n.getName().toLowerCase().contains(tf_searchMeal.getText().toLowerCase()));
+    }
+
+    FilteredList<BAFood> filteredFood = new FilteredList(Service.getInstance().getFoods());
+    FilteredList<BAMeal> filteredMeal = new FilteredList(Service.getInstance().getMeals());
 
     @FXML
     public void initialize() {
@@ -210,30 +205,7 @@ public class NutritionController {
         // day Tab
         // =====================
 
-        lv_day_meals.setCellFactory(cell -> {
-            final MealCell mealCell = new MealCell(
-                    c -> {
-                        Service.getInstance().deleteDayMeal(c);
-                        // @todo we only need to update the gauges
-                        // but we dont have a reference to the selectedDay present so we would need to get it again
-                        // fix this ...
-                        updateDay();
-                    },
-                    c -> {
-                        System.out.println("right");
-                    });
-            // notify view that cell is sliding
-            sliding.bind(mealCell.slidingProperty());
-
-            return mealCell;
-        });
-
-        // prevent the list from scrolling while sliding
-        lv_day_meals.addEventFilter(ScrollEvent.ANY, e -> {
-            if (sliding.get() && e.getDeltaY() != 0) {
-                e.consume();
-            }
-        });
+        lv_day_meals.setCellFactory(cell -> new NutritionUnitCell<>());
 
         //mag_kcal.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetKcalProperty());
         Segment seg1 = new PercentSegment(mag_kcal, 0, 100);
@@ -271,79 +243,21 @@ public class NutritionController {
         // Meal Tab
         // =====================
 
-        lv_meals.setCellFactory(cell -> {
-            final MealCell mealCell = new MealCell(
-                    c -> {
-                        System.out.println("left");
-                    },
-                    c -> {
-                        System.out.println("right");
-                    });
-            // notify view that cell is sliding
-            sliding.bind(mealCell.slidingProperty());
-
-            return mealCell;
-        });
-
-        // prevent the list from scrolling while sliding
-        lv_meals.addEventFilter(ScrollEvent.ANY, e -> {
-            if (sliding.get() && e.getDeltaY() != 0) {
-                e.consume();
-            }
-        });
+        lv_meals.setCellFactory(cell -> new NutritionUnitCell<>());
 
         // order by name
         lv_meals.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
-        lv_meals.setItems(Service.getInstance().getMeals());
+        lv_meals.setItems(filteredMeal);
 
         // =====================
         // Food Tab
         // =====================
 
-        lv_food.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell(false);
+        lv_food.setCellFactory(cell -> new NutritionUnitCell<>());
 
-            foodCell.setConsumer(
-                    c -> {
-                        System.out.println("left");
-                    },
-                    c -> {
-                        System.out.println("right");
-                    });
-
-            // notify view that cell is sliding
-            sliding.bind(foodCell.slidingProperty());
-
-            return foodCell;
-        });
-
-        // prevent the list from scrolling while sliding
-        lv_food.addEventFilter(ScrollEvent.ANY, e -> {
-            if (sliding.get() && e.getDeltaY() != 0) {
-                e.consume();
-            }
-        });
-
-        // filter for food
-        /**
-        nutrition.getApplication().addLayerFactory(Main.FILTER_FOOD, () -> {
-            FilterView filterView = new FilterView("");
-            SidePopupView sidePopupView = new SidePopupView(filterView.getView(), Side.TOP, true);
-            FilterFoodController filterFoodController = filterView.getController();
-            sidePopupView.showingProperty().addListener((obs, ov, nv) -> {
-                if (ov && !nv) {
-                    FilteredList<Food> filteredList = new FilteredList(Service.getInstance().getFoods());
-                    filteredList.setPredicate(filterFoodController.getPredicate());
-                    lv_food.setItems(filteredList);
-                }
-            });
-            return sidePopupView;
-        });
-         */
-
-        lv_food.setItems(Service.getInstance().getFoods());
+        // order by name
         lv_food.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
-        lv_food.setHeadersFunction(n -> n.getName().substring(0, 1));
+        lv_food.setItems(filteredFood);
 
         // =====================
         // Logs Tab
@@ -353,7 +267,6 @@ public class NutritionController {
 
         // listener for the selectedDay
         Service.getInstance().getLogBook().getSelectedDayProperty().addListener((obs, ov, nv) -> {
-            // @todo only switch if the day has data
             if (nv != null) {
                 updateDay();
                 // switch to Day tab

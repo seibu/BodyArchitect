@@ -7,8 +7,9 @@
 
 package de.seibushin.bodyArchitect;
 
-import com.gluonhq.charm.down.common.JavaFXPlatform;
-import com.gluonhq.charm.down.common.PlatformFactory;
+import com.gluonhq.charm.down.Platform;
+import com.gluonhq.charm.down.Services;
+import com.gluonhq.charm.down.plugins.StorageService;
 import de.seibushin.bodyArchitect.model.nutrition.*;
 import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
 import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
@@ -17,14 +18,18 @@ import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class Service {
 
@@ -33,9 +38,9 @@ public class Service {
     private LogBook logBook;
 
     private final Settings settings = new Settings();
-    private final ObservableList<Food> foods = FXCollections.observableArrayList();
-    private final ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
-    private final ObservableList<SimpleMeal> all = FXCollections.observableArrayList();
+    private final ObservableList<BAFood> foods = FXCollections.observableArrayList();
+    private final ObservableList<BAMeal> meals = FXCollections.observableArrayList();
+    private final ObservableList<BANutritionUnit> all = FXCollections.observableArrayList();
     private final ObservableList<Day> days = FXCollections.observableArrayList();
 
     private final ObservableList<Plan> plans = FXCollections.observableArrayList();
@@ -69,8 +74,6 @@ public class Service {
 
     private final DateTimeFormatter dtfDb = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private final ResourceBundle stmts;
-
     private final NumberFormat intNF = NumberFormat.getInstance(new Locale("de", "DE"));
     private final NumberFormat doubleNF = NumberFormat.getInstance(new Locale("de", "DE"));
 
@@ -82,11 +85,11 @@ public class Service {
         // Database Connector Object
         try {
             Class c = null;
-            if (JavaFXPlatform.isAndroid()) {
+            if (Platform.isAndroid()) {
                 c = Class.forName("org.sqldroid.SQLDroidDriver");
-            } else if (JavaFXPlatform.isIOS()) {
+            } else if (Platform.isIOS()) {
                 c = Class.forName("SQLite.JDBCDriver");
-            } else if (JavaFXPlatform.isDesktop()) {
+            } else if (Platform.isDesktop()) {
                 c = Class.forName("org.sqlite.JDBC");
             }
             /* embedded
@@ -100,7 +103,30 @@ public class Service {
 
         // set Url to db
         try {
-            File db = new File(PlatformFactory.getPlatform().getPrivateStorage(), DB_NAME);
+            File privateStorage = Services.get(StorageService.class).flatMap(StorageService::getPrivateStorage).orElseThrow(() -> new FileNotFoundException("Could not access private storage."));
+            File db = new File(privateStorage, DB_NAME);
+            if (!db.exists()) {
+                //@todo not working on mobile!!"!§$
+                File clear = new File(Service.class.getResource("clear.db").getFile());
+
+                try (FileOutputStream fos = new FileOutputStream(db);
+                     FileInputStream fis = new FileInputStream(clear)) {
+                    // Construct a 1K buffer to hold bytes on their way to the socket
+                    byte[] buffer = new byte[1024];
+                    int bytes = 0;
+
+                    // Copy requested file into the socket's output stream
+                    while ((bytes = fis.read(buffer)) != -1) {
+                        fos.write(buffer, 0, bytes);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (db.exists()) {
+                        db.delete();
+                        System.exit(1);
+                    }
+                }
+            }
             dbUrl = dbUrl + db.getAbsolutePath();
             // establish connection
             connection = DriverManager.getConnection(dbUrl);
@@ -108,10 +134,6 @@ public class Service {
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
-
-        stmts = getBundle();
-
-        createDB();
 
         // load data
         loadRelevant();
@@ -127,64 +149,6 @@ public class Service {
 
     public static Service getInstance() {
         return service;
-    }
-
-    private ResourceBundle getBundle() {
-        try {
-            ResourceBundle rb = ResourceBundle.getBundle("de.seibushin.bodyArchitect.i18n.DbBundle");
-            return rb;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void createDB() {
-        ResultSet res = null;
-        boolean hasTables = false;
-        try {
-            // check if the database has tables
-            DatabaseMetaData meta = connection.getMetaData();
-            res = meta.getTables(null, null, "FOOD", new String[]{"TABLE"});
-
-            while (res.next()) {
-                hasTables = true;
-            }
-
-            // if the database has no tables create them
-            if (!hasTables) {
-                stmt = connection.createStatement();
-                try {
-                    stmt.setQueryTimeout(QUERY_TIMEOUT);
-                } catch (Exception e) {
-                    // ignore on android...
-                }
-
-                // execute every statement in the propertyFile
-                List<String> keys = Collections.list(stmts.getKeys());
-                Collections.sort(keys);
-
-                for (String key : keys) {
-                    stmt.executeUpdate(stmts.getString(key));
-                }
-
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                res.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                if (!hasTables) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public NumberFormat getIntNF() {
@@ -212,7 +176,7 @@ public class Service {
         return getDay(logBook.getSelectedDay());
     }
 
-    public ObservableList<SimpleMeal> getMealsForSelectedDay() {
+    public ObservableList<BANutritionUnit> getMealsForSelectedDay() {
         Day d = getSelectedDayObject();
         return d.getMeals();
     }
@@ -263,7 +227,6 @@ public class Service {
         // move to database
     }
 
-
     // =================== Food ==========================
 
     private void retriveFoods() {
@@ -286,8 +249,7 @@ public class Service {
                 double fat = rs.getDouble(7);
                 double carbs = rs.getDouble(8);
                 double sugar = rs.getDouble(9);
-                boolean snack = rs.getBoolean(10);
-                Food f = new Food(id, name, weight, portion, kcal, protein, fat, carbs, sugar, snack);
+                BAFood f = new BAFood(id, name, weight, portion, kcal, protein, fat, carbs, sugar);
                 foods.add(f);
                 all.add(f);
             }
@@ -311,16 +273,16 @@ public class Service {
         }
     }
 
-    public ObservableList<Food> getFoods() {
+    public ObservableList<BAFood> getFoods() {
         return foods;
     }
 
-    public void addFood(Food food) {
+    public void addFood(BAFood food) {
         foods.add(food);
         all.add(food);
 
         try {
-            ps = connection.prepareStatement("insert into " + FOOD_TABLE + " values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps = connection.prepareStatement("insert into " + FOOD_TABLE + " values(null, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             try {
                 ps.setQueryTimeout(QUERY_TIMEOUT);
             } catch (Exception e) {
@@ -330,13 +292,16 @@ public class Service {
             ps.setString(1, food.getName());
             ps.setDouble(2, food.getWeight());
             ps.setDouble(3, food.getPortion());
+            // we need to do this to get the unportioned Value
+            food.setPortion(food.getWeight());
             ps.setDouble(4, food.getKcal());
             ps.setDouble(5, food.getProtein());
             ps.setDouble(6, food.getFat());
             ps.setDouble(7, food.getCarbs());
             ps.setDouble(8, food.getSugar());
-            ps.setBoolean(9, food.isSnack());
+
             ps.executeUpdate();
+            food.resetPortion();
 
             // get the Generated Key and Update the Object for later use we might need the id
             rs = ps.getGeneratedKeys();
@@ -362,8 +327,9 @@ public class Service {
         }
     }
 
-    public ObservableList<Food> getFoodsClone() {
-        ObservableList<Food> clone = FXCollections.observableArrayList();
+    public ObservableList<BAFood> getFoodsClone() {
+        // ???? check
+        ObservableList<BAFood> clone = FXCollections.observableArrayList();
         clone.addAll(foods);
         return clone;
     }
@@ -386,8 +352,8 @@ public class Service {
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
-                Type type = Type.valueOf(rs.getString(3));
-                Meal meal = new Meal(id, name, type);
+                String tag = rs.getString(3);
+                BAMeal meal = new BAMeal(id, name, tag);
 
                 // execute prepared Statement to get all the food for the meal
                 ps.setInt(1, id);
@@ -399,16 +365,16 @@ public class Service {
                     Double weight = res.getDouble(4);
 
                     // streams not supported by fxports :///
-                    Food f = null;
-                    for (Food tmp : foods) {
+                    BAFood f = null;
+                    for (BAFood tmp : foods) {
                         if (tmp.getId() == f_id) {
                             f = tmp;
                             break;
                         }
                     }
 
-                    MealFood mf = new MealFood(mf_id, f_id, m_id, weight, f);
-                    meal.addMealFood(mf);
+                    BAFoodPortion mf = new BAFoodPortion(f, weight);
+                    meal.addFood(mf);
                 }
 
                 meals.add(meal);
@@ -449,15 +415,15 @@ public class Service {
         }
     }
 
-    public ObservableList<SimpleMeal> getMeals() {
+    public ObservableList<BAMeal> getMeals() {
         return meals;
     }
 
-    public ObservableList<SimpleMeal> getAllSimpleMeals() {
+    public ObservableList<BANutritionUnit> getAllNutritionUnits() {
         return all;
     }
 
-    public void addMeal(Meal meal) {
+    public void addMeal(BAMeal meal) {
         meals.add(meal);
         all.add(meal);
 
@@ -470,7 +436,7 @@ public class Service {
             }
 
             ps.setString(1, meal.getName());
-            ps.setString(2, meal.getType().toString());
+            ps.setString(2, meal.getTag());
             ps.executeUpdate();
 
             // get the Generated Key and Update the Object for later use we might need the id
@@ -478,7 +444,7 @@ public class Service {
             rs.next();
             meal.setId(rs.getInt(1));
 
-            for (MealFood mf : meal.getMealFoods()) {
+            for (BAFoodPortion mf : meal.getFood()) {
                 ps = connection.prepareStatement("insert into " + MEAL_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 try {
                     ps.setQueryTimeout(QUERY_TIMEOUT);
@@ -486,9 +452,9 @@ public class Service {
                     // thrown from SQLDroid we can just ignore this
                 }
 
-                ps.setInt(1, mf.getFood().getId());
+                ps.setInt(1, mf.getNutritionUnitId());
                 ps.setInt(2, meal.getId());
-                ps.setDouble(3, mf.getWeight());
+                ps.setDouble(3, mf.getPortion());
                 ps.executeUpdate();
 
                 // get the Generated Key and Update the Object for later use we might need the id
@@ -547,12 +513,13 @@ public class Service {
                     int dm_id = res.getInt(1);
                     int d_id = res.getInt(2);
                     int m_id = res.getInt(3);
+                    double portions = res.getDouble(4);
 
                     // streams not supported by fxports :///
-                    SimpleMeal m = null;
-                    for (SimpleMeal tmp : meals) {
+                    BAMealPortion m = null;
+                    for (BAMeal tmp : meals) {
                         if (tmp.getId() == m_id) {
-                            m = new DayMeal(tmp);
+                            m = new BAMealPortion(tmp, portions);
                             m.setSaved(true);
                             break;
                         }
@@ -568,10 +535,10 @@ public class Service {
                     int f_id = res.getInt(3);
                     double weight = res.getDouble(4);
 
-                    SimpleMeal m = null;
-                    for (Food tmp : foods) {
+                    BAFoodPortion m = null;
+                    for (BAFood tmp : foods) {
                         if (tmp.getId() == f_id) {
-                            m = new DayFood(tmp, weight);
+                            m = new BAFoodPortion(tmp, weight);
                             m.setSaved(true);
                         }
                     }
@@ -619,9 +586,9 @@ public class Service {
         return days;
     }
 
-    public void addSimpleMealToDay(SimpleMeal simpleMeal, int dayId) {
+    public void addSimpleMealToDay(BANutritionUnit simpleMeal, int dayId) {
         try {
-            ps = connection.prepareStatement("insert into " + DAY_MEAL_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps = connection.prepareStatement("insert into " + DAY_MEAL_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             PreparedStatement ps2 = connection.prepareStatement("insert into " + DAY_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             try {
@@ -631,17 +598,18 @@ public class Service {
                 // thrown from SQLDroid we can just ignore this
             }
 
-            if (simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+            if (BAMealPortion.class.isInstance(simpleMeal) && !((BAMealPortion) simpleMeal).isSaved()) {
                 ps.setInt(1, dayId);
-                ps.setInt(2, ((DayMeal) simpleMeal).getMealId());
+                ps.setInt(2, ((BAMealPortion) simpleMeal).getNutritionUnitId());
+                ps.setDouble(3, simpleMeal.getPortion());
                 ps.executeUpdate();
-                simpleMeal.setSaved(true);
-            } else if (!simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+                ((BAMealPortion) simpleMeal).setSaved(true);
+            } else if (BAFoodPortion.class.isInstance(simpleMeal) && !((BAFoodPortion)simpleMeal).isSaved()) {
                 ps2.setInt(1, dayId);
-                ps2.setInt(2, ((DayFood) simpleMeal).getFoodId()); // -> Food-ID
-                ps2.setDouble(3, ((DayFood) simpleMeal).getWeight());
+                ps2.setInt(2, ((BAFoodPortion) simpleMeal).getNutritionUnitId()); // -> Food-ID
+                ps2.setDouble(3, ((BAFoodPortion) simpleMeal).getPortion());
                 ps2.executeUpdate();
-                simpleMeal.setSaved(true);
+                ((BAFoodPortion)simpleMeal).setSaved(true);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -690,10 +658,10 @@ public class Service {
         }
     }
 
-    public void deleteDayMeal(SimpleMeal simpleMeal) {
+    public void deleteDayMeal(BANutritionUnit simpleMeal) {
         System.out.println("deleteDayMeal");
         try {
-            if (simpleMeal.isMeal()) {
+            if (BAMealPortion.class.isInstance(simpleMeal)) {
                 ps = connection.prepareStatement("DELETE FROM " + DAY_MEAL_TABLE + " WHERE id IN (SELECT id FROM " + DAY_MEAL_TABLE + " WHERE d_id = ? AND m_id = ? ORDER BY id DESC LIMIT 1)");
             } else {
                 ps = connection.prepareStatement("DELETE FROM " + DAY_FOOD_TABLE + " WHERE id IN (SELECT id FROM " + DAY_FOOD_TABLE + " WHERE d_id = ? AND f_id = ? ORDER BY id DESC LIMIT 1)");
@@ -771,12 +739,13 @@ public class Service {
                     res2 = ps2.executeQuery();
                     // @todo add support for Food
                     while (res2.next()) {
-                        int m_id = res2.getInt("m_id");
+                        int m_id = res2.getInt(3);
+                        double portions = res2.getDouble(4);
 
-                        SimpleMeal m = null;
-                        for (SimpleMeal tmp : meals) {
+                        BAMealPortion m = null;
+                        for (BAMeal tmp : meals) {
                             if (tmp.getId() == m_id) {
-                                m = new DayMeal(tmp);
+                                m = new BAMealPortion(tmp, 1);
                                 m.setSaved(true);
                             }
                         }
@@ -831,9 +800,9 @@ public class Service {
         }
     }
 
-    public void addSimpleMealToPlanDay(SimpleMeal simpleMeal, int planId) {
+    public void addSimpleMealToPlanDay(BANutritionUnit simpleMeal, int planId) {
         try {
-            ps = connection.prepareStatement("insert into " + NUTRITON_PLAN_DAY_MEALS_TABLE + " values(null, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps = connection.prepareStatement("insert into " + NUTRITON_PLAN_DAY_MEALS_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             PreparedStatement ps2 = connection.prepareStatement("insert into " + NUTRITON_PLAN_DAY_FOOD_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             try {
@@ -843,17 +812,18 @@ public class Service {
                 // thrown from SQLDroid we can just ignore this
             }
 
-            if (simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+            if (BAMealPortion.class.isInstance(simpleMeal) && !((BAMealPortion)simpleMeal).isSaved()) {
                 ps.setInt(1, planId);
-                ps.setInt(2, ((DayMeal) simpleMeal).getMealId());
+                ps.setInt(2, ((BAMealPortion) simpleMeal).getNutritionUnitId());
+                ps.setDouble(3, simpleMeal.getPortion());
                 ps.executeUpdate();
-                simpleMeal.setSaved(true);
-            } else if (!simpleMeal.isMeal() && !simpleMeal.isSaved()) {
+                ((BAMealPortion)simpleMeal).setSaved(true);
+            } else if (BAFoodPortion.class.isInstance(simpleMeal) && !((BAFoodPortion)simpleMeal).isSaved()) {
                 ps2.setInt(1, planId);
-                ps2.setInt(2, ((DayFood) simpleMeal).getFoodId()); // -> Food-ID
-                ps2.setDouble(3, ((DayFood) simpleMeal).getWeight());
+                ps2.setInt(2, ((BAFoodPortion) simpleMeal).getNutritionUnitId()); // -> Food-ID
+                ps2.setDouble(3, ((BAFoodPortion) simpleMeal).getPortion());
                 ps2.executeUpdate();
-                simpleMeal.setSaved(true);
+                ((BAFoodPortion)simpleMeal).setSaved(true);
             }
 
         } catch (SQLException e) {
@@ -861,10 +831,10 @@ public class Service {
         }
     }
 
-    public void deletePlanDayMeal(SimpleMeal simpleMeal, int planDayId) {
+    public void deletePlanDayMeal(BANutritionUnit simpleMeal, int planDayId) {
         System.out.println("deletePlanDayMeal");
         try {
-            if (simpleMeal.isMeal()) {
+            if (BAMealPortion.class.isInstance(simpleMeal)) {
                 ps = connection.prepareStatement("DELETE FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE id IN (SELECT id FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE npd_id = ? AND m_id = ? ORDER BY id DESC LIMIT 1)");
             } else {
                 ps = connection.prepareStatement("DELETE FROM " + NUTRITON_PLAN_DAY_FOOD_TABLE + " WHERE id IN (SELECT id FROM " + NUTRITON_PLAN_DAY_FOOD_TABLE + " WHERE npd_id = ? AND f_id = ? ORDER BY id DESC LIMIT 1)");

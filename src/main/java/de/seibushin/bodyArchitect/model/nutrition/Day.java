@@ -17,7 +17,7 @@ public class Day {
     private LocalDate date;
     private String notice;
 
-    private ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
+    private ObservableList<BANutritionUnit> meals = FXCollections.observableArrayList();
     // add Settings
 
     private Double kcal = 0.0;
@@ -45,7 +45,7 @@ public class Day {
         return date;
     }
 
-    public void addMeal(SimpleMeal meal) {
+    public void addMeal(BANutritionUnit meal) {
         meals.add(meal);
         // add Stats to the meal Stats
         kcal += meal.getKcal();
@@ -55,7 +55,7 @@ public class Day {
         sugar += meal.getSugar();
     }
 
-    public void removeMeal(SimpleMeal meal) {
+    public void removeMeal(BANutritionUnit meal) {
         if (meals.remove(meal)) {
             // remove Stats from the meal Stats
             kcal -= meal.getKcal();
@@ -66,7 +66,7 @@ public class Day {
         }
     }
 
-    public ObservableList<SimpleMeal> getMeals() {
+    public ObservableList<BANutritionUnit> getMeals() {
         return meals;
     }
 

@@ -11,15 +11,14 @@ import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
-import de.seibushin.bodyArchitect.model.nutrition.DayFood;
-import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
+import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 
 import java.io.IOException;
 
-public class SimpleMealCellNode {
+public class NutritionUnitCellNode<T extends BANutritionUnit> {
     @FXML
     public ListTile tile;
     @FXML
@@ -39,10 +38,10 @@ public class SimpleMealCellNode {
     @FXML
     Icon i_info;
 
-    private SimpleMeal item;
+    private T item;
 
-    public SimpleMealCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(SimpleMealCellNode.class.getResource("simpleMealCellNode.fxml"));
+    public NutritionUnitCellNode() {
+        FXMLLoader fxmlLoader = new FXMLLoader(NutritionUnitCellNode.class.getResource("simpleMealCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {
@@ -52,26 +51,24 @@ public class SimpleMealCellNode {
         }
     }
 
-    public SimpleMeal getItem() {
+    public T getItem() {
         return item;
     }
 
     public void refresh() {
-        System.out.println("refresh");
         update(item);
     }
 
-    public void update(SimpleMeal item) {
+    public void update(T item) {
         this.item = item;
+        lbl_type.setText(item.getSubText());
 
-        if (item.isMeal()) {
-            lbl_type.setText(item.getType().toString());
-        } else {
-            lbl_type.setText(item.getWeight() + " " + Utils.getString("food.cell.weight.unit"));
+        if (!item.isMeal())
             i_info.setDisable(true);
-        }
-        lbl_name.setText(item.getName());
+        else
+            i_info.setDisable(false);
 
+        lbl_name.setText(item.getName());
 
         lbl_kcal.setText(Service.getInstance().getDf().format(item.getKcal()) + " " + Utils.getString("meal.cell.kcal"));
         lbl_fat.setText(Service.getInstance().getDf().format(item.getFat()));

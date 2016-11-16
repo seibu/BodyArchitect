@@ -7,9 +7,7 @@
 
 package de.seibushin.bodyArchitect.model.nutrition.plan;
 
-import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -10,59 +10,52 @@ package de.seibushin.bodyArchitect.views;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.control.CharmListView;
-import com.gluonhq.charm.glisten.control.ExceptionDialog;
-import com.gluonhq.charm.glisten.control.Icon;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
-import de.seibushin.bodyArchitect.model.nutrition.Food;
-import de.seibushin.bodyArchitect.model.nutrition.Meal;
-import de.seibushin.bodyArchitect.model.nutrition.MealFood;
+import de.seibushin.bodyArchitect.model.nutrition.BAFood;
+import de.seibushin.bodyArchitect.model.nutrition.BAFoodPortion;
+import de.seibushin.bodyArchitect.model.nutrition.BAMeal;
 import de.seibushin.bodyArchitect.model.nutrition.Type;
-import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
-import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
-import de.seibushin.bodyArchitect.views.listCell.FoodCell;
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import de.seibushin.bodyArchitect.views.listCell.NutritionUnitCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 
 public class MealController {
+    @FXML
+    View meal;
     @FXML
     TextField tf_name;
     @FXML
     ComboBox<Type> cb_type;
     @FXML
-    CharmListView<Food, String> lv_food;
+    CharmListView<BAFoodPortion, String> lv_food;
     @FXML
-    CharmListView<Food, String> lv_allFood;
+    CharmListView<BAFood, String> lv_allFood;
     @FXML
-    TextField tf_weight;
+    TextField tf_portion;
     @FXML
-    Slider slider_portion;
+    TextField tf_search;
 
-    @FXML
-    View meal;
-
-    private final BooleanProperty sliding = new SimpleBooleanProperty();
-
-    private Food selected = null;
+    FilteredList<BAFood> filtered = new FilteredList(Service.getInstance().getFoods());
+    ObservableList<BAFoodPortion> selectedList = FXCollections.observableArrayList();
+    FilteredList<BAFoodPortion> selected = new FilteredList(selectedList);
 
     private void addMeal() {
         String result = "";
         try {
             String name = tf_name.getText();
-            Type type = cb_type.getValue();
+            String type = cb_type.getValue().toString();
 
-            Meal meal = new Meal(name, type);
+            BAMeal meal = new BAMeal(name, type);
 
-            for (Food f : lv_food.itemsProperty().get()) {
-                meal.addMealFood(new MealFood(f, f.getPortion()));
+            for (BAFoodPortion f : selected) {
+                meal.addFood(f);
             }
 
             Service.getInstance().addMeal(meal);
@@ -80,21 +73,23 @@ public class MealController {
     }
 
     private void clear() {
-        //todo: empty all fields!!!
-
         cb_type.getSelectionModel().clearSelection();
         tf_name.clear();
+        selectedList.clear();
+    }
 
-        // both ways should be equal in this case
-        //lv_food.setItems(null);
+    @FXML
+    private void addToMeal() {
+        BAFood food = lv_allFood.getSelectedItem();
+        BAFoodPortion portion = new BAFoodPortion(food, food.getPortion());
+        selectedList.add(portion);
 
-        // we work with the actual object for the food, so we need to restore the acurate portion
-        for (Food f : lv_food.itemsProperty().get()) {
-            f.resetPortion();
-        }
+        food.resetPortion();
+    }
 
-        lv_food.setItems(FXCollections.emptyObservableList());
-        lv_allFood.setItems(Service.getInstance().getFoodsClone());
+    @FXML
+    private void search() {
+        filtered.setPredicate(n -> n.getName().toLowerCase().contains(tf_search.getText().toLowerCase()));
     }
 
     @FXML
@@ -115,83 +110,25 @@ public class MealController {
             }
         });
 
-        //lv_food.setPlaceholder(new Label(Utils.getString("meal.add.food.placeholder")));
-        //lv_allFood.setPlaceholder(new Label(Utils.getString("meal.add.allFood.placeholder")));
-
-        lv_allFood.setItems(Service.getInstance().getFoodsClone());
+        lv_allFood.setItems(filtered);
         lv_allFood.setComparator(((o1, o2) -> o1.getName().compareTo(o2.getName())));
+        lv_allFood.setCellFactory(cell -> new NutritionUnitCell<>());
+
         cb_type.getItems().setAll(Type.values());
 
         // ListView with the Foods for the new Meal
-        lv_food.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell(true,
-                    c -> {
-                        System.out.println("left");
-                        lv_food.itemsProperty().remove(c);
-                        lv_allFood.itemsProperty().add(c);
-                    },
-                    c -> {
-                        System.out.println("right");
+        lv_food.setItems(selected);
+        lv_food.setCellFactory(cell -> new NutritionUnitCell<>());
 
-                    });
-            // notify view that cell is sliding
-            sliding.bind(foodCell.slidingProperty());
 
-            return foodCell;
-        });
-
-        // prevent the list from scrolling while sliding
-        lv_food.addEventFilter(ScrollEvent.ANY, e -> {
-            if (sliding.get() && e.getDeltaY() != 0) {
-                e.consume();
-            }
-        });
-
-        // ListView with all the Foods available
-        lv_allFood.setCellFactory(cell -> {
-            final FoodCell foodCell = new FoodCell(false,
-                    c -> {
-                        System.out.println("left");
-                        lv_allFood.itemsProperty().remove(c);
-                        lv_food.itemsProperty().add(c);
-                    },
-                    c -> {
-                        System.out.println("right");
-                    });
-            // notify view that cell is sliding
-            sliding.bind(foodCell.slidingProperty());
-
-            return foodCell;
-        });
-
-        // prevent the list from scrolling while sliding
-        lv_allFood.addEventFilter(ScrollEvent.ANY, e -> {
-            if (sliding.get() && e.getDeltaY() != 0) {
-                e.consume();
-            }
-        });
-
-        Platform.runLater(() -> {
-            ((ListView<Food>) lv_food.lookup(".list-view")).getSelectionModel().selectedItemProperty().addListener(
-                    (obs, ov, nv) -> {
-                        if (nv != null) {
-                            slider_portion.setValue(nv.getPortion());
-                            selected = nv;
-                        } else {
-                            slider_portion.setValue(0);
-                        }
-                    }
-            );
-        });
-
-        tf_weight.textProperty().addListener((obs, ov, nv) -> {
+        tf_portion.textProperty().addListener((obs, ov, nv) -> {
             if (nv != null && nv != "") {
                 try {
                     double d = Double.parseDouble(nv);
-                    selected.setPortion(d);
-                    ((ListView<Food>) lv_food.lookup(".list-view")).refresh();
-                } catch (Exception e){
-                    //e.printStackTrace();
+                    lv_allFood.getSelectedItem().setPortion(d);
+                    lv_allFood.refresh();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });

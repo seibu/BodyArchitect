@@ -13,23 +13,29 @@ import javafx.collections.ObservableList;
 public class BAMeal implements BANutritionUnit {
     private int id;
     private String name;
-    private Type type;
+    //@todo extend to tag list
+    private String tag;
     private final ObservableList<BAFoodPortion> food = FXCollections.observableArrayList();
 
-    private double kcal;
-    private double protein;
-    private double fat;
-    private double carbs;
-    private double sugar;
+    double kcal;
+    double protein;
+    double fat;
+    double carbs;
+    double sugar;
+    private double portion = 1;
 
-    public BAMeal(String name, Type type) {
+    public BAMeal(String name, String tag) {
         this.name = name;
-        this.type = type;
+        this.tag = tag;
     }
 
-    public BAMeal(int id, String name, Type type) {
-        this(name, type);
+    public BAMeal(int id, String name, String tag) {
+        this(name, tag);
         this.id = id;
+    }
+
+    public ObservableList<BAFoodPortion> getFood() {
+        return food;
     }
 
     public void addFood(BAFoodPortion foodPortion) {
@@ -54,6 +60,10 @@ public class BAMeal implements BANutritionUnit {
         }
     }
 
+    public String getTag() {
+        return tag;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -71,26 +81,64 @@ public class BAMeal implements BANutritionUnit {
 
     @Override
     public double getKcal() {
-        return kcal;
+        return portioning(kcal);
     }
 
     @Override
     public double getProtein() {
-        return protein;
+        return portioning(protein);
     }
 
     @Override
     public double getFat() {
-        return fat;
+        return portioning(fat);
     }
 
     @Override
     public double getCarbs() {
-        return carbs;
+        return portioning(carbs);
     }
 
     @Override
     public double getSugar() {
-        return sugar;
+        return portioning(sugar);
+    }
+
+    @Override
+    public String getSubText() {
+        return tag + "|" + portion;
+    }
+
+    @Override
+    public boolean isMeal() {
+        return true;
+    }
+
+    @Override
+    public double getPortion() {
+        return portion;
+    }
+
+    @Override
+    public void setPortion(double portion) {
+        this.portion = portion;
+    }
+
+    @Override
+    public void resetPortion() {
+        this.portion = 1;
+    }
+
+    /**
+     * Used for portioning a specific value
+     * @param value
+     * @return
+     */
+    private double portioning(double value) {
+        return value * portion;
+    }
+
+    public BAMeal getMeal() {
+        return this;
     }
 }

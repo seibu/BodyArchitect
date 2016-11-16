@@ -7,26 +7,21 @@
 
 package de.seibushin.bodyArchitect.model.nutrition;
 
-public class BAFood implements BANutritionUnit, Portionable {
+import de.seibushin.bodyArchitect.helper.Utils;
+
+public class BAFood implements BANutritionUnit {
     private int id;
     private String name;
-    private double weight;
+    double weight;
     private double portion;
-    private double kcal;
-    private double protein;
-    private double fat;
-    private double carbs;
-    private double sugar;
+    double kcal;
+    double protein;
+    double fat;
+    double carbs;
+    double sugar;
 
     // for resetting the portion
     private double tmpPortion;
-
-    /**
-     * no argument constructor
-     */
-    public BAFood() {
-
-    }
 
     /**
      * constructor with all fields
@@ -91,27 +86,38 @@ public class BAFood implements BANutritionUnit, Portionable {
 
     @Override
     public double getKcal() {
-        return kcal;
+        return portioning(kcal);
     }
 
     @Override
     public double getProtein() {
-        return protein;
+        return portioning(protein);
     }
 
     @Override
     public double getFat() {
-        return fat;
+        return portioning(fat);
     }
 
     @Override
     public double getCarbs() {
-        return carbs;
+        return portioning(carbs);
     }
 
     @Override
     public double getSugar() {
-        return sugar;
+        return portioning(sugar);
+    }
+
+    @Override
+    public String getSubText() {
+        //@todo remove PortionGetter und allways output the portionised value!?
+        return portion + Utils.getString("food.cell.weight.unit");
+    }
+
+    @Override
+    public boolean isMeal() {
+        return false;
     }
 
     @Override
@@ -124,34 +130,8 @@ public class BAFood implements BANutritionUnit, Portionable {
         this.portion = portion;
     }
 
-    @Override
     public void resetPortion() {
         portion = tmpPortion;
-    }
-
-    @Override
-    public double getPortionedKcal() {
-        return portioning(kcal);
-    }
-
-    @Override
-    public double getPortionedProtein() {
-        return portioning(protein);
-    }
-
-    @Override
-    public double getPortionedFat() {
-        return portioning(fat);
-    }
-
-    @Override
-    public double getPortionedCarbs() {
-        return portioning(carbs);
-    }
-
-    @Override
-    public double getPortionedSugar() {
-        return portioning(sugar);
     }
 
     /**

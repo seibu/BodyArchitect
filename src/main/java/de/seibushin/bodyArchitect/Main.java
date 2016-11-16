@@ -1,25 +1,19 @@
 package de.seibushin.bodyArchitect;
 
-import com.gluonhq.charm.down.common.JavaFXPlatform;
+import com.gluonhq.charm.down.Platform;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.Avatar;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
 import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
-import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
 import de.seibushin.bodyArchitect.views.*;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class Main extends MobileApplication {
     // Views and Layers
@@ -113,7 +107,8 @@ public class Main extends MobileApplication {
 
         scene.getStylesheets().add(Main.class.getResource("style.css").toExternalForm());
         ((Stage) scene.getWindow()).getIcons().add(new Image(Main.class.getResourceAsStream("/icon.png")));
-        if (JavaFXPlatform.isDesktop()) {
+
+        if (Platform.isDesktop()) {
             scene.getWindow().setWidth(400);
         }
     }

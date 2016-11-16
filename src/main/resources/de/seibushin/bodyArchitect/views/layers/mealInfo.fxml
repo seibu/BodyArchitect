@@ -4,7 +4,6 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -13,6 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
+<?import com.gluonhq.charm.glisten.control.CharmListView?>
 <VBox fx:id="root" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="popup" stylesheets="@mealInfo.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox id="header-container" alignment="BOTTOM_LEFT" styleClass="popup" VBox.vgrow="NEVER">
@@ -86,10 +86,10 @@
          </children>
       </GridPane>
       <Region prefHeight="1.0" styleClass="spacer" VBox.vgrow="NEVER" />
-      <ListView fx:id="lv_foods" prefHeight="225.0" VBox.vgrow="NEVER">
+      <CharmListView fx:id="lv_foods" prefHeight="225.0" VBox.vgrow="NEVER">
          <VBox.margin>
             <Insets bottom="5.0" left="15.0" right="15.0" />
          </VBox.margin>
-      </ListView>
+      </CharmListView>
    </children>
 </VBox>

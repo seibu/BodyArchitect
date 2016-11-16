@@ -9,14 +9,12 @@ package de.seibushin.bodyArchitect.views;
 
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
-import com.gluonhq.charm.glisten.control.AutoCompleteTextField;
 import com.gluonhq.charm.glisten.control.TextField;
-import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
-import de.seibushin.bodyArchitect.model.nutrition.Food;
+import de.seibushin.bodyArchitect.model.nutrition.BAFood;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -41,8 +39,6 @@ public class FoodController {
     TextField tf_protein;
     @FXML
     Label lbl_calc;
-    @FXML
-    CheckBox cb_snack;
 
     @FXML
     View food;
@@ -58,10 +54,9 @@ public class FoodController {
             Double carbs = Utils.getNumberFormat().parse(tf_carbs.getText()).doubleValue();
             Double sugar = Utils.getNumberFormat().parse(tf_sugar.getText()).doubleValue();
             Double protein = Utils.getNumberFormat().parse(tf_protein.getText()).doubleValue();
-            boolean snack = cb_snack.isSelected();
 
             // add the food
-            Food food = new Food(name, weight, portion, kcal, protein, fat, carbs, sugar, snack);
+            BAFood food = new BAFood(name, weight, portion, kcal, protein, fat, carbs, sugar);
             Service.getInstance().addFood(food);
 
             // clear the fields
@@ -87,7 +82,6 @@ public class FoodController {
         tf_protein.setText("");
         tf_weight.setText("");
         tf_portion.setText("");
-        cb_snack.setSelected(false);
     }
 
     @FXML

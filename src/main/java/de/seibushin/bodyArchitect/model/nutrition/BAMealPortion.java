@@ -10,12 +10,12 @@ package de.seibushin.bodyArchitect.model.nutrition;
 public class BAMealPortion implements BANutritionUnit, Synchronizable {
     private int id;
     private BAMeal meal;
-    private double portionSize;
+    private double portion;
     private boolean saved = false;
 
-    public BAMealPortion(BAMeal meal, double portionSize) {
+    public BAMealPortion(BAMeal meal, double portion) {
         this.meal = meal;
-        this.portionSize = portionSize;
+        this.portion = portion;
     }
 
     @Override
@@ -35,27 +35,37 @@ public class BAMealPortion implements BANutritionUnit, Synchronizable {
 
     @Override
     public double getKcal() {
-        return portioning(meal.getKcal());
+        return portioning(meal.kcal);
     }
 
     @Override
     public double getProtein() {
-        return portioning(meal.getProtein());
+        return portioning(meal.protein);
     }
 
     @Override
     public double getFat() {
-        return portioning(meal.getFat());
+        return portioning(meal.fat);
     }
 
     @Override
     public double getCarbs() {
-        return portioning(meal.getCarbs());
+        return portioning(meal.carbs);
     }
 
     @Override
     public double getSugar() {
-        return portioning(meal.getSugar());
+        return portioning(meal.sugar);
+    }
+
+    @Override
+    public String getSubText() {
+        return "x" + portion + "|" + meal.getTag();
+    }
+
+    @Override
+    public boolean isMeal() {
+        return true;
     }
 
     @Override
@@ -69,8 +79,18 @@ public class BAMealPortion implements BANutritionUnit, Synchronizable {
     }
 
     @Override
-    public double getPortionSize() {
-        return portionSize;
+    public double getPortion() {
+        return portion;
+    }
+
+    @Override
+    public void setPortion(double portion) {
+        this.portion = portion;
+    }
+
+    @Override
+    public void resetPortion() {
+        // do nothing kapapapapap
     }
 
     @Override
@@ -83,12 +103,16 @@ public class BAMealPortion implements BANutritionUnit, Synchronizable {
         return meal.getId();
     }
 
+    public BAMeal getMeal() {
+        return meal;
+    }
+
     /**
      * Used for portioning a specific value
      * @param value
      * @return
      */
     private double portioning(double value) {
-        return value * portionSize;
+        return value * portion;
     }
 }

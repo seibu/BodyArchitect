@@ -9,16 +9,10 @@ package de.seibushin.bodyArchitect.model.nutrition;
 
 public interface Synchronizable extends BANutritionUnit {
     public boolean isSaved();
-    public void setSaved(boolean saved);
 
-    /**
-     * this might be either the amount of Portions or the weight of the Food
-     * @return
-     */
-    public double getPortionSize();
+    public void setSaved(boolean saved);
 
     public BANutritionUnit getNutritionUnit();
 
     public int getNutritionUnitId();
-
 }

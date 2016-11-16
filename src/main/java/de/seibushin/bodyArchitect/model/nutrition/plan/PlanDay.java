@@ -7,9 +7,7 @@
 
 package de.seibushin.bodyArchitect.model.nutrition.plan;
 
-import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -24,7 +22,7 @@ public class PlanDay {
     private double carbs = 0.0;
     private double sugar = 0.0;
 
-    private ObservableList<SimpleMeal> meals = FXCollections.observableArrayList();
+    private ObservableList<BANutritionUnit> meals = FXCollections.observableArrayList();
 
     public PlanDay() {
 
@@ -40,7 +38,7 @@ public class PlanDay {
         this.id = id;
     }
 
-    public void addMeal(SimpleMeal simpleMeal) {
+    public void addMeal(BANutritionUnit simpleMeal) {
         meals.add(simpleMeal);
         // add Stats to the meal Stats
         kcal += simpleMeal.getKcal();
@@ -50,7 +48,7 @@ public class PlanDay {
         sugar += simpleMeal.getSugar();
     }
 
-    public void removeMeal(SimpleMeal simpleMeal) {
+    public void removeMeal(BANutritionUnit simpleMeal) {
         meals.remove(simpleMeal);
         // add Stats to the meal Stats
         kcal -= simpleMeal.getKcal();
@@ -84,11 +82,11 @@ public class PlanDay {
         this.order = order;
     }
 
-    public ObservableList<SimpleMeal> getMeals() {
+    public ObservableList<BANutritionUnit> getMeals() {
         return meals;
     }
 
-    public void setMeals(ObservableList<SimpleMeal> meals) {
+    public void setMeals(ObservableList<BANutritionUnit> meals) {
         this.meals = meals;
     }
 

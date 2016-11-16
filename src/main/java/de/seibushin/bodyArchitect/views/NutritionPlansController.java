@@ -14,10 +14,10 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.Service;
-import de.seibushin.bodyArchitect.model.nutrition.SimpleMeal;
+import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
 import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
 import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
-import de.seibushin.bodyArchitect.views.listCell.MealCell;
+import de.seibushin.bodyArchitect.views.listCell.NutritionUnitCell;
 import de.seibushin.bodyArchitect.views.listCell.PlanCell;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -38,7 +38,7 @@ public class NutritionPlansController {
     @FXML
     private CharmListView<Plan, String> lv_plans;
     @FXML
-    private CharmListView<SimpleMeal, String> lv_meals;
+    private CharmListView<BANutritionUnit, String> lv_meals;
     @FXML
     HBox hb_days;
     @FXML
@@ -143,6 +143,9 @@ public class NutritionPlansController {
 
         lv_plans.setItems(Service.getInstance().getPlans());
 
+        lv_meals.setCellFactory(cell -> new NutritionUnitCell<BANutritionUnit>());
+
+        /*
         lv_meals.setCellFactory(cell -> {
             final MealCell mealCell = new MealCell(
                     c -> {
@@ -158,6 +161,7 @@ public class NutritionPlansController {
 
             return mealCell;
         });
+        */
 
         // prevent the list from scrolling while sliding
         lv_meals.addEventFilter(ScrollEvent.ANY, e -> {

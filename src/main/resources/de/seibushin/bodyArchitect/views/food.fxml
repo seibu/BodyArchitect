@@ -45,7 +45,6 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Label>
-                  <CheckBox fx:id="cb_snack" contentDisplay="TOP" mnemonicParsing="false" text="Snack" />
                </children>
             </HBox>
             <GridPane hgap="5.0" styleClass="cell-body">
