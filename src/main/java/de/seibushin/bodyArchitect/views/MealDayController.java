@@ -69,7 +69,7 @@ public class MealDayController {
                 if (forPlan) {
                     NutritionPlansController.getSelectedPlanDay().addMeal(portion);
                     Service.getInstance().addSimpleMealToPlanDay(portion, NutritionPlansController.getSelectedPlanDay().getId());
-                    result = "Meal added to selected day of plan";
+                    result = portion.getName() + " added to selected day of plan";
                 } else {
                     Day day = Service.getInstance().getSelectedDayObject();
                     if (day == null) {
@@ -80,14 +80,14 @@ public class MealDayController {
                     //@todo dont use day.getId() it might be for a plan and not for the active Day!!!
                     day.addMeal(portion);
                     Service.getInstance().addSimpleMealToDay(portion, day.getId());
-                    result = "Meal added to selected Date " + Service.getInstance().getSelectedDayString();
+                    result = portion.getName() + " added to selected Date " + Service.getInstance().getSelectedDayString();
                 }
             } else {
                 BAFoodPortion portion = new BAFoodPortion((BAFood) nunit, nunit.getPortion());
                 if (forPlan) {
                     NutritionPlansController.getSelectedPlanDay().addMeal(portion);
                     Service.getInstance().addSimpleMealToPlanDay(portion, NutritionPlansController.getSelectedPlanDay().getId());
-                    result = "Food added to selected day of plan";
+                    result = portion.getName() + " added to selected day of plan";
                 } else {
                     Day day = Service.getInstance().getSelectedDayObject();
                     if (day == null) {
@@ -97,7 +97,7 @@ public class MealDayController {
                     }
                     day.addMeal(portion);
                     Service.getInstance().addSimpleMealToDay(portion, day.getId());
-                    result = "Food added to selected date " + Service.getInstance().getSelectedDayString();
+                    result = portion.getName() + " added to selected date " + Service.getInstance().getSelectedDayString();
                 }
             }
             // reset the portion
@@ -105,7 +105,9 @@ public class MealDayController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MobileApplication.getInstance().showMessage(result);
+
+        Service.getInstance().getInfoLayer().show(result);
+        MobileApplication.getInstance().showLayer("InfoLayer");
     }
 
     @FXML

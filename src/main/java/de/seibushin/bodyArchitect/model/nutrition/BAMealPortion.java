@@ -8,7 +8,7 @@
 package de.seibushin.bodyArchitect.model.nutrition;
 
 public class BAMealPortion implements BANutritionUnit, Synchronizable {
-    private int id;
+    //private int id;
     private BAMeal meal;
     private double portion;
     private boolean saved = false;
@@ -25,12 +25,12 @@ public class BAMealPortion implements BANutritionUnit, Synchronizable {
 
     @Override
     public int getId() {
-        return id;
+        return meal.getId();
     }
 
     @Override
     public void setId(int id) {
-        this.id = id;
+
     }
 
     @Override

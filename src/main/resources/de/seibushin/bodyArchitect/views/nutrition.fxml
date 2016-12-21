@@ -5,6 +5,7 @@
 <?import com.gluonhq.charm.glisten.mvc.View?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -15,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge?>
 
-<View fx:id="nutrition" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionController">
+<View fx:id="nutrition" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.seibushin.bodyArchitect.views.NutritionController">
     <center>
         <TabPane fx:id="tb_nutrition" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -148,6 +149,88 @@
                         </VBox>
                     </content>
                 </Tab>
+            <Tab fx:id="stats" text="Stats">
+              <content>
+                  <VBox>
+                     <children>
+                        <HBox>
+                           <children>
+                              <TextField fx:id="tf_stats_days" />
+                              <Button mnemonicParsing="false" onAction="#getStats" styleClass="btn_trans">
+                                 <graphic>
+                                    <Icon content="ACCESS_ALARMS" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="%nutrition.kcal" textOverrun="CLIP">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lbl_stats_kcal" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="%nutrition.protein" textOverrun="CLIP">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lbl_stats_protein" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="%nutrition.fat" textOverrun="CLIP">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lbl_stats_fat" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" text="%nutrition.carbs" textOverrun="CLIP" VBox.vgrow="ALWAYS">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lbl_stats_carbs" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="%nutrition.sugar" textOverrun="CLIP">
+                                       <styleClass>
+                                          <String fx:value="lowlight" />
+                                          <String fx:value="light" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lbl_stats_sugar" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <CharmListView fx:id="lv_stats" prefHeight="200.0" prefWidth="200.0">
+                           <placeholder>
+                              <Icon content="CLEAR_ALL" styleClass="list-placeholder" />
+                           </placeholder>
+                        </CharmListView>
+                     </children>
+                  </VBox>
+              </content>
+            </Tab>
             </tabs>
         </TabPane>
     </center>

@@ -10,7 +10,7 @@ package de.seibushin.bodyArchitect.model.nutrition;
 import de.seibushin.bodyArchitect.helper.Utils;
 
 public class BAFoodPortion implements BANutritionUnit, Synchronizable {
-    private int id;
+    //private int id;
     private BAFood food;
     private double portion;
     private boolean saved = false;
@@ -27,12 +27,12 @@ public class BAFoodPortion implements BANutritionUnit, Synchronizable {
 
     @Override
     public int getId() {
-        return id;
+        return food.getId();
     }
 
     @Override
     public void setId(int id) {
-        this.id = id;
+
     }
 
     @Override

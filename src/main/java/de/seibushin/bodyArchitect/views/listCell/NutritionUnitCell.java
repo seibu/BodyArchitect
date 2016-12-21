@@ -12,6 +12,8 @@ import com.gluonhq.charm.glisten.control.CharmListCell;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
 
+import java.util.function.Consumer;
+
 public class NutritionUnitCell<T extends BANutritionUnit> extends CharmListCell<T> {
     private NutritionUnitCellNode nutritionUnitCellNode;
 
@@ -23,6 +25,24 @@ public class NutritionUnitCell<T extends BANutritionUnit> extends CharmListCell<
         nutritionUnitCellNode.i_info.setOnMouseClicked(e -> {
             Service.getInstance().getMealInfoLayer().setMeal(current);
             MobileApplication.getInstance().showLayer("MealInfo");
+        });
+        // todo: remove icon if not needed
+        nutritionUnitCellNode.i_delete.setVisible(false);
+    }
+
+    public NutritionUnitCell(Consumer<BANutritionUnit> deleteConsumer) {
+        this();
+        nutritionUnitCellNode.i_delete.setVisible(true);
+        nutritionUnitCellNode.i_delete.setOnMouseClicked(e -> {
+            System.out.println("delete");
+            deleteConsumer.accept(current);
+        });
+    }
+
+    public void setDeleteConsumer(Consumer<BANutritionUnit> deleteConsumer) {
+        nutritionUnitCellNode.i_delete.setOnMouseClicked(e -> {
+            System.out.println("delete");
+            deleteConsumer.accept(current);
         });
     }
 

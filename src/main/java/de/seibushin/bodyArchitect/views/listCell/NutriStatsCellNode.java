@@ -12,19 +12,17 @@ import com.gluonhq.charm.glisten.control.ListTile;
 import de.seibushin.bodyArchitect.Service;
 import de.seibushin.bodyArchitect.helper.Utils;
 import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
+import de.seibushin.bodyArchitect.model.nutrition.NutriStats;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
-public class NutritionUnitCellNode<T extends BANutritionUnit> {
+public class NutriStatsCellNode<T extends NutriStats> {
     @FXML
     public ListTile tile;
-    @FXML
-    public Label lbl_name;
-    @FXML
-    private Label lbl_type;
     @FXML
     public Label lbl_kcal;
     @FXML
@@ -36,14 +34,12 @@ public class NutritionUnitCellNode<T extends BANutritionUnit> {
     @FXML
     public Label lbl_protein;
     @FXML
-    Icon i_info;
-    @FXML
-    Icon i_delete;
+    public Label lbl_date;
 
     private T item;
 
-    public NutritionUnitCellNode() {
-        FXMLLoader fxmlLoader = new FXMLLoader(NutritionUnitCellNode.class.getResource("simpleMealCellNode.fxml"));
+    public NutriStatsCellNode() {
+        FXMLLoader fxmlLoader = new FXMLLoader(NutriStatsCellNode.class.getResource("nutriStatsCellNode.fxml"));
         fxmlLoader.setController(this);
         fxmlLoader.setResources(Utils.getBundle());
         try {
@@ -61,19 +57,10 @@ public class NutritionUnitCellNode<T extends BANutritionUnit> {
         update(item);
     }
 
-
-
     public void update(T item) {
         this.item = item;
-        lbl_type.setText(item.getSubText());
 
-        if (!item.isMeal())
-            i_info.setDisable(true);
-        else
-            i_info.setDisable(false);
-
-        lbl_name.setText(item.getName());
-
+        lbl_date.setText(item.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
         lbl_kcal.setText(Service.getInstance().getDf().format(item.getKcal()) + " " + Utils.getString("meal.cell.kcal"));
         lbl_fat.setText(Service.getInstance().getDf().format(item.getFat()));
         lbl_carbs.setText(Service.getInstance().getDf().format(item.getCarbs()));

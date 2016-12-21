@@ -143,32 +143,11 @@ public class NutritionPlansController {
 
         lv_plans.setItems(Service.getInstance().getPlans());
 
-        lv_meals.setCellFactory(cell -> new NutritionUnitCell<BANutritionUnit>());
-
-        /*
-        lv_meals.setCellFactory(cell -> {
-            final MealCell mealCell = new MealCell(
-                    c -> {
-                        System.out.println("left");
-                        Service.getInstance().deletePlanDayMeal(c, selectedPlanDay.getId());
-                        selectedPlanDay.removeMeal(c);
-                    },
-                    c -> {
-                        System.out.println("right");
-                    });
-            // notify view that cell is sliding
-            sliding.bind(mealCell.slidingProperty());
-
-            return mealCell;
-        });
-        */
-
-        // prevent the list from scrolling while sliding
-        lv_meals.addEventFilter(ScrollEvent.ANY, e -> {
-            if (sliding.get() && e.getDeltaY() != 0) {
-                e.consume();
-            }
-        });
+        lv_meals.setCellFactory(cell -> new NutritionUnitCell<>(e -> {
+                    Service.getInstance().deletePlanDayMeal(e, selectedPlanDay.getId());
+                    selectedPlanDay.removeMeal(e);
+                })
+        );
 
         // order by name
         // @todo order by time or smth
@@ -209,7 +188,7 @@ public class NutritionPlansController {
             String s = "";
             try {
                 s = Service.getInstance().getDoubleNF().format(selectedPlanDay.getKcal());
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return s;
@@ -219,7 +198,7 @@ public class NutritionPlansController {
             String s = "";
             try {
                 s = Service.getInstance().getDoubleNF().format(selectedPlanDay.getProtein());
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return s;
@@ -229,7 +208,7 @@ public class NutritionPlansController {
             String s = "";
             try {
                 s = Service.getInstance().getDoubleNF().format(selectedPlanDay.getFat());
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return s;
@@ -239,7 +218,7 @@ public class NutritionPlansController {
             String s = "";
             try {
                 s = Service.getInstance().getDoubleNF().format(selectedPlanDay.getCarbs());
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return s;
@@ -249,7 +228,7 @@ public class NutritionPlansController {
             String s = "";
             try {
                 s = Service.getInstance().getDoubleNF().format(selectedPlanDay.getSugar());
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return s;

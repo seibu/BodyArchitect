@@ -14,14 +14,13 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import de.seibushin.bodyArchitect.Main;
 import de.seibushin.bodyArchitect.Service;
-import de.seibushin.bodyArchitect.model.nutrition.BAFood;
-import de.seibushin.bodyArchitect.model.nutrition.BAMeal;
-import de.seibushin.bodyArchitect.model.nutrition.BANutritionUnit;
-import de.seibushin.bodyArchitect.model.nutrition.Day;
+import de.seibushin.bodyArchitect.model.nutrition.*;
+import de.seibushin.bodyArchitect.views.listCell.NutriStatsCell;
 import de.seibushin.bodyArchitect.views.listCell.NutritionUnitCell;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -30,6 +29,8 @@ import javafx.scene.layout.VBox;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
 import jfxtras.scene.control.gauge.linear.elements.Segment;
+
+import java.util.stream.Collectors;
 
 public class NutritionController {
     public static final String MEAL_VIEW = "Meal";
@@ -71,6 +72,21 @@ public class NutritionController {
     TextField tf_searchFood;
     @FXML
     TextField tf_searchMeal;
+
+    @FXML
+    Label lbl_stats_kcal;
+    @FXML
+    Label lbl_stats_protein;
+    @FXML
+    Label lbl_stats_fat;
+    @FXML
+    Label lbl_stats_carbs;
+    @FXML
+    Label lbl_stats_sugar;
+    @FXML
+    TextField tf_stats_days;
+    @FXML
+    CharmListView<NutriStats, String> lv_stats;
 
     private Button btn_addMealToDay = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMealToDay());
     private Button btn_addMeal = MaterialDesignIcon.PLAYLIST_ADD.button(e -> showAddMeal());
@@ -142,6 +158,7 @@ public class NutritionController {
 
     /**
      * Update the ActionItems accordingly to the given tab
+     *
      * @param tab
      */
     private void showTabActionItems(Tab tab) {
@@ -157,11 +174,14 @@ public class NutritionController {
             case "food":
                 appBar.getActionItems().setAll(btn_addFood);
                 break;
-            case "logs":
+            default:
                 appBar.getActionItems().clear();
                 break;
         }
     }
+
+    FilteredList<BAFood> filteredFood = new FilteredList(Service.getInstance().getFoods());
+    FilteredList<BAMeal> filteredMeal = new FilteredList(Service.getInstance().getMeals());
 
     @FXML
     public void searchFood() {
@@ -173,8 +193,38 @@ public class NutritionController {
         filteredMeal.setPredicate(n -> n.getName().toLowerCase().contains(tf_searchMeal.getText().toLowerCase()));
     }
 
-    FilteredList<BAFood> filteredFood = new FilteredList(Service.getInstance().getFoods());
-    FilteredList<BAMeal> filteredMeal = new FilteredList(Service.getInstance().getMeals());
+    @FXML
+    public void getStats() {
+        int c = 0;
+        try {
+            c = Integer.parseInt(tf_stats_days.getText());
+        } catch (NumberFormatException e) {
+            tf_stats_days.clear();
+        }
+
+        ObservableList<NutriStats> stats = Service.getInstance().getCountDays(c);
+
+        lv_stats.setCellFactory(cell -> new NutriStatsCell<>());
+        lv_stats.setItems(stats);
+
+        Stats avg = new Stats();
+
+        stats.forEach(d -> {
+            avg.addDay();
+            avg.addKcal(d.getKcal());
+            avg.addProtein(d.getProtein());
+            avg.addFat(d.getFat());
+            avg.addCarbs(d.getCarbs());
+            avg.addSugar(d.getSugar());
+        });
+
+        tf_stats_days.setText("" + avg.getDays());
+        lbl_stats_kcal.setText(Service.getInstance().getIntNF().format(avg.getKcal()));
+        lbl_stats_protein.setText(Service.getInstance().getIntNF().format(avg.getProtein()));
+        lbl_stats_fat.setText(Service.getInstance().getIntNF().format(avg.getFat()));
+        lbl_stats_carbs.setText(Service.getInstance().getIntNF().format(avg.getCarbs()));
+        lbl_stats_sugar.setText(Service.getInstance().getIntNF().format(avg.getSugar()));
+    }
 
     @FXML
     public void initialize() {
@@ -205,7 +255,11 @@ public class NutritionController {
         // day Tab
         // =====================
 
-        lv_day_meals.setCellFactory(cell -> new NutritionUnitCell<>());
+        lv_day_meals.setCellFactory(cell -> new NutritionUnitCell<>(e -> {
+                    Service.getInstance().deleteDayMeal(e);
+                    updateDay();
+                })
+        );
 
         //mag_kcal.maxValueProperty().bind(Service.getInstance().settingsProperty().get().targetKcalProperty());
         Segment seg1 = new PercentSegment(mag_kcal, 0, 100);
@@ -273,5 +327,9 @@ public class NutritionController {
                 tb_nutrition.getSelectionModel().select(0);
             }
         });
+
+        // =====================
+        // Stats Tab
+        // =====================
     }
 }

@@ -6,6 +6,7 @@ import com.gluonhq.charm.glisten.control.Avatar;
 import com.gluonhq.charm.glisten.control.NavigationDrawer;
 import com.gluonhq.charm.glisten.control.NavigationDrawer.Item;
 import com.gluonhq.charm.glisten.layout.layer.SidePopupView;
+import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
 import de.seibushin.bodyArchitect.views.*;
@@ -41,6 +42,7 @@ public class Main extends MobileApplication {
         //addViewFactory(WORKOUT_VIEW, () -> new WorkoutView(WORKOUT_VIEW).getView());
         addViewFactory(SETTINGS_VIEW, () -> new SettingsView(SETTINGS_VIEW).getView());
         addViewFactory(MEAL_DAY_VIEW, () -> new MealDayView(MEAL_DAY_VIEW).getView());
+
 
         // side Navigation
         NavigationDrawer drawer = new NavigationDrawer();
@@ -97,12 +99,11 @@ public class Main extends MobileApplication {
 
         // add the mealInfoLayer (popup)
         addLayerFactory("MealInfo", () -> Service.getInstance().getMealInfoLayer());
+        addLayerFactory("InfoLayer", () -> Service.getInstance().getInfoLayer());
     }
 
     @Override
     public void postInit(Scene scene) {
-        Service.getInstance().setMealInfoLayer(new MealInfoLayer());
-
         Swatch.GREY.assignTo(scene);
 
         scene.getStylesheets().add(Main.class.getResource("style.css").toExternalForm());

@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.javafxports:jfxmobile-plugin:1.1.0'
+        classpath 'org.javafxports:jfxmobile-plugin:1.1.1'
     }
 }
 
@@ -23,14 +23,12 @@ dependencies {
     compile 'com.gluonhq:charm:4.0.0'
     compile 'org.jfxtras:jfxtras-gauge-linear:8.0-r5'
     compile 'org.xerial:sqlite-jdbc:3.8.11.2:'
-    compile  'com.gluonhq:charm-down-plugin-storage-desktop:3.0.0'
+    compile 'com.gluonhq:charm-down-plugin-storage-desktop:3.0.0'
 
     desktopRuntime 'org.xerial:sqlite-jdbc:3.8.11.2:'
 
-    embeddedRuntime 'org.xerial:sqlite-jdbc:3.8.11.2:'
-    embeddedRuntime 'com.gluonhq:charm-down-plugin-storage-desktop:3.0.0'
-
-    androidRuntime files('./lib/sqldroid-1.1.0-SNAPSHOT.jar')
+    //androidRuntime files('./lib/sqldroid-1.1.0-SNAPSHOT.jar')
+    androidRuntime 'org.sqldroid:sqldroid:1.0.3'
 }
 
 jfxmobile {

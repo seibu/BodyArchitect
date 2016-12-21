@@ -10,6 +10,8 @@ package de.seibushin.bodyArchitect;
 import com.gluonhq.charm.down.Platform;
 import com.gluonhq.charm.down.Services;
 import com.gluonhq.charm.down.plugins.StorageService;
+import com.gluonhq.charm.glisten.layout.Layer;
+import com.gluonhq.charm.glisten.layout.layer.SnackbarPopupView;
 import de.seibushin.bodyArchitect.model.nutrition.*;
 import de.seibushin.bodyArchitect.model.nutrition.plan.Plan;
 import de.seibushin.bodyArchitect.model.nutrition.plan.PlanDay;
@@ -17,6 +19,7 @@ import de.seibushin.bodyArchitect.views.LogBook;
 import de.seibushin.bodyArchitect.views.layers.MealInfoLayer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class Service {
 
@@ -50,6 +54,7 @@ public class Service {
 
     private final DecimalFormat df = new DecimalFormat("#.#");
     private MealInfoLayer mealInfoLayer;
+    private SnackbarPopupView infoLayer;
 
     private final static String DB_NAME = "ba.db";
     private final static int QUERY_TIMEOUT = 30;
@@ -70,12 +75,24 @@ public class Service {
     private PreparedStatement ps;
     private ResultSet rs;
 
-    private String dbUrl = "jdbc:sqlite:";
-
     private final DateTimeFormatter dtfDb = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private final NumberFormat intNF = NumberFormat.getInstance(new Locale("de", "DE"));
     private final NumberFormat doubleNF = NumberFormat.getInstance(new Locale("de", "DE"));
+
+    public static void copyDatabase(String pathIni, String pathEnd, String name) {
+        try (InputStream myInput = Service.class.getResourceAsStream(pathIni + name);
+             OutputStream myOutput = new FileOutputStream(pathEnd + "/" + name)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = myInput.read(buffer)) > 0) {
+                myOutput.write(buffer, 0, length);
+            }
+            myOutput.flush();
+        } catch (IOException ex) {
+            System.out.println("Error " + ex);
+        }
+    }
 
     public Service() {
         // adjust numberformats
@@ -102,43 +119,38 @@ public class Service {
         }
 
         // set Url to db
-        try {
-            File privateStorage = Services.get(StorageService.class).flatMap(StorageService::getPrivateStorage).orElseThrow(() -> new FileNotFoundException("Could not access private storage."));
-            File db = new File(privateStorage, DB_NAME);
-            if (!db.exists()) {
-                //@todo not working on mobile!!"!§$
-                File clear = new File(Service.class.getResource("clear.db").getFile());
-
-                try (FileOutputStream fos = new FileOutputStream(db);
-                     FileInputStream fis = new FileInputStream(clear)) {
-                    // Construct a 1K buffer to hold bytes on their way to the socket
-                    byte[] buffer = new byte[1024];
-                    int bytes = 0;
-
-                    // Copy requested file into the socket's output stream
-                    while ((bytes = fis.read(buffer)) != -1) {
-                        fos.write(buffer, 0, bytes);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (db.exists()) {
-                        db.delete();
-                        System.exit(1);
-                    }
-                }
-            }
-            dbUrl = dbUrl + db.getAbsolutePath();
-            // establish connection
-            connection = DriverManager.getConnection(dbUrl);
-
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        }
+        createClearDB();
 
         // load data
         loadRelevant();
 
         logBook = new LogBook(days);
+    }
+
+    private void createClearDB() {
+        String dbUrl = "jdbc:sqlite:";
+
+        File dir;
+        try {
+            dir = Services.get(StorageService.class)
+                    .flatMap(StorageService::getPrivateStorage)
+                    .orElseThrow(() -> new IOException("Error: PrivateStorage not available"));
+            File db = new File(dir, DB_NAME);
+            if (!db.exists()) {
+                System.out.println("Info: Database does not exist");
+                copyDatabase("/databases/", dir.getAbsolutePath(), DB_NAME);
+            }
+            dbUrl = dbUrl + db.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        try {
+            connection = DriverManager.getConnection(dbUrl);
+        }  catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void init() {
@@ -198,11 +210,17 @@ public class Service {
     }
 
     public MealInfoLayer getMealInfoLayer() {
+        if (mealInfoLayer == null) {
+            mealInfoLayer = new MealInfoLayer();
+        }
         return mealInfoLayer;
     }
 
-    public void setMealInfoLayer(MealInfoLayer mealInfoLayer) {
-        this.mealInfoLayer = mealInfoLayer;
+    public SnackbarPopupView getInfoLayer() {
+        if (infoLayer == null) {
+            infoLayer = new SnackbarPopupView();
+        }
+        return infoLayer;
     }
 
     public void loadRelevant() {
@@ -242,6 +260,7 @@ public class Service {
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
+                //System.out.println(name + " " + id);
                 double weight = rs.getDouble(3);
                 double portion = rs.getDouble(4);
                 double kcal = rs.getDouble(5);
@@ -586,6 +605,24 @@ public class Service {
         return days;
     }
 
+    public ObservableList getCountDays(int c) {
+        FilteredList<Day> fDays = days.filtered(day -> day.getDate().isBefore(getSelectedDay()));
+
+        if (c > fDays.size()) {
+            c = fDays.size();
+        }
+
+        ObservableList<Day> stats = FXCollections.observableArrayList();
+
+        ObservableList<Day> copy = fDays.sorted((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+        for (int i = copy.size() - 1; i >= fDays.size() - c; i--) {
+            Day d = copy.get(i);
+            stats.add(d);
+        }
+
+        return stats;
+    }
+
     public void addSimpleMealToDay(BANutritionUnit simpleMeal, int dayId) {
         try {
             ps = connection.prepareStatement("insert into " + DAY_MEAL_TABLE + " values(null, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -604,12 +641,12 @@ public class Service {
                 ps.setDouble(3, simpleMeal.getPortion());
                 ps.executeUpdate();
                 ((BAMealPortion) simpleMeal).setSaved(true);
-            } else if (BAFoodPortion.class.isInstance(simpleMeal) && !((BAFoodPortion)simpleMeal).isSaved()) {
+            } else if (BAFoodPortion.class.isInstance(simpleMeal) && !((BAFoodPortion) simpleMeal).isSaved()) {
                 ps2.setInt(1, dayId);
                 ps2.setInt(2, ((BAFoodPortion) simpleMeal).getNutritionUnitId()); // -> Food-ID
                 ps2.setDouble(3, ((BAFoodPortion) simpleMeal).getPortion());
                 ps2.executeUpdate();
-                ((BAFoodPortion)simpleMeal).setSaved(true);
+                ((BAFoodPortion) simpleMeal).setSaved(true);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -663,8 +700,10 @@ public class Service {
         try {
             if (BAMealPortion.class.isInstance(simpleMeal)) {
                 ps = connection.prepareStatement("DELETE FROM " + DAY_MEAL_TABLE + " WHERE id IN (SELECT id FROM " + DAY_MEAL_TABLE + " WHERE d_id = ? AND m_id = ? ORDER BY id DESC LIMIT 1)");
-            } else {
+            } else if (BAFoodPortion.class.isInstance(simpleMeal)) {
                 ps = connection.prepareStatement("DELETE FROM " + DAY_FOOD_TABLE + " WHERE id IN (SELECT id FROM " + DAY_FOOD_TABLE + " WHERE d_id = ? AND f_id = ? ORDER BY id DESC LIMIT 1)");
+            } else {
+                return;
             }
 
             try {
@@ -677,6 +716,8 @@ public class Service {
             ps.setInt(1, getSelectedDayObject().getId());
             //noinspection JpaQueryApiInspection
             ps.setInt(2, simpleMeal.getId());
+
+            System.out.println(getSelectedDayObject().getId() + " - " + simpleMeal.getId());
 
             ps.executeUpdate();
             getSelectedDayObject().removeMeal(simpleMeal);
@@ -812,18 +853,18 @@ public class Service {
                 // thrown from SQLDroid we can just ignore this
             }
 
-            if (BAMealPortion.class.isInstance(simpleMeal) && !((BAMealPortion)simpleMeal).isSaved()) {
+            if (BAMealPortion.class.isInstance(simpleMeal) && !((BAMealPortion) simpleMeal).isSaved()) {
                 ps.setInt(1, planId);
                 ps.setInt(2, ((BAMealPortion) simpleMeal).getNutritionUnitId());
                 ps.setDouble(3, simpleMeal.getPortion());
                 ps.executeUpdate();
-                ((BAMealPortion)simpleMeal).setSaved(true);
-            } else if (BAFoodPortion.class.isInstance(simpleMeal) && !((BAFoodPortion)simpleMeal).isSaved()) {
+                ((BAMealPortion) simpleMeal).setSaved(true);
+            } else if (BAFoodPortion.class.isInstance(simpleMeal) && !((BAFoodPortion) simpleMeal).isSaved()) {
                 ps2.setInt(1, planId);
                 ps2.setInt(2, ((BAFoodPortion) simpleMeal).getNutritionUnitId()); // -> Food-ID
                 ps2.setDouble(3, ((BAFoodPortion) simpleMeal).getPortion());
                 ps2.executeUpdate();
-                ((BAFoodPortion)simpleMeal).setSaved(true);
+                ((BAFoodPortion) simpleMeal).setSaved(true);
             }
 
         } catch (SQLException e) {
@@ -832,7 +873,7 @@ public class Service {
     }
 
     public void deletePlanDayMeal(BANutritionUnit simpleMeal, int planDayId) {
-        System.out.println("deletePlanDayMeal");
+        System.out.println("deletePlanDayMeal " + simpleMeal.getName() + " " + planDayId);
         try {
             if (BAMealPortion.class.isInstance(simpleMeal)) {
                 ps = connection.prepareStatement("DELETE FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE id IN (SELECT id FROM " + NUTRITON_PLAN_DAY_MEALS_TABLE + " WHERE npd_id = ? AND m_id = ? ORDER BY id DESC LIMIT 1)");
@@ -1009,5 +1050,4 @@ public class Service {
     public Settings getSettings() {
         return settings;
     }
-
 }

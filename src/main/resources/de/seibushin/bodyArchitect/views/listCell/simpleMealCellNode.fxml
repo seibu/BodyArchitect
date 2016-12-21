@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
 <ListTile fx:id="tile" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
       <GridPane hgap="5.0" styleClass="cell-body" BorderPane.alignment="CENTER">
@@ -81,6 +80,7 @@
                </HBox.margin>
             </Label>
               <Icon fx:id="i_info" content="INFO" />
+            <Icon fx:id="i_delete" content="DELETE" />
               </children>
           </HBox>
    </center>

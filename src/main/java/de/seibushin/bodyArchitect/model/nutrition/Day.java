@@ -12,7 +12,7 @@ import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
 
-public class Day {
+public class Day implements NutriStats {
     private Integer id = null;
     private LocalDate date;
     private String notice;
@@ -20,11 +20,11 @@ public class Day {
     private ObservableList<BANutritionUnit> meals = FXCollections.observableArrayList();
     // add Settings
 
-    private Double kcal = 0.0;
-    private Double protein = 0.0;
-    private Double fat = 0.0;
-    private Double carbs = 0.0;
-    private Double sugar = 0.0;
+    private double kcal = 0.0;
+    private double protein = 0.0;
+    private double fat = 0.0;
+    private double carbs = 0.0;
+    private double sugar = 0.0;
 
     private boolean saved = false;
 
@@ -70,23 +70,23 @@ public class Day {
         return meals;
     }
 
-    public Double getKcal() {
+    public double getKcal() {
         return kcal;
     }
 
-    public Double getProtein() {
+    public double getProtein() {
         return protein;
     }
 
-    public Double getFat() {
+    public double getFat() {
         return fat;
     }
 
-    public Double getCarbs() {
+    public double getCarbs() {
         return carbs;
     }
 
-    public Double getSugar() {
+    public double getSugar() {
         return sugar;
     }
 
